@@ -44,9 +44,9 @@ const config: Config = {
         docs: {
           routeBasePath: '/',
           sidebarPath: './sidebars.ts',
-          // Remove this to remove the "edit this page" links.
+          exclude: ['**/plans/**'],
           editUrl:
-            'https://github.com/brucontrol/docs/tree/main/',
+            'https://github.com/brucontrol/docs/edit/main/',
         },
         blog: false,
         theme: {

@@ -4,156 +4,110 @@ title: Application Overview
 sidebar_position: 1
 ---
 
-# BruControl Application
+# BruControl Application Overview
 
-## Application Environment
+BruControl is a software application that serves as the central hub for your process control and automation system. It provides a unified interface for setup, monitoring, and control of devices, workspaces, and automated processes—ideal for breweries, fermenters, and other process equipment.
 
-The BruControl application serves as the central hub for your automation system. It provides a unified interface for setup, monitoring, and control of all your devices and processes.
+## What BruControl Does
 
-## Main Components
+BruControl communicates with one or more microcontroller interfaces (such as Arduino boards) via USB or network. These interfaces act as the hardware layer between the software and your physical devices—relays, sensors, heaters, pumps, valves, and more. The application gives you:
 
-### Workspaces
+- **Real-time monitoring** of temperatures, levels, states, and values
+- **Control** of outputs, timers, and automated sequences
+- **Scripting** for full automation without programming experience
+- **Customizable dashboards** with widgets, charts, and layouts
 
-Workspaces are multi-page displays that allow you to organize your control interface:
+## Main Areas of the Interface
 
-- **Multiple pages** - Create separate views for different systems
-- **Customizable layouts** - Arrange elements as needed
-- **Visual themes** - Select from different color schemes
-- **Touch-friendly** - Optimized for touchscreen operation
+### Header
 
-### Elements
+The header bar shows status and controls:
 
-Elements are the building blocks displayed in workspaces:
+- **Panel toggles** — Show or hide the Configuration (Solution Explorer) panel and the Script Panel
+- **Status indicators** — Version, uptime, device connections (connected/total), and license status
+- **Enable/Disable all ports** — Quick controls for all interface ports
+- **Theme selector** — Switch between light and dark themes
 
-- **Device elements** - Control and monitor hardware
-- **Graphs** - Visualize historical data
-- **Buttons and switches** - User interaction
-- **Inspectors** - Display values and status
-- **Timers and alarms** - System notifications
+### Solution Explorer (Left Panel)
 
-### Scripts
+The Solution Explorer is the tree on the left side of the application (labeled **Configuration** in the pane header). It organizes everything in your project:
 
-Scripts automate your processes:
+- **Workspaces** — Your dashboards and their elements (you can create folders to organize workspaces)
+- **Processes** — Automation scripts (processes) you can run, pause, or stop (folders available for organization)
+- **Data Views** — Configurable views over chart and time-series data
+- **Interfaces** — Your connected hardware devices (click a device to open the Device Editor)
+- **Mocks** — Simulated devices (only visible when mock mode is enabled)
+- **Settings** — Application configuration
 
-- **Multiple concurrent scripts** - Run several automation sequences simultaneously
-- **Simple language** - Easy to learn and use
-- **Powerful features** - Variables, conditionals, loops
-- **Debugging tools** - Step through code, pause, resume
+Use the Solution Explorer to create workspaces, add elements, manage processes, and open settings. Right-click items for context menus with actions like New, Edit, Rename, Delete, and Run. The left panel can be toggled on or off via the header.
 
-## Application Settings
+### Dashboard (Center Area)
 
-Access settings through the gear icon:
+The Dashboard is the main canvas where your workspace elements appear as widgets. Each workspace has its own dashboard. You can:
 
-### Interfaces Tab
+- **Arrange widgets** — Drag, resize, and layer elements
+- **Zoom and pan** — Navigate large layouts
+- **Switch workspaces** — Use the workspace tab bar above the dashboard
+- **Edit elements** — In Select mode, select a widget and click Edit to open its properties drawer
 
-Configure connections to your hardware interfaces:
+The Dashboard shows real-time values, buttons, switches, charts, timers, alarms, and device controls.
 
-- **Add interfaces** - USB or network connections
-- **Configure communication** - Set IP addresses, COM ports
-- **Monitor status** - View connection health
+### Script Panel (Bottom Panel)
 
-### Configuration Tab
+The Script Panel shows the code for the currently selected script (process). You can:
 
-System-wide settings:
+- **Edit script code** — Write and modify automation logic
+- **Run, Stop, Pause** — Control script execution
+- **View status** — See which scripts are running
 
-- **Data storage** - Configure logging and history
-- **Display options** - Screen resolution, scaling
-- **Performance** - Optimize for your hardware
+Scripts use a simple language with variables, conditionals, timers, alarms, and element control. Multiple scripts can run at the same time.
 
-### Security Tab
+### Settings (Solution Explorer)
 
-Control access to your system:
+Settings control how BruControl behaves. Open Settings by expanding **Settings** in the Solution Explorer and selecting an item (e.g., General, Security, License). Settings open in a modal. Settings tabs include: **General**, **Security**, **Services**, **License**, **Data Storage**, **Widgets**, and **Device Types**. **Plugin Store** and **System Logs** open in separate browser tabs.
 
-- **User accounts** - Create and manage users
-- **Permissions** - Control what users can modify
-- **Password protection** - Secure your automation
+## Tabs and Navigation
 
-### License Tab
+### Workspace Tabs
 
-Manage your BruControl license:
+When you have multiple workspaces, tabs appear above the Dashboard. Click a tab to switch to that workspace. You can reorder tabs by dragging them. (Hidden workspaces do not appear in the tab bar.)
 
-- **View license status** - Check activation
-- **Update license** - Enter new license keys
-- **Evaluation mode** - Test before purchasing
+### Scripts Tab
 
-### Environment Tab
+The Scripts icon toggles the Script Panel on or off. When a script is selected in the Solution Explorer, its code appears in the Script Panel.
 
-System information and diagnostics:
+### Data Views
 
-- **Version information** - Software and firmware versions
-- **System status** - CPU, memory usage
-- **Diagnostics** - Troubleshooting tools
+Data Views appear in the Solution Explorer under **Data Views**. Selecting a data view shows it in the main area instead of the Dashboard, with time-series charts, panels, or summary views. Use the close button to return to the Dashboard.
 
-### Data Exchange Tab
+### Interfaces
 
-Configure communication with external systems:
+Interfaces (your hardware devices) are listed under **Interfaces** in the Solution Explorer. Each interface shows connection status. Add interfaces by right-clicking **Interfaces** → **New Interface**. Configure device types and firmware in **Settings** → **Device Types**. Click a device to open the Device Editor.
 
-- **Network protocols** - Set up data sharing
-- **API access** - Enable external control
-- **Integration** - Connect to third-party software
+## Mobile and Tablet Layout
 
-### Email Tab
+On mobile and tablet devices, the layout adapts:
 
-Configure email notifications:
+- **Bottom navigation** — Switch between Dashboard and Script panels
+- **Sidebar drawer** — The Solution Explorer opens in a slide-out drawer (tap Explorer in the bottom nav to open)
+- **Workspace tabs** — Still appear above the Dashboard when multiple workspaces exist
 
-- **SMTP settings** - Mail server configuration
-- **Alarm notifications** - Send alerts via email
-- **Reports** - Schedule automated reports
+## Other Pages and Routes
 
-## User Interface Features
+Some features open in separate pages or new tabs:
 
-### Touch-Friendly Design
-
-- **Large buttons** - Easy to press on touchscreens
-- **No right-clicks** - All functions accessible via left-click/tap
-- **Intuitive navigation** - Clear menu structure
-- **Responsive** - Adapts to different screen sizes
-
-### Visual Customization
-
-- **Themes** - Choose color schemes
-- **Custom images** - Add your own graphics
-- **Element styling** - Customize appearance
-- **Layout flexibility** - Arrange elements freely
-
-### Real-Time Updates
-
-- **Live data** - See current values instantly
-- **Status indicators** - Visual feedback
-- **Graphs** - Real-time plotting
-- **Alarms** - Immediate notifications
-
-## Data Management
-
-### Historical Data
-
-- **Continuous logging** - Automatic data collection
-- **Configurable retention** - Set how long to keep data
-- **Quick access** - View historical trends
-- **Export capability** - Save data for analysis
-
-### Graphing
-
-- **Multiple traces** - Plot several values together
-- **Zoom and pan** - Examine specific time periods
-- **Customizable** - Choose colors, scales, ranges
-- **Export** - Save graphs as images
-
-## Getting Started
-
-1. **Install BruControl** - Download and run installer
-2. **Configure interfaces** - Add your hardware connections
-3. **Create elements** - Set up devices and controls
-4. **Design workspaces** - Build your control interface
-5. **Write scripts** - Automate your processes
-6. **Test and refine** - Verify operation and optimize
+- **File Manager** (`/files`) — Browse, upload, and download files
+- **Log Viewer** (`/logs`) — Live logs and search (also via **Settings** → **System Logs**)
+- **Plugin Store** (`/plugin-store`) — Install widgets and themes (also via **Settings** → **Plugin Store**)
+- **Widget Editor** (`/widgets`) — Create and edit widget templates
+- **Device Diagnostics** (`/device/:id/diagnostics`) — Per-device diagnostics
+- **Mock Device** (`/mock/:port`) — Simulate a device for testing
 
 ## Next Steps
 
-- [Application Setup](./setup) - Installation and initial configuration
-- [Workspaces](./workspaces) - Design your control interface
-- [Settings](./settings) - Configure application options
-
-:::info Coming Soon
-Detailed documentation for each application feature is being developed. Check back for comprehensive guides and tutorials.
-:::
+- [Application Setup](./setup) — Download, install, license, and first run
+- [Workspaces](./workspaces) — Create workspaces, add elements, use background images
+- [Settings](./settings) — Configure General, Security, License, Data, and more
+- [Data Views](./data-views) — Create and configure data views
+- [File Manager](./file-manager) — Browse, upload, and download files
+- [Log Viewer](./log-viewer) — Search and filter logs for troubleshooting

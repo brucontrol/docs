@@ -14,6 +14,8 @@ The "input" or "output" direction refers to the interface's perspective.
 
 ## Supported Device Types
 
+BruControl supports the port types below. Each maps to an element type when configuring device elements. For the complete list and configuration details, see [Device Elements Overview](../elements/device-elements-overview).
+
 ### 1. Digital Outputs
 
 These are commanded on/off devices such as:
@@ -130,16 +132,16 @@ These are read high-speed pulsed proportional sensors.
 
 ### 6. Special Temperature Sensors
 
-These are read variable sensors for measuring temperature with high accuracy.
+These are read variable sensors for measuring temperature with high accuracy. In BruControl: **OWTemp** (1-Wire) and **SPISensor** (RTD).
 
-#### RTD (Resistive Temperature Devices)
+#### RTD (Resistive Temperature Devices) — SPISensor
 
 - PT100 and PT1000 sensors
 - 2-wire, 3-wire, or 4-wire configurations
 - High accuracy and stability
 - Requires SPI interface boards (third-party)
 
-#### 1-Wire Temperature Sensors
+#### 1-Wire Temperature Sensors — OWTemp
 
 - DS18B20 and similar
 - Digital output
@@ -156,11 +158,41 @@ These are read variable sensors for measuring temperature with high accuracy.
 
 ---
 
-### 7. Special Device Sensors
+### 7. Control Elements
+
+These are output ports that provide control logic based on inputs. They combine a sensor input with an output to automate on/off or proportional control.
+
+#### Duty Cycle Output
+
+- Cycled on/off output for proportional control via time ratio
+- Configurable interval and duty percentage
+- Alternative to PWM for some relay-based loads
+
+#### Hysteresis Output
+
+- On/off control driven by an analog input (e.g., temperature)
+- High and low setpoints with hysteresis band
+- Typical use: refrigeration, simple temperature control
+
+#### PID Control
+
+- Proportional–Integral–Derivative control output
+- Tunes to a setpoint from an analog input
+- Typical use: precise temperature, pressure, or flow control
+
+#### Deadband Control
+
+- Band-based control from an analog input
+- Multiple output zones (e.g., heating, cooling, off)
+- Typical use: multi-zone heating/cooling, stepped control
+
+---
+
+### 8. Special Device Sensors
 
 These sensors provide data from particular devices used in processing applications.
 
-#### Electronic Hydrometers
+#### Electronic Hydrometers — Hydrometer
 
 - iSpindel
 - Tilt hydrometer
@@ -204,4 +236,4 @@ Most devices require supporting hardware for integration:
 
 - [Interface Wiring Maps](./wiring-maps) - Pin assignments for your interface
 - [Control System Considerations](./control-system) - Design your control system
-- [Device Elements](../elements/device-elements) - Configure devices in BruControl
+- [Device Elements](../elements/device-elements-overview) - Configure devices in BruControl

@@ -37,9 +37,17 @@ Knowledge and experience with electrical integration, low and high voltage wirin
 
 ### Operating System
 
-- Windows 7, 8, 10, or 11 (32-bit or 64-bit editions)
-- If installing on Windows 7, the .NET 10 Desktop Runtime or higher must be installed
+- **Windows** (64-bit): Windows 10 or 11
+  - The Windows release is a single-file executable (`BruControl.WebHost.exe`) that hosts the web application
+  - .NET 10 ASP.NET Core Runtime must be installed if using framework-dependent deployment (not required for self-contained builds)
   - Download from: https://dotnet.microsoft.com/en-us/download
+- **Linux** (64-bit): Supported via Docker or native .NET publish (e.g., Debian, Ubuntu, Alpine)
+  - Docker image: `ghcr.io/brucontrol/brucontrol-web:latest`
+  - Native: Extract the `BruControl-Web-*-linux-x64.tar.gz` release and run `dotnet BruControl.WebHost.dll`
+
+:::info Web Application Architecture
+BruControl runs as a web server. After starting the application, open a browser and navigate to `http://localhost:5005` (or the configured port) to access the interface.
+:::
 
 ### Hardware Specifications
 
@@ -71,11 +79,13 @@ The vertical resolution is the second number in a screen resolution format. For 
 
 :::tip Display Optimization
 - **To auto-hide the task bar**: Right-click the Taskbar, select Settings, then turn on 'Automatically hide the taskbar'
-- **To disable display scaling**: Right-click the BruControl.exe or shortcut file, select 'Properties'...'Compatibility' tab...'Settings'...check 'Disable display scaling on high DPI settings'
+- **To disable display scaling** (Windows host): Right-click `BruControl.WebHost.exe` or its shortcut, select 'Properties'...'Compatibility' tab...'Settings'...check 'Disable display scaling on high DPI settings'
+- **Browser zoom**: The web interface can also be zoomed via browser controls (Ctrl+/-) for readability
 :::
 
 ### Network Requirements
 
+- **Default port**: 5005 (configurable in settings)
 - **Internet connectivity** - Required for software licensing and updates
 - **Remote Control** (optional) - If PC is not located next to the machine where the user is operating, remote control software can be used:
   - Microsoft Remote Desktop
@@ -97,11 +107,23 @@ If interface connected by network, you'll need:
 - Install interface firmware
 - Download and install BruControl application
 
+### Browser Requirements (Web Interface)
+
+The BruControl interface runs in a web browser. Use a modern browser with WebSocket support:
+
+- **Recommended**: Chrome, Edge, Firefox, or Safari (current versions)
+- **Required**: WebSocket support (for real-time updates via SignalR)
+- **Resolution**: 1024 x 768 or higher for the browser window
+
+:::note
+The application serves the web UI on port 5005 by default. Ensure no firewall or security software blocks localhost connections.
+:::
+
 ## Touchscreen Considerations
 
 BruControl is intended to be touch-screen friendly:
 
-- No mouse right-clicks required
+- Long-press on touch devices opens context menus (equivalent to right-click)
 - Large buttons, fonts, and menus to accommodate touch
 - Optimized for tablet and touchscreen displays
 - Can be used with standard mouse and keyboard as well

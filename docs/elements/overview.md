@@ -6,112 +6,66 @@ sidebar_position: 1
 
 # Elements Overview
 
-Elements are the building blocks of your BruControl system. They represent the virtual objects that interact with your physical hardware and provide the interface for monitoring and control.
+Elements are the building blocks of your BruControl system. Each element combines **data**, a **widget template**, and **appearance** (position, size, rotation) to create what you see and control on the Dashboard.
 
-## What are Elements?
+## Device vs Non-Device Elements
 
-Elements in BruControl are virtual representations of:
+| Category | Description | Examples |
+|----------|-------------|----------|
+| **Non-Device** | Software-only elements that live in a workspace. No physical hardware connection. | Global Variable, Toggle Switch, Button, Timer, Alarm, Chart, Profile, Script Element, Generic |
+| **Device** | Elements backed by a device port (interface + port). Read from or control physical hardware. | Digital Output, Analog Input, 1-Wire Temp, PID, Hysteresis, Duty Cycle, etc. |
 
-- **Physical devices** (sensors, actuators, relays)
-- **Control algorithms** (PID, hysteresis, duty cycle)
-- **User interface components** (buttons, displays, graphs)
-- **Data storage** (variables, logs)
-- **System functions** (timers, alarms)
+Non-device elements are created directly in a workspace or folder. Device elements are created by adding a device (interface + port) and choosing the element type for that port.
 
-## Element Categories
+## Element = Data + Template + Appearance
+
+Every element has three layers:
+
+1. **Data** — Native properties (value, state, etc.) and optional custom properties from the widget template
+2. **Widget Template** — The visual representation (e.g., gauge, toggle, chart). Templates define custom properties (colors, fonts, layout) via `ui-controls.json`
+3. **Appearance** — Position (x, y), size (width, height), z-order, rotation — stored per theme
+
+## All Element Types
+
+### Non-Device Elements
+
+| Type | Description |
+|------|-------------|
+| [Global Variable](./global-variable) | Store values (numeric, boolean, string, time, datetime). Script variables, displays. |
+| [Toggle Switch](./toggle-switch) | On/off state. Manual override, script trigger. |
+| [Button](./button) | Momentary press. One-shot actions. |
+| [Generic](./generic) | Flexible container. Labels, custom displays. |
+| [Timer](./timer) | Count-up or count-down. Mash timer, boil timer. |
+| [Alarm](./alarm) | Threshold monitoring. High temp, low level alerts. |
+| [Script Element](./script) | Links to a Process (script). Run, stop, pause from UI. |
+| [Chart](./chart) | Time-series display. Temperature history, data logging. |
+| [Profile](./profile) | Ramp/profile control. Temperature ramps, step mashing. |
 
 ### Device Elements
 
-Device Elements connect to physical hardware through interface pins:
+| Type | Description |
+|------|-------------|
+| Digital Output | On/off control (relays, valves) |
+| Digital Input | Read on/off states |
+| Duty Cycle | Time-based on/off cycling |
+| PWM Output | Pulse-width modulation |
+| Analog Input | Variable voltage reading |
+| Counter | Pulse counting (flow meters) |
+| 1-Wire Temp | Temperature sensors |
+| SPI Sensor | SPI-connected sensors |
+| Hydrometer | Specific gravity |
+| Hysteresis | Temperature control with deadband |
+| PID | Proportional-Integral-Derivative control |
+| Deadband | Prevent oscillation |
 
-- **Digital Input** - Read on/off states from switches and sensors
-- **Digital Output** - Control on/off devices like relays and valves
-- **Analog Input** - Read variable voltage from sensors
-- **PWM Output** - Control variable devices with pulse width modulation
-- **Counter Input** - Read high-speed pulses from flow meters and encoders
-- **Temperature Sensors** - RTD and 1-wire temperature measurement
-- **Hydrometer Input** - Specific gravity measurement from electronic hydrometers
+See [Device Elements Overview](./device-elements-overview) for device-specific documentation.
 
-### Control Elements
+## Adding Elements
 
-Control Elements implement algorithms for automated control:
-
-- **Duty Cycle Output** - Time-based on/off cycling
-- **Hysteresis Output** - Temperature control with deadband
-- **PID Output** - Proportional-Integral-Derivative control
-- **Deadband Output** - Prevent oscillation in control loops
-
-### Interface Elements
-
-Interface Elements provide user interaction and visualization:
-
-- **Button Elements** - User-triggered actions
-- **Switch Elements** - Toggle states
-- **Graph Elements** - Historical data visualization
-- **Inspector Elements** - Display values and status
-
-### System Elements
-
-System Elements manage timing and notifications:
-
-- **Timer Elements** - Count up or count down timers
-- **Alarm Elements** - Configurable alerts and notifications
-- **Global Elements** - Shared variables across scripts
-
-## Element Properties
-
-All elements have properties that can be:
-
-- **Read** - Get current values and states
-- **Written** - Set values and control behavior
-- **Monitored** - Track changes over time
-- **Logged** - Store historical data
-
-Common properties include:
-
-- **Value** - Current reading or setting
-- **State** - On/off or enabled/disabled status
-- **Name** - Element identifier
-- **Enabled** - Whether the element is active
-
-## Element Configuration
-
-Elements are configured through the BruControl interface:
-
-1. **Add Element** - Create a new element
-2. **Configure Properties** - Set parameters and options
-3. **Assign Hardware** - Link to interface pins (for device elements)
-4. **Apply Calibrations** - Adjust readings for accuracy
-5. **Test** - Verify operation
-
-## Element Naming
-
-:::tip Naming Best Practices
-- Use descriptive names: "Mash Tun Temperature" instead of "Temp1"
-- Include control type for device elements: "HLT PID" instead of "HLT"
-- Avoid duplicate names
-- Use consistent naming conventions
-:::
-
-## Element Interaction
-
-Elements can interact with:
-
-- **Scripts** - Read and write properties programmatically
-- **Other Elements** - Link elements together
-- **Workspaces** - Display and control through the UI
-- **Data Exchange** - Share data with external systems
+- **Non-device**: Right-click a workspace in Solution Explorer → [Element Type] (e.g., Button, Timer, Alarm)
+- **Device**: Right-click a workspace → **Device**, then select interface, element type, and port
 
 ## Next Steps
 
-Learn about specific element types:
-
-- [Device Elements](./device-elements) - Physical hardware interfaces
-- [Control Elements](./control-elements) - Automated control algorithms
-- [Timer Elements](./timer-elements) - Timing and scheduling
-- [Alarm Elements](./alarm-elements) - Alerts and notifications
-- [Graph Elements](./graph-elements) - Data visualization
-
-:::info Coming Soon
-Detailed documentation for each element type is being developed. Check back for comprehensive guides and examples.
-:::
+- [Non-Device Elements](./global-variable) — One page per type with properties and script integration
+- [Calibrations](./calibrations-overview) — Transform raw device values (temperature, voltage, etc.)

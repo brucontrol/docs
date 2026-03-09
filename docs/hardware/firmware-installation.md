@@ -88,7 +88,7 @@ Network parameters should be selected according to the preferred network topolog
 
 ### Option 1: DHCP (Recommended for Most Users)
 
-**Dynamic Host Control Protocol** - IP address is automatically assigned by your router.
+**Dynamic Host Configuration Protocol** - IP address is automatically assigned by your router.
 
 **Advantages:**
 - Addresses will never be duplicated

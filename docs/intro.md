@@ -8,13 +8,11 @@ sidebar_position: 1
 
 **Process Automation Made Personal**
 
-BruControl Version 1.3 BETA & Firmware v46F+
-
-*Updated 1/24/2026*
+BruControl requires the application and compatible interface firmware.
 
 ## Welcome
 
-BruControl is a powerful software application that serves as a host/front-end and programming interface for process control systems such as small-scale breweries, but can be adapted for many other automation or process control systems. It is currently PC based and communicates via serial (USB) and/or Ethernet/Wi-Fi network, sending and receiving instructions to one or more microcontrollers.
+BruControl is a powerful software application that serves as a host/front-end and programming interface for process control systems such as small-scale breweries, but can be adapted for many other automation or process control systems. It runs as a web server on Windows or Linux (including Docker) and is accessed via a web browser. BruControl communicates via serial (USB) and/or TCP network (Ethernet/Wi-Fi), sending and receiving instructions to one or more microcontrollers.
 
 ## What Makes BruControl Special?
 
@@ -24,7 +22,7 @@ BruControl is graphically driven, user friendly, intuitive, and highly flexible,
 - **No knowledge of protocols**
 - **No microcontroller programming or advanced skills**
 
-Yet it allows a user to configure anything from a single output control to a physically distributed, multiple input/output, highly integrated automated system.
+Yet it allows a user to configure anything from a single output control to a physically distributed, multiple input/output, highly integrated automated system. Built-in scripting enables automation without microcontroller programming, and multiple workspaces let you organize different machines or subsystems.
 
 ## Key Advantages
 

@@ -63,7 +63,7 @@ Complete changelog of BruControl releases:
 
 - **Version History – v1.1** - Features and fixes
 - **Version History – v1.2RC** - Release candidate changes
-- **Version History – v1.3** - Current version updates
+- **Version History – Current Release** - Changelog and updates
 
 ### Support
 
@@ -86,22 +86,19 @@ The appendix is organized as a reference guide. You don't need to read it cover-
 
 ### Most Referenced Pages
 
-- [Interface Overview](#) - Interface specifications and capabilities
-- [Troubleshooting Network Connectivity](#) - Fix connection issues
-- [Interface Control Codes](#) - Debug commands
-- [Technical Assistance](#) - Get help
+- [Interface Overview](./interface-overview) - Interface specifications and capabilities
+- [Troubleshooting Network Connectivity](./troubleshooting-network) - Fix connection issues
+- [Troubleshooting](./troubleshooting) - Common issues and solutions
+- [Technical Assistance](./technical-assistance) - Get help
 
 ### For New Users
 
-- [Interface Recommendations](#) - Choose the right hardware
 - [Interface Firmware Installation](../hardware/firmware-installation) - Get started
 - [System Requirements](../requirements) - What you need
 
 ### For Advanced Users
 
-- [Data Exchange Protocol](#) - External system integration
-- [BruControl as a Server](#) - Advanced configurations
-- [Device Elements via Scripts](#) - Scriptable properties
+- [Element Properties in Scripts](../scripting/element-properties) - Scriptable properties
 
 :::info Coming Soon
 Detailed appendix pages are being developed from the original documentation. Check back for comprehensive reference materials.
@@ -113,6 +110,4 @@ Found an error or have a suggestion? The BruControl documentation is continuousl
 
 ## Document Version
 
-This documentation is for BruControl Version 1.3 BETA and Firmware v46F+.
-
-Last updated: January 24, 2026
+This documentation covers the current BruControl release.

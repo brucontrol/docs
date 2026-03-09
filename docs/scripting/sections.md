@@ -1,46 +1,99 @@
 ---
 id: sections
-title: Sections and Flow Control
-sidebar_position: 3
+title: Sections, goto, and call
+sidebar_position: 2
 ---
 
-# Sections and Flow Control
+# Sections, goto, and call
 
-## Sections
+Scripts are divided into **sections** — blocks of code with names in brackets. Sections let you organize your script and jump between different parts of it.
 
-Code is grouped into named sections. A section heading is declared using square braces. A 'goto' statement is used to jump execution to a specific section.
+## Section Syntax
+
+```
+[section_name]
+```
+
+Section headers use square brackets. The section name can include spaces: `[heating phase]` is valid.
+
+## The [main] Section
+
+Execution starts at the **first section** in the script (by file order). If you put code before any section header, BruControl creates an implicit `[main]` section for it. By convention, many scripts use `[main]` as the name of the first section.
+
+```
+[main]
+print "Starting..."
+goto heating
+
+[heating]
+print "Heating phase"
+goto done
+
+[done]
+print "All done"
+```
+
+## goto — Jump to a Section
+
+Use `goto` to jump execution to another section. The jump does **not** return.
 
 ### Syntax
 
 ```
-[sectionname]
+goto section_name
+goto "section name"
 ```
 
-Where `sectionname` is the name of the section.
-
-```
-goto "sectionname"
-```
-
-Where `sectionname` is the name of the section to jump to.
+If the section name contains spaces, use quotes.
 
 ### Example
 
 ```
 [main]
-// Your code here
-"Pump" State = on
-sleep 5000
-goto "nextStep"
+print "Starting"
+goto heating
 
-[nextStep]
-"Pump" State = off
-goto "main"
+[heating]
+print "Heating phase"
+goto done
+
+[done]
+print "All done"
 ```
 
-### Section Names with Spaces
+## call — Call a Subroutine
 
-If your section name contains spaces, you must use quotes in the goto statement:
+Use `call` when you want to run a section and **come back** to where you called from. The section acts like a subroutine.
+
+### call vs goto
+
+- **call** — "Do this section, then come back"
+- **goto** — "Jump there and don't come back"
+
+### Example
+
+```
+[main]
+new value x
+x = 1
+call addOne
+print x
+goto end
+
+[addOne]
+x = x + 1
+return
+
+[end]
+```
+
+- `call addOne` — Jump to `[addOne]`, run it, then return to the line after `call`
+- `return` — Go back to where you were called from
+- `goto end` — Jump to `[end]` (does **not** return)
+
+## Section Names with Spaces
+
+If your section name contains spaces, use quotes in the `goto` or `call` statement:
 
 ```
 [sub 1]
@@ -48,255 +101,99 @@ If your section name contains spaces, you must use quotes in the goto statement:
 
 [main]
 goto "sub 1"
+call "sub 1"
 ```
 
-## Execution Delays
+## Organizing Your Script
 
-The `sleep` statement tells the interpreter to pause for a given period of time, in milliseconds.
-
-### Why Use Delays?
-
-Delays often need to be added to Script code to:
-
-- Allow physical devices time to respond
-- Allow associated processes time to complete
-- Allow human interaction time
-- Prevent the host computer's CPU from racing and using bandwidth needlessly
-- Control loop execution rates
-
-:::tip Best Practice
-It is good practice to include execution delays whenever a script does not need to run at a faster speed. Always include delays in loops to prevent CPU overload.
-:::
-
-### Syntax
-
-```
-sleep time
-```
-
-Where `time` is a number in milliseconds.
-
-### Examples
-
-```
-// Delay for 1 second
-sleep 1000
-
-// Delay for 5 seconds
-sleep 5000
-
-// Delay for 100 milliseconds
-sleep 100
-```
-
-### Common Delay Patterns
-
-#### Simple Loop with Delay
-
-```
-[main]
-// Your code here
-sleep 1000                    // delay 1000 milliseconds (1 second)
-goto "main"                   // go back to main
-```
-
-#### Sequential Operations
-
-```
-[start]
-"Valve1" State = on
-sleep 2000                    // Wait 2 seconds for valve to open
-
-"Pump" State = on
-sleep 30000                   // Run pump for 30 seconds
-
-"Pump" State = off
-sleep 1000                    // Wait 1 second
-
-"Valve1" State = off
-```
-
-## Comments and Formatting
-
-Comments can be used to annotate Scripts, so a description or note can be placed for documentation.
-
-### Syntax
-
-```
-// comment
-```
-
-Where `comment` is text which is ignored by the interpreter.
-
-### Example
-
-```
-[main]                        // section named main
-// Your code here
-goto "main"                   // go to section named main
-
-[sub 1]                       // next section
-// Your code here
-goto "sub 1"                  // go to section named sub 1
-```
-
-### Formatting Best Practices
-
-#### Use Blank Lines
-
-Blank lines can be implemented to separate Script areas for readability:
-
-```
-[initialization]
-"Pump" State = off
-"Heater" State = off
-"Valve" State = closed
-
-[main]
-// Main process loop
-"Pump" State = on
-sleep 5000
-goto "main"
-```
-
-#### Use Indentation
-
-Text may be indented to indicate something conditional or to improve readability:
-
-```
-[loop]
-if "Temperature" Value > 170
-    "Heater" State = off
-    sleep 1000
-endif
-
-sleep 500
-goto "loop"
-```
-
-#### Use Descriptive Comments
-
-```
-// This script section handles fluid filling of the first vessel
-[fillVessel]
-"FillValve" State = open      // Open the fill valve
-sleep 1000                    // Wait for valve to fully open
-
-// Monitor level while filling
-[monitorFill]
-if "LevelSensor" Value > 50   // Check if vessel is 50% full
-    goto "stopFilling"
-endif
-sleep 500
-goto "monitorFill"
-
-[stopFilling]
-"FillValve" State = closed    // Close the fill valve
-```
-
-## Script Organization
-
-### Main Loop Pattern
+### Main loop pattern
 
 ```
 [initialize]
-// Set initial states
 "Pump" State = off
 "Heater" State = off
 
 [main]
 // Main process logic
-// Your code here
 sleep 1000
 goto "main"
 ```
 
-### State Machine Pattern
+### State machine pattern
 
 ```
 [idle]
-// Wait for start condition
-if "StartButton" State = on
-    goto "running"
+if "StartButton" State == on
+  goto "running"
 endif
 sleep 500
 goto "idle"
 
 [running]
-// Process is running
 "Pump" State = on
-if "StopButton" State = on
-    goto "stopping"
+if "StopButton" State == on
+  goto "stopping"
 endif
 sleep 500
 goto "running"
 
 [stopping]
-// Shutdown sequence
 "Pump" State = off
 sleep 2000
 goto "idle"
 ```
 
-### Subroutine Pattern
+### Subroutine pattern
 
 ```
 [main]
-// Do something
-goto "subroutine1"
-
-[afterSub1]
-// Do something else
-goto "subroutine2"
-
-[afterSub2]
-// Continue
+call "doTask1"
+call "doTask2"
 goto "main"
 
-[subroutine1]
+[doTask1]
 // Perform task 1
-goto "afterSub1"
+return
 
-[subroutine2]
+[doTask2]
 // Perform task 2
-goto "afterSub2"
+return
 ```
 
-## Flow Control Best Practices
+## Best Practices
 
-1. **Use descriptive section names** - `[fillVessel]` is better than `[sec1]`
-2. **Keep sections focused** - Each section should have a clear purpose
-3. **Add comments** - Explain what each section does
-4. **Use consistent naming** - Choose a naming convention and stick to it
-5. **Avoid deep nesting** - Keep logic simple and readable
-6. **Include delays in loops** - Prevent CPU overload
-7. **Plan your flow** - Sketch out the logic before coding
+1. **Use descriptive section names** — `[fillVessel]` is better than `[sec1]`
+2. **Keep sections focused** — Each section should have a clear purpose
+3. **Add comments** — Explain what each section does
+4. **Include delays in loops** — Use `sleep` to prevent CPU overload
+5. **Plan your flow** — Sketch out the logic before coding
 
 ## Common Pitfalls
 
-### Infinite Loop Without Delay
+### Infinite loop without delay
 
 ❌ **Bad:**
 ```
 [loop]
 // Do something
-goto "loop"                   // No delay - will consume CPU!
+goto "loop"
 ```
 
 ✅ **Good:**
 ```
 [loop]
 // Do something
-sleep 100                     // Always include a delay in loops
+sleep 100
 goto "loop"
 ```
 
-### Missing Section
+### Missing section
 
 ❌ **Bad:**
 ```
 [main]
-goto "nextStep"               // nextStep section doesn't exist!
+goto "nextStep"
+// nextStep section doesn't exist!
 ```
 
 ✅ **Good:**
@@ -310,7 +207,7 @@ goto "nextStep"
 
 ## Next Steps
 
-- [Variables](./variables) - Store and manipulate data
-- [Conditional Logic](./conditionals) - Make decisions in your scripts
-- [Element Properties](./element-properties) - Interact with devices
-- [Script Examples](./examples) - See complete working examples
+- [Variables](./variables) — Store and manipulate data
+- [Element Properties](./element-properties) — Interact with devices
+- [Conditionals](./conditionals) — Make decisions
+- [Flow Control](./flow-control) — Loops and timing

@@ -107,7 +107,7 @@ Certain interfaces have memory in them which allows for settings to be stored pe
 
 - BruControl uses this memory to store settings for interfaces connecting via Network
 - **Permanent memory** - Interfaces will retain their network settings each time the firmware is installed or updated
-- **Temporary storage** - Interfaces will require their settings to be re-entered each time their firmware is installed or updated (identified by "Until new FW" in interface tables)
+- **Temporary storage** - Interfaces will require their settings to be re-entered each time their firmware is installed or updated (identified by "Until New FW" in interface tables)
 
 :::info Power Cycling
 In both circumstances, the interface can be powered off and on without losing its network settings.

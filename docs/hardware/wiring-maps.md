@@ -18,8 +18,9 @@ The types and corresponding letter codes are:
 | **P** | PWM Output/Analog Output | Variable power/proportional control |
 | **A** | Analog Input | Variable voltage sensors |
 | **C** | Counter Input | High-speed pulse sensors |
-| **R** | RTD | Resistive Temperature Device sensors |
+| **R** | RTD (SPI Sensor) | Resistive Temperature Device sensors via SPI board |
 | **O** | 1-Wire | DS18B20 and similar temperature sensors |
+| **H** | Hydrometer | Tilt and similar Bluetooth hydrometers (ESP32 only, virtual ports 220–224) |
 
 ## Firmware Variations
 
@@ -75,9 +76,7 @@ Pin 5:  D,C   - Digital or Counter Input
 - 1-wire sensor support
 
 **Connection Options:**
-- USB Serial (native)
-- Ethernet (with shield)
-- Wi-Fi (with shield or module)
+- USB Serial (native) only — no network firmware variants in BruControl
 
 ### ESP32-Based Interfaces
 
@@ -118,13 +117,13 @@ Pin 5:  D,C   - Digital or Counter Input
 
 ## Detailed Wiring Maps
 
-For detailed, interface-specific wiring maps, please refer to:
+Per-pin wiring maps for each interface and firmware combination are available from [brucontrol.com/download/firmware/](https://brucontrol.com/download/firmware/) (download the Interface Wiring Map for your interface). For related reference:
 
-- [Interface Overview (Appendix)](../appendix/interface-overview) - Complete pin mappings for all supported interfaces
+- [Interface Overview (Appendix)](../appendix/interface-overview) - Interface specifications and I/O capabilities
 - [Interface Specific Considerations (Appendix)](../appendix/interface-specific) - Special notes for specific interface models
 
 ## Next Steps
 
 - [Control System Considerations](./control-system) - Design and safety guidelines
 - [Firmware Installation](./firmware-installation) - Install firmware on your interface
-- [Device Elements](../elements/device-elements) - Configure devices in BruControl
+- [Device Elements](../elements/device-elements-overview) - Configure devices in BruControl
