@@ -94,6 +94,5 @@ BruControl supports multiple database backends. See the application Settings and
 - SQLite (default for new installations)
 - PostgreSQL
 - MongoDB
-- MSSQL (LocalDB)
 
 Database provider and connection strings are configured in `settings.yaml`. Data is not automatically migrated between database types.

@@ -34,6 +34,7 @@ A Chart is a non-device element that subscribes to historical samples from eleme
 | `name` | string | Internal name (fallback) |
 | `spanSeconds` | number | Time window (seconds) — 4 to 604800 |
 | `refreshInterval` | number | Sample refresh interval (seconds), min 1 |
+| `timeRangeMode` | realtime \| history | **Realtime** = sliding window. **History** = fixed window at load (no left-side erosion); use Refresh to reload. |
 | `channels` | array | Channel bindings: `{ channelID: { elementID, index }, autoScale, axisYMin, axisYMax, appearance }`. Configure in Edit Chart → Chart Channels. |
 | `hGridLines` | 0 \| 1 \| 2 | Horizontal grid: None, Major, Major+Minor |
 | `vGridLines` | 0 \| 1 \| 2 | Vertical grid: None, Major, Major+Minor |

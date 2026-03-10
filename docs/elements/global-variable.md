@@ -37,7 +37,8 @@ A Global Variable is a non-device element that holds a single value. It supports
 | `precision` | number | Decimal places (Value type only) |
 | `format` | string | Display format (TimeSpan, DateTime) |
 | `enableHistoricalLogging` | boolean | Log value over time |
-| `loggingIntervalSeconds` | number | Logging interval |
+| `loggingIntervalSeconds` | number | Min seconds between logged values; 0 = every change |
+| `maxSilenceSeconds` | number | Force log current value if no change for N seconds (0 = disabled). Default 60 for globals. |
 | `userControl` | boolean | Allow manual edit from Dashboard |
 | `visibility` | Default \| Visible \| Hidden \| HiddenLocked | When to show on Dashboard |
 
