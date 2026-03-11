@@ -6,7 +6,7 @@ sidebar_position: 1
 
 # Elements Overview
 
-Elements are the building blocks of your BruControl system. Each element combines **data**, a **widget template**, and **appearance** (position, size, rotation) to create what you see and control on the Dashboard.
+Elements are the building blocks of your BruControl system. Each element combines **data**, an **element template**, and **appearance** (position, size, rotation) to create what you see and control on the Dashboard.
 
 ## Device vs Non-Device Elements
 
@@ -21,8 +21,8 @@ Non-device elements are created directly in a workspace or folder. Device elemen
 
 Every element has three layers:
 
-1. **Data** — Native properties (value, state, etc.) and optional custom properties from the widget template
-2. **Widget Template** — The visual representation (e.g., gauge, toggle, chart). Templates define custom properties (colors, fonts, layout) via `ui-controls.json`
+1. **Data** — Native properties (value, state, etc.) and optional custom properties from the element template
+2. **Element Template** — The visual representation (e.g., gauge, toggle, chart). Templates define custom properties (colors, fonts, layout) via `ui-controls.json`
 3. **Appearance** — Position (x, y), size (width, height), z-order, rotation — stored per theme
 
 ## All Element Types

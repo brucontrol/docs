@@ -80,7 +80,7 @@ Data Views are rendered by the **DataExplorerView** component and receive real-t
 |---------|---------------|-----------|
 | **Location** | On a workspace Dashboard | Separate view in main area |
 | **Scope** | One workspace | Application-wide |
-| **Layout** | Single chart widget | Multiple panels, grid, or summary |
+| **Layout** | Single chart element | Multiple panels, grid, or summary |
 | **Access** | Click workspace tab | Select in Data Views folder |
 
 Use Chart elements for quick, workspace-specific graphs. Use Data Views for dedicated analysis, multi-panel monitoring, or when you want a full-screen data dashboard.
@@ -89,4 +89,4 @@ Use Chart elements for quick, workspace-specific graphs. Use Data Views for dedi
 
 - [Charts](../elements/chart) — Chart elements on the Dashboard
 - [Solution Explorer](../solution-explorer/overview) — Navigating the tree
-- [Dashboard](../dashboard/overview) — Workspace canvas and widgets
+- [Dashboard](../dashboard/overview) — Workspace canvas and elements

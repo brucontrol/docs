@@ -6,7 +6,7 @@ sidebar_position: 8
 
 # Script Element
 
-A **Script Element** links a workspace widget to a **Process** (script). It lets you run, stop, pause, and resume the script from the Dashboard.
+A **Script Element** links a workspace element to a **Process** (script). It lets you run, stop, pause, and resume the script from the Dashboard.
 
 ## What It Is
 
@@ -39,14 +39,14 @@ A Script Element is a non-device element that references a Process by ID. It dis
 
 ## Custom Properties (from plugin-library)
 
-From `script` widget `ui-controls.json`:
+From `script` element template `ui-controls.json`:
 
 | Property | Type | Group | Description |
 |----------|------|-------|-------------|
 | `showHeader` | boolean | Layout | Show header bar |
 | `showLabel` | boolean | Layout | Show variable name label |
 | `showValue` | boolean | Layout | Show value |
-| `showBackground` | boolean | Layout | Show widget background and border |
+| `showBackground` | boolean | Layout | Show element template background and border |
 | `labelFontFamily`, `labelFontSize`, `labelColor` | text/number | Label | Label styling |
 | `valueFontFamily`, `valueFontSize`, `valueColor` | text/number | Value | Variable value styling |
 | `backgroundColor`, `borderColor` | text (color) | Background & Border | Theme-aware overrides |
@@ -71,7 +71,7 @@ To start/stop a process from another script:
 "MainProcess" resume
 ```
 
-The Script Element widget shows the linked process's state and, if configured, the value of the selected variable.
+The Script Element displays the linked process's state and, if configured, the value of the selected variable.
 
 ## Use Cases
 

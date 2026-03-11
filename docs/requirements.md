@@ -85,7 +85,7 @@ The vertical resolution is the second number in a screen resolution format. For 
 
 ### Network Requirements
 
-- **Default port**: 5005 (configurable in settings)
+- **Default port**: 5005 (configurable in `appsettings.json` next to the executable or via `ASPNETCORE_URLS` environment variable)
 - **Internet connectivity** - Required for software licensing and updates
 - **Remote Control** (optional) - If PC is not located next to the machine where the user is operating, remote control software can be used:
   - Microsoft Remote Desktop

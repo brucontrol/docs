@@ -6,11 +6,11 @@ sidebar_position: 5
 
 # Generic
 
-A **Generic** element is a flexible container with no built-in data semantics. It displays whatever the widget template defines — labels, static content, or custom layouts.
+A **Generic** element is a flexible container with no built-in data semantics. It displays whatever the element template defines — labels, static content, or custom layouts.
 
 ## What It Is
 
-A Generic element has no native value or state. It exists to hold a **widget template** and **custom properties**. The template determines what appears on the Dashboard.
+A Generic element has no native value or state. It exists to hold an **element template** and **custom properties**. The template determines what appears on the Dashboard.
 
 ## Why It Exists
 
@@ -23,7 +23,7 @@ A Generic element has no native value or state. It exists to hold a **widget tem
 
 1. In Solution Explorer, right-click a **Workspace** or **Folder**
 2. Choose **Generic**
-3. Edit to set display name and choose a widget template
+3. Edit to set display name and choose an element template
 4. Configure custom properties in the Custom Properties tab
 
 ## Native Properties
@@ -34,17 +34,17 @@ A Generic element has no native value or state. It exists to hold a **widget tem
 | `name` | string | Internal name (fallback) |
 | `userControl` | boolean | Allow users to interact with this element |
 | `visibility` | Default \| Visible \| Hidden \| HiddenLocked | When to show |
-| `widgetTemplateId` | string | Widget template (e.g. `generic`, `generic-markdown`, `generic-image`) |
+| `elementTemplateId` | string | Element template (e.g. `generic`, `generic-markdown`, `generic-image`) |
 
 Generic has no `value`, `state`, or data-logging properties. All display comes from the template and its custom properties.
 
 ## Custom Properties (from plugin-library)
 
-From `generic` widget `ui-controls.json`:
+From `generic` element template `ui-controls.json`:
 
 | Property | Type | Group | Description |
 |----------|------|-------|-------------|
-| `showBackground` | boolean | Layout | Show widget background and border |
+| `showBackground` | boolean | Layout | Show element template background and border |
 | `showValue` | boolean | Layout | Show value text |
 | `valueFontFamily`, `valueFontSize`, `valueColor` | — | Value | Value styling |
 | `backgroundColor`, `borderColor` | — | Background & Border | Theme-aware overrides |

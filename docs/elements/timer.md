@@ -45,7 +45,7 @@ A Timer is a non-device element that tracks elapsed time. It supports **CountUp*
 
 ## Custom Properties (from plugin-library)
 
-From `timer` widget `ui-controls.json`:
+From `timer` element template `ui-controls.json`:
 
 | Property | Type | Group | Description |
 |----------|------|-------|-------------|

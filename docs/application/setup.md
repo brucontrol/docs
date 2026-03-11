@@ -32,13 +32,23 @@ Choose the option that matches how you plan to run BruControl.
 1. **Download** the latest release ZIP from BruControl.com or the releases page.
 2. **Extract** the files into a new, empty folder. Do not extract into the same folder as firmware or other tools.
 3. **Navigate** to the folder where you extracted the files.
-4. **Run** `BruControl.WebHost.exe` (or the versioned executable such as `BruControl_1.0.0.0.exe`).
+4. **Run** `BruControl.WebHost.exe`.
 5. If Windows shows a security warning, this is normal for unsigned or less common applications. The application is digitally signed when distributed officially.
-6. **Open** a browser and go to `http://localhost:5005` to use the application.
+6. The browser opens automatically to the application. If it does not, go to `http://localhost:5005` (or the port in `appsettings.json`).
 
 :::tip First Run
 On first run, BruControl will create a folder in your Documents directory called **BruControl**. This is where configuration, logs, and data are stored. Migrations run automatically to set up settings and any required data structures.
 :::
+
+:::info Windows Behavior
+- **No console window** — The application runs without a visible command window.
+- **Browser auto-open** — Your default browser opens to the application when it starts.
+- **Single instance** — Starting BruControl while another instance is running will close the previous instance and start fresh.
+:::
+
+### Configuring the URL and Port
+
+The host and port are configured in `appsettings.json` in the same folder as the executable. Edit `BruControl:Urls` to change the binding (e.g. `http://0.0.0.0:5005` for port 5005 on all interfaces). You can also set the `ASPNETCORE_URLS` environment variable to override this.
 
 ## Installation (Docker)
 
@@ -111,9 +121,11 @@ This folder contains:
 - **Config Backup** — Automatic daily backups (retention configurable in Settings, default 30 days)
 - **Logs** — Application and interface log files
 - **Data** — Database and historical data (if applicable)
-- **uploads** — User-uploaded files (e.g., for widgets)
-- **settings.yaml** — Application settings (port, database, security, etc.)
+- **uploads** — User-uploaded files (e.g., for element templates)
+- **settings.yaml** — Application settings (database, security, etc.)
 - **migration-state.json** — Tracks completed data migrations (do not edit)
+
+For the Windows ZIP, `appsettings.json` in the same folder as the executable controls the web server URL and port (see [Configuring the URL and Port](#configuring-the-url-and-port)).
 
 :::danger Do Not Delete
 Do not delete or edit files in the BruControl folder without understanding their purpose or without guidance from BruControl Technical Support.

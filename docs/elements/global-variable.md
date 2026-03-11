@@ -44,12 +44,12 @@ A Global Variable is a non-device element that holds a single value. It supports
 
 ## Custom Properties (from plugin-library)
 
-Widget templates (e.g., `gv-value`, `gv-bool`) define custom properties in `ui-controls.json`:
+Element templates (e.g., `gv-value`, `gv-bool`) define custom properties in `ui-controls.json`:
 
 | Property | Type | Group | Description |
 |----------|------|-------|-------------|
 | `showHeader` | boolean | Layout | Show header bar |
-| `showBackground` | boolean | Layout | Show widget background and border |
+| `showBackground` | boolean | Layout | Show element template background and border |
 | `showLabel` | boolean | Layout | Show title label |
 | `showValue` | boolean | Layout | Show value text |
 | `showToggleLabel` | boolean | Layout | Show ON/OFF text (Boolean) |
@@ -81,5 +81,5 @@ In scripts, reference a Global Variable by its **Name**. Use **Value** for all t
 
 - **Setpoint storage** — Hold target temperature, duration, or threshold for scripts
 - **Manual override flag** — Boolean to let users bypass automation
-- **Computed display** — Script writes a calculated value; widget shows it
+- **Computed display** — Script writes a calculated value; element template shows it
 - **Data logging** — Enable historical logging to chart the variable over time

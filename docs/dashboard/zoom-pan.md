@@ -12,22 +12,22 @@ The dashboard canvas supports zoom and pan for navigating large layouts. Zoom an
 
 | Range | 10% to 200% (0.1 to 2) |
 |-------|------------------------|
-| **Mouse** | Ctrl/Cmd + scroll — zooms toward cursor (Hand and Select mode) |
+| **Mouse** | Ctrl/Cmd + scroll — zooms toward cursor (both modes) |
 | **Touch** | Pinch with two fingers (both modes) |
 | **Buttons** | Zoom in (+), Zoom out (−), Reset (100%), Fit to view |
 
-Zoom in/out are disabled at 200% and 10% respectively. **Fit to view** calculates a zoom level that fits all widgets in the viewport (capped at 100%) and centers the content.
+Zoom in/out are disabled at 200% and 10% respectively. **Fit to view** calculates a zoom level that fits all elements in the viewport (capped at 100%) and centers the content.
 
 ## Pan
 
 | Input | Behavior |
 |-------|----------|
-| **Hand mode** | Drag with left mouse button |
-| **Hand mode** | Scroll wheel (without Ctrl/Cmd) |
-| **Select mode** | Middle mouse button drag |
-| **Touch** | Single-finger drag (Hand mode, or Select mode when touching empty canvas) |
+| **Pan mode** | Drag with left mouse button |
+| **Pan mode** | Scroll wheel (without Ctrl/Cmd) |
+| **Edit mode** | Middle mouse button drag, or hold Space and drag |
+| **Touch** | Single-finger drag (Pan mode, or Edit mode when touching empty canvas) |
 
-Initial pan positions the content area in view with a small offset so widgets near the origin are visible.
+Initial pan positions the content area in view with a small offset so elements near the origin are visible.
 
 ## Canvas Controls
 
@@ -35,9 +35,8 @@ The **CanvasControls** component in the header bar provides:
 
 | Control | Purpose |
 |---------|---------|
-| Hand tool | Pan and zoom (shortcut: H) |
-| Select tool | Edit widgets (shortcut: V) |
-| Show invisible | Toggle visibility of hidden widgets |
+| Edit mode (pencil) | Toggle Edit/Pan mode. Active = Edit, inactive = Pan. Shortcuts: H (Pan), V (Edit). Hold Space to temporarily pan in Edit mode. |
+| Show invisible | Toggle visibility of hidden elements |
 | Zoom out | Decrease zoom (disabled at 10%) |
 | Zoom % | Reset to 100% on click |
 | Zoom in | Increase zoom (disabled at 200%) |
@@ -50,5 +49,5 @@ Zoom level and pan position (`canvasX`, `canvasY`) are saved to the workspace ap
 
 ## Related
 
-- [Tool Mode](./tool-mode) — Hand vs Select
+- [Tool Mode](./tool-mode) — Edit vs Pan
 - [Canvas Layout](./canvas-layout) — Grid and viewport

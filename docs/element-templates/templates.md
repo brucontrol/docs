@@ -16,7 +16,7 @@ A template consists of:
 - **Compiled HTML** — A bundled, self-contained HTML document injected into a sandboxed iframe on the Dashboard
 - **UIControls** — A schema (`ui-controls.json`) defining configurable properties (label, colors, visibility, etc.)
 
-The Dashboard loads the template by ID, injects its compiled HTML into an iframe, and passes element data and theme colors via the Widget SDK.
+The Dashboard loads the template by ID, injects its compiled HTML into an iframe, and passes element data and theme colors via the Element Template SDK.
 
 ## supportedTypes
 
@@ -27,7 +27,7 @@ Templates declare which element types they support via `supportedTypes` (a JSON 
 | `["timer"]` | This template can be used only for Timer elements |
 | `["globalVariable-value", "globalVariable-bool"]` | This template can be used for both Value and Boolean global variables |
 
-The **template picker** in the element Edit Drawer shows only templates whose `supportedTypes` includes the element's type, or whose `widgetType` matches the element's type (when `supportedTypes` is not set).
+The **template picker** in the element Edit Drawer shows only templates whose `supportedTypes` includes the element's type, or whose `elementType` matches the element's type (when `supportedTypes` is not set).
 
 ## defaultFor
 
@@ -42,9 +42,9 @@ If multiple templates have `defaultFor` for the same type, the first one wins. U
 
 ## Template Picker
 
-In the element Edit Drawer, under the **Appearance** tab, you can choose a template from the **Widget Template** dropdown. The picker lists:
+In the element Edit Drawer, under the **Appearance** tab, you can choose a template from the **Element Template** dropdown. The picker lists:
 
-1. Templates compatible with the element's type (`supportedTypes` includes it, or `widgetType` matches when `supportedTypes` is not set)
+1. Templates compatible with the element's type (`supportedTypes` includes it, or `elementType` matches when `supportedTypes` is not set)
 2. Built-in and custom templates (flat list by name)
 
 Select a template to change how the element looks on the Dashboard. Changes apply immediately.

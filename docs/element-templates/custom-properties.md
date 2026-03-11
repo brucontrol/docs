@@ -6,7 +6,7 @@ sidebar_position: 3
 
 # Custom Properties
 
-Custom properties are configurable options for a widget. Template-defined properties come from the template's `ui-controls.json` schema and appear in the **Appearance** tab of the element Edit Drawer. User-added properties (not in the template) appear in the **Custom Properties** tab.
+Custom properties are configurable options for an element template. Template-defined properties come from the template's `ui-controls.json` schema and appear in the **Appearance** tab of the element Edit Drawer. User-added properties (not in the template) appear in the **Custom Properties** tab.
 
 ## uiControls Schema
 
@@ -58,7 +58,7 @@ Properties can be grouped for organization in the edit form:
 | Field | Purpose |
 |-------|---------|
 | `format` | Theme-aware styling: `font-family`, `font-size`, `font-weight`, `font-style`, `text-align`, `color`, `element-ref`, `file-picker`, `file-upload`, `range` |
-| `x-theme-default` | Binds to a theme color (e.g. `textPrimary`, `accentGreen`, `bgSecondary`, `borderColor`). When empty, the widget uses the theme's default for that key. |
+| `x-theme-default` | Binds to a theme color (e.g. `textPrimary`, `accentGreen`, `bgSecondary`, `borderColor`). When empty, the element template uses the theme's default for that key. |
 
 Example:
 
@@ -78,7 +78,7 @@ Example:
 |---|--------|--------|
 | **Examples** | `value`, `state`, `active` | `showHeader`, `labelColor`, `precision` |
 | **Storage** | Never in `PropertiesJson` | Stored in `PropertiesJson` |
-| **Widget config form** | Excluded (not shown) | Shown in Appearance tab (template-defined) or Custom Properties tab (user-added) |
-| **Widget receives** | From element view model | From `DynamicProperties` |
+| **Template config form** | Excluded (not shown) | Shown in Appearance tab (template-defined) or Custom Properties tab (user-added) |
+| **Element template receives** | From element view model | From `DynamicProperties` |
 
 Native properties are part of the element's domain model (e.g., a Global Variable's `value`, a Toggle Switch's `state`). Custom properties are either template-defined (from `ui-controls.json`) or user-added configuration stored on the element in `PropertiesJson`.

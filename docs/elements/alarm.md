@@ -46,7 +46,7 @@ Alarms are frequently associated with Timers: the Timer defines the threshold (e
 
 ## Custom Properties (from plugin-library)
 
-From `alarm` widget `ui-controls.json`:
+From `alarm` element template `ui-controls.json`:
 
 | Property | Type | Group | Description |
 |----------|------|-------|-------------|

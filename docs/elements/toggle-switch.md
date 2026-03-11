@@ -36,12 +36,12 @@ A Toggle Switch is a non-device element with a binary **State** (on/off). Unlike
 
 ## Custom Properties (from plugin-library)
 
-From `toggle-switch` widget `ui-controls.json`:
+From `toggle-switch` element template `ui-controls.json`:
 
 | Property | Type | Group | Description |
 |----------|------|-------|-------------|
 | `showHeader` | boolean | Layout | Show header bar |
-| `showBackground` | boolean | Layout | Show widget background and border |
+| `showBackground` | boolean | Layout | Show element template background and border |
 | `showLabel` | boolean | Layout | Show title label |
 | `showValue` | boolean | Layout | Show toggle control |
 | `showToggleLabel` | boolean | Layout | Show ON/OFF text beside toggle |

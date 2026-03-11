@@ -6,33 +6,33 @@ sidebar_position: 7
 
 # Miscellaneous APIs
 
-Additional APIs for widget templates, themes, color sets, logs, version, uptime, explorer folders, data views, chart data, scripting, security, session, license, configuration, and system operations.
+Additional APIs for element templates, themes, color sets, logs, version, uptime, explorer folders, data views, chart data, scripting, security, session, license, configuration, and system operations.
 
-## Widget Templates (`WidgetTemplateController`)
+## Element Templates (`ElementTemplateController`)
 
 ```
-GET    /api/v1/widget-template
-GET    /api/v1/widget-template?widgetType=globalVariable-value
-GET    /api/v1/widget-template/:id
-GET    /api/v1/widget-template/default-starters
-GET    /api/v1/widget-template/defaults
-PUT    /api/v1/widget-template/defaults
-POST   /api/v1/widget-template
-POST   /api/v1/widget-template/batch
-POST   /api/v1/widget-template/:id/duplicate
-POST   /api/v1/widget-template/:templateId/sync-element
-PUT    /api/v1/widget-template/:id
-DELETE /api/v1/widget-template/:id
+GET    /api/v1/element-template
+GET    /api/v1/element-template?elementType=globalVariable-value
+GET    /api/v1/element-template/:id
+GET    /api/v1/element-template/default-starters
+GET    /api/v1/element-template/defaults
+PUT    /api/v1/element-template/defaults
+POST   /api/v1/element-template
+POST   /api/v1/element-template/batch
+POST   /api/v1/element-template/:id/duplicate
+POST   /api/v1/element-template/:templateId/sync-element
+PUT    /api/v1/element-template/:id
+DELETE /api/v1/element-template/:id
 ```
 
-- **GET** — List templates (optional `widgetType` filter) or get by ID
-- **default-starters** — Default source files keyed by widget type for the widget editor
+- **GET** — List templates (optional `elementType` filter) or get by ID
+- **default-starters** — Default source files keyed by element type for the element template editor
 - **defaults** — Map of element type → default template ID
 - **PUT defaults** — Set user-configured default template IDs (body: `{ "elementType": "templateId", ... }`)
 - **batch** — Get multiple templates by ID. Body: `{ "ids": ["id1", "id2"] }`
-- **POST** — Create template (JSON body with name, widgetType, sourceFiles, etc.)
+- **POST** — Create template (JSON body with name, elementType, sourceFiles, etc.)
 - **duplicate** — Duplicate an existing template into a new editable custom template
-- **sync-element** — Sync a single element with its widget template. Body: `{ "elementType": "...", "elementId": "guid" }`
+- **sync-element** — Sync a single element with its element template. Body: `{ "elementType": "...", "elementId": "guid" }`
 - **PUT** — Update template (not PATCH; built-in templates cannot be modified)
 - **DELETE** — Delete template (built-in templates cannot be deleted)
 

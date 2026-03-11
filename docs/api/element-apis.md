@@ -6,7 +6,7 @@ sidebar_position: 3
 
 # Element APIs
 
-Non-device elements are dashboard widgets that display data, trigger actions, or link to scripts. Each element type has its own API route. All element APIs follow the same patterns: list, get by ID, create, patch, delete, and optional web-appearance endpoints.
+Non-device elements are dashboard elements that display data, trigger actions, or link to scripts. Each element type has its own API route. All element APIs follow the same patterns: list, get by ID, create, patch, delete, and optional web-appearance endpoints.
 
 ## Element Types and Routes
 
@@ -53,7 +53,7 @@ Creates a new element in the specified workspace. No request body required for m
 PATCH /api/v1/{element-type}/{id}
 ```
 
-Send a JSON object with the fields to update. Native properties (e.g. `value`, `state`, `variableName`) and custom properties (from the widget template) can be patched.
+Send a JSON object with the fields to update. Native properties (e.g. `value`, `state`, `variableName`) and custom properties (from the element template) can be patched.
 
 ### Delete Element
 
@@ -122,7 +122,7 @@ Web appearance stores position (X, Y), size (Width, Height), Z-order, and rotati
 ### Generic
 
 - **Route:** `/api/v1/generic`
-- Flexible container; custom properties only (from widget template)
+- Flexible container; custom properties only (from element template)
 
 ## Duplicate Element
 

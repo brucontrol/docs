@@ -15,7 +15,7 @@ BruControl communicates with one or more microcontroller interfaces (such as Ard
 - **Real-time monitoring** of temperatures, levels, states, and values
 - **Control** of outputs, timers, and automated sequences
 - **Scripting** for full automation without programming experience
-- **Customizable dashboards** with widgets, charts, and layouts
+- **Customizable dashboards** with elements, charts, and layouts
 
 ## Main Areas of the Interface
 
@@ -43,12 +43,12 @@ Use the Solution Explorer to create workspaces, add elements, manage processes, 
 
 ### Dashboard (Center Area)
 
-The Dashboard is the main canvas where your workspace elements appear as widgets. Each workspace has its own dashboard. You can:
+The Dashboard is the main canvas where your workspace elements appear. Each workspace has its own dashboard. You can:
 
-- **Arrange widgets** — Drag, resize, and layer elements
+- **Arrange elements** — Drag, resize, and layer elements
 - **Zoom and pan** — Navigate large layouts
 - **Switch workspaces** — Use the workspace tab bar above the dashboard
-- **Edit elements** — In Select mode, select a widget and click Edit to open its properties drawer
+- **Edit elements** — In Select mode, select an element and click Edit to open its properties drawer
 
 The Dashboard shows real-time values, buttons, switches, charts, timers, alarms, and device controls.
 
@@ -64,7 +64,7 @@ Scripts use a simple language with variables, conditionals, timers, alarms, and 
 
 ### Settings (Solution Explorer)
 
-Settings control how BruControl behaves. Open Settings by expanding **Settings** in the Solution Explorer and selecting an item (e.g., General, Security, License). Settings open in a modal. Settings tabs include: **General**, **Security**, **Services**, **License**, **Data Storage**, **Widgets**, and **Device Types**. **Plugin Store** and **System Logs** open in separate browser tabs.
+Settings control how BruControl behaves. Open Settings by expanding **Settings** in the Solution Explorer and selecting an item (e.g., General, Security, License). Settings open in a modal. Settings panels include: **General**, **Security**, **License**, **Data Storage**, **Element Templates**, and **Device Types**. **Plugin Store** and **System Logs** open in separate browser tabs.
 
 ## Tabs and Navigation
 
@@ -98,8 +98,8 @@ Some features open in separate pages or new tabs:
 
 - **File Manager** (`/files`) — Browse, upload, and download files
 - **Log Viewer** (`/logs`) — Live logs and search (also via **Settings** → **System Logs**)
-- **Plugin Store** (`/plugin-store`) — Install widgets and themes (also via **Settings** → **Plugin Store**)
-- **Widget Editor** (`/widgets`) — Create and edit widget templates
+- **Plugin Store** (`/plugin-store`) — Install element templates and themes (also via **Settings** → **Plugin Store**)
+- **Element Template Editor** (`/element-templates`) — Create and edit element templates
 - **Device Diagnostics** (`/device/:id/diagnostics`) — Per-device diagnostics
 - **Mock Device** (`/mock/:port`) — Simulate a device for testing
 

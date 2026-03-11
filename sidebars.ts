@@ -109,14 +109,14 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Widgets',
+      label: 'Element Templates',
       items: [
-        'widgets/overview',
-        'widgets/templates',
-        'widgets/custom-properties',
-        'widgets/default-templates',
-        'widgets/widget-editor',
-        'widgets/plugin-store',
+        'element-templates/overview',
+        'element-templates/templates',
+        'element-templates/custom-properties',
+        'element-templates/default-templates',
+        'element-templates/element-template-editor',
+        'element-templates/plugin-store',
       ],
     },
     {

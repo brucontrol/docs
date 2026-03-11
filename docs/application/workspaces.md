@@ -6,7 +6,7 @@ sidebar_position: 3
 
 # Workspaces
 
-A workspace is a container for elements—the building blocks of your control interface. Each workspace has its own dashboard where you arrange widgets, charts, buttons, and device controls.
+A workspace is a container for elements—the building blocks of your control interface. Each workspace has its own dashboard where you arrange elements, charts, buttons, and device controls.
 
 ## What Is a Workspace?
 

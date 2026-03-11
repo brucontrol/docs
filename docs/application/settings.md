@@ -14,6 +14,10 @@ Settings control how BruControl behaves, how it connects to hardware, and how yo
 
 Settings are organized into panels. Changes are saved automatically when you update a value.
 
+:::info URL and Port Configuration
+The web server host and port are **not** in the Settings UI. Configure them in `appsettings.json` in the same folder as the executable (Windows ZIP) or via the `ASPNETCORE_URLS` environment variable. See [Application Setup](./setup#configuring-the-url-and-port) for details.
+:::
+
 ## Settings Panels
 
 Settings are opened one panel at a time in a modal. Select a panel from the Solution Explorer; there are no tabs inside the modal.
@@ -39,21 +43,6 @@ Security settings protect your system from unauthorized or accidental changes:
 
 When the environment is locked, workspaces cannot be edited or deleted, and element layout changes are prevented. User-controllable elements (e.g., buttons, switches) can still be used if **User Control** is enabled on those elements.
 
-### Services
-
-The Services panel configures the **web API service** and **mock devices**:
-
-- **API Service**
-  - **Enable API Service** — Start the web service for remote connections and API access
-  - **Port** — TCP port (1–65535) for the API. Stop the service to change.
-  - **Open Browser on Startup** — Automatically open the web interface when the service starts
-- **Mock Devices**
-  - **Enable Mock Devices** — Allow device mocking for testing without physical hardware. Both the API service and mock devices require a Professional license.
-
-:::info Interfaces vs Services
-Interfaces (microcontroller boards) are **not** configured here. Add interfaces via **Solution Explorer** → right-click **Interfaces** → **New Interface**. The Services panel only configures the web API and mock device service.
-:::
-
 ### License
 
 Manage your BruControl license:
@@ -73,12 +62,12 @@ Configure how BruControl stores data:
 - **Maintenance** — Data purge interval (hours), maximum database size (GB), and database size monitor interval (minutes).
 - **Database** — The database provider and connection strings are configured in the **settings.yaml** file, not in this UI.
 
-### Widgets
+### Element Templates
 
-Widget settings control the visual representation of elements on the Dashboard:
+Element template settings control the visual representation of elements on the Dashboard:
 
-- **Default Templates** — Choose which widget template is used by default for each element type.
-- **Widget Editor** — Open the visual editor to create and customize widget templates.
+- **Default Templates** — Choose which element template is used by default for each element type.
+- **Element Template Editor** — Open the visual editor to create and customize element templates.
 
 ### Device Types
 
@@ -90,7 +79,7 @@ Device type settings relate to firmware and hardware compatibility:
 
 ### Plugin Store
 
-Opens the Plugin Store in a new browser tab to browse, install, and update plugins (widgets, themes, etc.).
+Opens the Plugin Store in a new browser tab to browse, install, and update plugins (element templates, themes, etc.).
 
 ### System Logs
 
@@ -102,10 +91,9 @@ Opens the Log Viewer in a new browser tab for troubleshooting and viewing applic
 |-----|----------|
 | **General** | Switching configuration, error reporting, updates, shutdown behavior, or logging domains and levels |
 | **Security** | Setting auto-lock, locking now, or setting/clearing the unlock PIN |
-| **Services** | Enabling the web API service, setting port, enabling mock devices |
 | **License** | Activating, evaluating, releasing, or checking license status |
 | **Data Storage** | Adjusting data retention, maintenance intervals, or database size limits |
-| **Widgets** | Changing default widget templates or opening the Widget Editor |
+| **Element Templates** | Changing default element templates or opening the Element Template Editor |
 | **Device Types** | Updating firmware version, syncing from registry, or uploading .brumc files |
 | **Plugin Store** | Installing or updating plugins (opens in new tab) |
 | **System Logs** | Viewing logs for troubleshooting (opens in new tab) |

@@ -29,7 +29,7 @@ The Solution Explorer tree is organized as follows:
     ├── Services
     ├── License
     ├── Data Storage
-    ├── Widgets
+    ├── Element Templates
     ├── Device Types
     ├── Plugin Store
     └── System Logs

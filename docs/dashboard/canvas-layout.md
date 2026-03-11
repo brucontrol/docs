@@ -6,7 +6,7 @@ sidebar_position: 2
 
 # Canvas Layout
 
-The dashboard uses **react-grid-layout** for widget positioning. The canvas is a large fixed grid with free-floating placement and overlap allowed.
+The dashboard uses **react-grid-layout** for element positioning. The canvas is a large fixed grid with free-floating placement and overlap allowed.
 
 ## Grid Configuration
 
@@ -18,7 +18,7 @@ The dashboard uses **react-grid-layout** for widget positioning. The canvas is a
 | margin | [10, 10] | Gap between items (x, y) |
 | containerPadding | [10, 10] | Same as margin |
 | compactType | null | Free-floating; no auto-compaction |
-| allowOverlap | true | Widgets can overlap; Z-index controls stacking |
+| allowOverlap | true | Elements can overlap; Z-index controls stacking |
 | transformScale | zoom | Syncs grid with CSS zoom for correct drag/resize coordinates |
 
 ## Layout Format
@@ -46,7 +46,7 @@ The viewport does not change size with zoom; the CSS transform scales its conten
 
 The dashboard background uses `var(--bg-primary)` from the theme. The canvas area has `overflow: hidden` and `touch-action: none` for custom pan/pinch handling.
 
-## New Widget Placement
+## New Element Placement
 
 When a new element is added (from Solution Explorer), it is placed using `findNextAvailablePosition()`: the first non-overlapping grid position starting from `ITEM_OFFSET` (36, 24), scanning rows then columns. Default sizes vary by element type (e.g., 6×4 for variables/toggles/buttons, 6×5 for duty/pwm/analog in, 6×6 for charts/profiles).
 

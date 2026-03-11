@@ -51,12 +51,12 @@ The output can drive a Digital Output (on/off) or a PWM Output, depending on the
 
 ## Custom Properties
 
-From the default PID widget template (`pid`):
+From the default PID element template (`pid`):
 
 | Property | Type | Default | Group | Description |
 |----------|------|---------|-------|--------------|
 | showHeader | boolean | true | Layout | Show header bar |
-| showBackground | boolean | true | Layout | Show widget background and border |
+| showBackground | boolean | true | Layout | Show element template background and border |
 | showLabel | boolean | true | Layout | Show title label in header |
 | hiddenRowKeys | array | — | Layout | Hide rows: "output", "target", "kpkikd" |
 | showValue | boolean | true | Layout | Show primary value rows |
@@ -72,7 +72,7 @@ From the default PID widget template (`pid`):
 | valueFontWeight | text | "700" | Value | Value font weight |
 | valueFontStyle | text | "normal" | Value | Value font style |
 | valueColor | color | (theme) | Value | Value color |
-| backgroundColor | color | (theme) | Background & Border | Widget background |
+| backgroundColor | color | (theme) | Background & Border | Element template background |
 | headerColor | color | (theme) | Background & Border | Header background |
 | borderColor | color | (theme) | Background & Border | Border color |
 | rowLabelColor | color | (theme) | Rows | Row label color |

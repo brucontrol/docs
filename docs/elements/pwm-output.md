@@ -41,12 +41,12 @@ Check your interface wiring map for pins marked (P) for PWM. Not all pins suppor
 
 ## Custom Properties
 
-From the default PWM Output widget template (`pwm-output`):
+From the default PWM Output element template (`pwm-output`):
 
 | Property | Type | Default | Group | Description |
 |----------|------|---------|-------|--------------|
 | showHeader | boolean | true | Layout | Show header bar |
-| showBackground | boolean | true | Layout | Show widget background and border |
+| showBackground | boolean | true | Layout | Show element template background and border |
 | showLabel | boolean | true | Layout | Show title label in header |
 | hiddenRowKeys | array | — | Layout | Hide rows: "value", "requested" |
 | showValue | boolean | true | Layout | Show primary value rows |
@@ -61,7 +61,7 @@ From the default PWM Output widget template (`pwm-output`):
 | valueFontWeight | text | "700" | Value | Value font weight |
 | valueFontStyle | text | "normal" | Value | Value font style |
 | valueColor | color | (theme) | Value | Value color |
-| backgroundColor | color | (theme) | Background & Border | Widget background |
+| backgroundColor | color | (theme) | Background & Border | Element template background |
 | headerColor | color | (theme) | Background & Border | Header background |
 | borderColor | color | (theme) | Background & Border | Border color |
 | rowLabelColor | color | (theme) | Rows | Row label color |

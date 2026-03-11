@@ -17,7 +17,7 @@ The **Solution Explorer** is the tree panel on the left side of BruControl. It o
 | **Data Views** | Saved chart configurations for the Data Explorer |
 | **Interfaces** | Hardware devices (microcontrollers); right-click → New Interface to add |
 | **Mocks** | Mock device simulators (when mock mode is enabled on an interface) |
-| **Settings** | General, Security, Services, License, Data Storage, Widgets, Device Types, Plugin Store, System Logs |
+| **Settings** | General, Security, Services, License, Data Storage, Element Templates, Device Types, Plugin Store, System Logs |
 
 ## Common Actions
 

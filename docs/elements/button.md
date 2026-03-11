@@ -36,7 +36,7 @@ A Button is a non-device element that reports **State** when pressed. Scripts ty
 
 ## Custom Properties (from plugin-library)
 
-From `button` widget `ui-controls.json`:
+From `button` element template `ui-controls.json`:
 
 | Property | Type | Group | Description |
 |----------|------|-------|-------------|

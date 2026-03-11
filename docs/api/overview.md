@@ -91,7 +91,7 @@ Most resources use GUIDs (e.g. `550e8400-e29b-41d4-a716-446655440000`). Device t
 | [Device API](./device-api) | Devices, ports, mock mode, device types, diagnostics |
 | [Process API](./process-api) | Scripts (processes), run/stop/resume/step |
 | [Settings API](./settings-api) | Application settings |
-| [Miscellaneous APIs](./misc-apis) | Widget templates, themes, color sets, logs, version, uptime, explorer folders, data views, chart data, scripting, license, session, security, plugin registry, configurations, system |
+| [Miscellaneous APIs](./misc-apis) | Element templates, themes, color sets, logs, version, uptime, explorer folders, data views, chart data, scripting, license, session, security, plugin registry, configurations, system |
 
 ## Real-Time Updates
 

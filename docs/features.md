@@ -66,8 +66,8 @@ sidebar_position: 2
 - Customizable graphical representation and control of physical devices
 - Real-time display, control, and configuration of devices, timers, alarms, buttons
 - **Solution Explorer** – Tree-based navigation for interfaces, workspaces, processes, settings, and data views
-- **Plugin Store** – Browse, install, and update widget templates and color themes from the registry
-- **Widget templates** – Customizable appearance per element type; install from Plugin Store or create your own
+- **Plugin Store** – Browse, install, and update element templates and color themes from the registry
+- **Element templates** – Customizable appearance per element type; install from Plugin Store or create your own
 
 ### Data Management
 

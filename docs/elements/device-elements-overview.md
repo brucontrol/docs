@@ -74,8 +74,8 @@ All device elements share some properties:
 When you edit a device element, the Edit Drawer includes:
 
 - **General** — Display name, native properties (Enabled, User Control, etc.), port-specific settings
-- **Custom Properties** — Widget appearance (from the selected template)
-- **Appearance** — Widget template choice, position, size
+- **Custom Properties** — Element appearance (from the selected template)
+- **Appearance** — Element template choice, position, size
 - **Calibration** — (Where applicable) Transform raw values (e.g., Analog Input, 1-Wire Temp, SPI Sensor)
 - **Interface** — Port assignment and connection status
 

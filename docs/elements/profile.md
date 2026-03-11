@@ -43,7 +43,7 @@ A Profile has a **source** (element + property to read) and a **destination** (e
 
 ## Custom Properties (from plugin-library)
 
-From `profile` widget `ui-controls.json`:
+From `profile` element template `ui-controls.json`:
 
 | Property | Type | Group | Description |
 |----------|------|-------|-------------|
