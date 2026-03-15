@@ -32,6 +32,10 @@ When generating a plugin from a photo or spec:
 - [ ] Resolve colors via `BruControl.getTheme()` or `getComputedStyle` for theme-aware styling
 - [ ] Use strict `!== undefined` checks for optional text (not `||`) so users can intentionally blank fields
 - [ ] Read custom properties at root level: `data.title`, `data.min` — not `data.appearance.title`
+- [ ] **Call** `BruControl.onData(callback)` — do not assign `BruControl.onData = callback` (that breaks the pipeline)
+- [ ] Do not put native properties (`value`, `state`, etc.) in ui-controls.json for device elements — they shadow live hardware data
+- [ ] Use the first `onData` payload as initialization; do not rely only on DOMContentLoaded (it can race with data)
+- [ ] ui-controls.json is a flat dictionary (no `"properties"` wrapper); use `default`, `title`, `type: "text"`
 
 ---
 
@@ -218,6 +222,15 @@ Optional. Maps dependency names to CDN URLs. Loaded before the SDK.
 ## 4. UIControls Schema (ui-controls.json)
 
 `ui-controls.json` defines configurable properties that appear in the element Edit Drawer under the **Appearance** tab.
+
+**Schema shape:** BruControl uses a **flat dictionary**, not standard JSON Schema. The file is a single object whose keys are property names and whose values are control definitions. There is no `"properties"` wrapper. Use keys like `default`, `title`, and `type: "text"` (not `defaultValue` or a nested schema).
+
+### Do not put native properties in ui-controls.json (shadowing)
+
+**Critical:** Any property you define in ui-controls.json is treated as a **user-defined setting** and is stored in the element's config. If you add a key that is also a **native** property of the element (e.g. `value`, `state`, `precision`), it **shadows** the live data from the hardware or element model.
+
+- For **device elements** (e.g. analogInput, owTemp, digitalOutput): do **not** include `value`, `state`, or other native fields in ui-controls.json if you want the live sensor/output value to pass through. Use only template-specific options (e.g. `labelColor`, `showHeader`, `min`/`max` for display range on a gauge).
+- For **generic** elements, `value`/`min`/`max` can be template display config (e.g. water-level-meter), but for device elements omit native keys so live data flows through.
 
 ### Control Types
 
@@ -411,6 +424,10 @@ The SDK is injected into every compiled template iframe. Your template runs in a
 - **Host → Template:** `receiveData`, `receiveTheme`, `receiveSamples`, `receiveElementUpdate`
 - **Template → Host:** `updateProperties`, `requestKeypad`, `requestTextInput`, `fetchSamples`, `subscribeElement`, etc.
 
+**Registration methods, not properties:** `onData`, `onTheme`, `onSamples`, and `onElementUpdate` are **methods you call with a callback**. Do not assign to them (e.g. `BruControl.onData = function(data) { ... }`). Assigning overwrites the internal method and breaks the data pipeline. Always call: `BruControl.onData(function(data) { ... })`.
+
+**No explicit init hook:** There is no `onInit` or `onMount`. The first time your `onData` callback runs is the de facto initialization. Use that first payload to build or update the DOM. Relying only on `DOMContentLoaded` can race with BruControl's template injection — the host may not have sent data yet.
+
 **CDN scripts loaded before your code:** Penpal, Chart.js, Chart.js date adapter.
 
 **Safe area:** The SDK injects `body { padding: 1px; }` so borders/shadows are not clipped.
@@ -425,7 +442,7 @@ The SDK is injected into every compiled template iframe. Your template runs in a
 
 | Method | Signature | Returns | Description |
 |--------|-----------|---------|-------------|
-| `onData` | `(callback: (data) => void) => void` | — | Register callback for element data updates. Called immediately if data already exists. |
+| `onData` | `(callback: (data) => void) => void` | — | **Call** with a callback to register (e.g. `BruControl.onData(fn)`). Do not assign (`BruControl.onData = fn`). Register callback for element data updates; called immediately if data already exists. |
 | `onTheme` | `(callback: (theme) => void) => void` | — | Register callback for theme color updates. |
 | `updateProperties` | `(props: object) => void` | — | Patch element properties. Ignored if `userControl === false`. |
 | `getData` | `() => unknown` | Current data or null | Get current element data synchronously. |
@@ -1021,6 +1038,30 @@ var label = (data.label !== undefined && data.label !== "") ? data.label : "Defa
 ### Flat data mapping (reminder)
 
 Custom properties live at the root: `data.title`, `data.min`, not `data.appearance.title`. See [Section 5](#5-base-element-properties).
+
+### The shadowing trap in ui-controls.json
+
+Defining a property in ui-controls.json makes BruControl treat it as a **static user-defined setting**. If that property name is also a **native** property of the element (e.g. `value` on an analog input or 1-Wire sensor), your config entry **shadows** the live hardware value — the template will receive the stored config value instead of the live sensor reading. To let hardware/element data pass through, **omit native properties from ui-controls.json**. Only include template-specific options (colors, labels, visibility, display ranges, etc.). See [Section 4](#4-uicontrols-schema-ui-controlsjson).
+
+### Method registration vs. property assignment
+
+`BruControl.onData`, `onTheme`, `onSamples`, and `onElementUpdate` are **registration methods**: you must **call** them and pass a callback. Assigning to them overwrites the SDK’s internal method and silently breaks the data pipeline.
+
+```javascript
+// ❌ Wrong: overwrites the internal method; no data will flow
+window.BruControl.onData = function(data) { render(data); };
+
+// ✅ Correct: register your callback
+window.BruControl.onData(function(data) { render(data); });
+```
+
+### No explicit initialization hook
+
+BruControl does not provide an `onInit` or `onMount` lifecycle hook. The **first time your `onData` callback runs** is effectively initialization. Use that first payload to build or update the DOM (e.g. create SVG, fill in values). Do not rely only on `DOMContentLoaded` to map the DOM and then expect data later — the host may inject the template and send data in an order that races with `DOMContentLoaded`. Treat the first `onData` call as the trigger to set up or refresh the view.
+
+### Flat UI schema (not JSON Schema)
+
+ui-controls.json is a **flat dictionary**: keys are property names, values are control definitions. There is no `"properties"` wrapper and no standard JSON Schema structure. Use BruControl keys: `default` (not `defaultValue`), `title`, `type: "text"`, etc. See [Section 4](#4-uicontrols-schema-ui-controlsjson).
 
 ---
 
