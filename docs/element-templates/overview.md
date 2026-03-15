@@ -40,6 +40,7 @@ Device elements connect to hardware; non-device elements do not. The element tem
 
 ## Related Topics
 
+- [Element Template Developer Guide](element-template-developer-guide.md) — **Complete reference for plugin authors** (SDK, manifest, ui-controls, examples)
 - [Templates](templates.md) — What a template is, supported types, default assignment
 - [Custom Properties](custom-properties.md) — Configurable element template options (uiControls)
 - [Default Templates](default-templates.md) — How defaults are chosen and overridden

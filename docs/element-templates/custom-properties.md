@@ -1,7 +1,7 @@
 ---
 id: custom-properties
 title: Custom Properties
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Custom Properties
@@ -57,8 +57,10 @@ Properties can be grouped for organization in the edit form:
 
 | Field | Purpose |
 |-------|---------|
-| `format` | Theme-aware styling: `font-family`, `font-size`, `font-weight`, `font-style`, `text-align`, `color`, `element-ref`, `file-picker`, `file-upload`, `range` |
+| `format` | Theme-aware styling: `font-family`, `font-size`, `font-weight`, `font-style`, `text-align`, `color-alpha` (hex #RRGGBB or #RRGGBBAA), `element-ref`, `file-upload`, `range` |
 | `x-theme-default` | Binds to a theme color (e.g. `textPrimary`, `accentGreen`, `bgSecondary`, `borderColor`). When empty, the element template uses the theme's default for that key. |
+| `x-accept` | For `file-upload`: MIME types (e.g. `image/*,.png,.jpg`) |
+| `x-picker-title` | For `file-upload`: Dialog title |
 
 Example:
 
@@ -67,8 +69,21 @@ Example:
   "type": "text",
   "default": "",
   "group": "Label",
-  "format": "color",
+  "format": "color-alpha",
   "x-theme-default": "textPrimary"
+}
+```
+
+For file upload:
+
+```json
+"image": {
+  "type": "text",
+  "default": "",
+  "format": "file-upload",
+  "title": "Background Image",
+  "x-accept": "image/*,.png,.jpg,.jpeg,.gif,.webp,.svg,.bmp,.ico,.avif",
+  "x-picker-title": "Select Background Image"
 }
 ```
 
@@ -82,3 +97,5 @@ Example:
 | **Element template receives** | From element view model | From `DynamicProperties` |
 
 Native properties are part of the element's domain model (e.g., a Global Variable's `value`, a Toggle Switch's `state`). Custom properties are either template-defined (from `ui-controls.json`) or user-added configuration stored on the element in `PropertiesJson`.
+
+For the complete ui-controls schema, format values, and plugin authoring guide, see [Element Template Developer Guide](element-template-developer-guide.md).

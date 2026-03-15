@@ -1,7 +1,7 @@
 ---
 id: element-template-editor
 title: Element Template Editor
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 # Element Template Editor

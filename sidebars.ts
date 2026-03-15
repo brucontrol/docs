@@ -112,6 +112,7 @@ const sidebars: SidebarsConfig = {
       label: 'Element Templates',
       items: [
         'element-templates/overview',
+        'element-templates/element-template-developer-guide',
         'element-templates/templates',
         'element-templates/custom-properties',
         'element-templates/default-templates',
