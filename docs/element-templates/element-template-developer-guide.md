@@ -1067,6 +1067,7 @@ ui-controls.json is a **flat dictionary**: keys are property names, values are c
 
 ## Related Documentation
 
+- [Element Template Request — Prompt Template](element-template-request-prompt-template.md) — Reusable prompt template to request a new template from an AI (fill in element type, goal, visuals).
 - [Element Templates Overview](overview.md)
 - [Templates](templates.md)
 - [Custom Properties](custom-properties.md)

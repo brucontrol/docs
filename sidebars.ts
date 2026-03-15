@@ -113,6 +113,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'element-templates/overview',
         'element-templates/element-template-developer-guide',
+        'element-templates/element-template-request-prompt-template',
         'element-templates/templates',
         'element-templates/custom-properties',
         'element-templates/default-templates',

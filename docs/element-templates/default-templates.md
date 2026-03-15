@@ -1,7 +1,7 @@
 ---
 id: default-templates
 title: Default Templates
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 # Default Templates
