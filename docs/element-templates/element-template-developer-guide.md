@@ -30,6 +30,8 @@ When generating a plugin from a photo or spec:
 - [ ] Use `BruControl.updateProperties({ key: value })` for user-controlled changes
 - [ ] Use `BruControl.requestKeypad`, `requestTextInput`, etc. for input dialogs when appropriate
 - [ ] Resolve colors via `BruControl.getTheme()` or `getComputedStyle` for theme-aware styling
+- [ ] Use strict `!== undefined` checks for optional text (not `||`) so users can intentionally blank fields
+- [ ] Read custom properties at root level: `data.title`, `data.min` — not `data.appearance.title`
 
 ---
 
@@ -47,6 +49,7 @@ When generating a plugin from a photo or spec:
 10. [Control Examples](#10-control-examples)
 11. [Complete Example: Water Level Meter](#11-complete-example-water-level-meter)
 12. [Full SDK Source](#12-full-sdk-source)
+13. [Common Pitfalls](#13-common-pitfalls)
 
 ---
 
@@ -350,11 +353,21 @@ Every element template receives a flat data object. These keys are always presen
 | `enableHistoricalLogging` | Logging enabled |
 | `loggingIntervalSeconds` | Logging interval |
 | `maxSilenceSeconds` | Max silence |
-| `appearance` | Appearance config |
+
+**Custom properties from ui-controls.json** (e.g. `title`, `labelColor`, `min`, `liquidColor`) are **flattened onto the root data object**. Use `data.title`, `data.min`, etc. — not `data.appearance.title`.
 
 **Stripped before receiveData (not in template payload):** `propertiesJson`, `schemaJson`, `uiControls`, `elementTemplateId`
 
 **Additional keys** depend on element type: `value`, `state`, `isRunning`, `variableType`, `precision`, `channels`, etc. See [Element Types Reference](#6-element-types-reference).
+
+### Flat data mapping
+
+**Custom properties from ui-controls.json are flattened onto the root data object.** You receive them at the top level, not nested.
+
+- ✅ `data.title`, `data.min`, `data.labelColor`, `data.liquidColor` — correct
+- ❌ `data.appearance.title`, `data.properties.min` — wrong
+
+The `appearance` object (when present) holds only layout metadata (X, Y, Width, Height, Z, Rotation) used by the dashboard — it is separate from ui-controls. All properties defined in your `ui-controls.json` appear as root-level keys on the data object.
 
 ---
 
@@ -982,6 +995,32 @@ The following is the canonical Element Template SDK injected into every compiled
   }
 })();
 ```
+
+---
+
+## 13. Common Pitfalls
+
+### Empty string handling
+
+The BruControl UI allows users to **intentionally clear** text fields (e.g. label, custom text). When cleared, the value is an empty string `""`, not `undefined`.
+
+Using `||` for fallbacks treats `""` as falsy and replaces it with your default:
+
+```javascript
+// ❌ Wrong: user cannot intentionally blank the label
+var label = data.label || "Default Label";
+
+// ✅ Correct: only use default when value is undefined
+var label = data.label !== undefined ? data.label : "Default Label";
+// Or, if you want to treat both undefined and "" as "use default":
+var label = (data.label !== undefined && data.label !== "") ? data.label : "Default Label";
+```
+
+**Rule:** Use strict `!== undefined` (or explicit checks for `undefined` and `""`) when you need to distinguish "user left it blank" from "not set". Use `||` only when you truly want to treat both `undefined` and `""` as "use default".
+
+### Flat data mapping (reminder)
+
+Custom properties live at the root: `data.title`, `data.min`, not `data.appearance.title`. See [Section 5](#5-base-element-properties).
 
 ---
 
