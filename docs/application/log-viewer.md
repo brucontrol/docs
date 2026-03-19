@@ -11,18 +11,23 @@ The Log Viewer helps you search, filter, and inspect application logs. Use it wh
 ## Accessing the Log Viewer
 
 - **Route:** `/logs`
-- **Navigation:** Open the Log Viewer by navigating to `/logs` in your browser, or click **Settings** → **System Logs** in the Solution Explorer (opens in a new tab). The full URL depends on your host and port (e.g., `http://localhost:8000/logs`).
+- **Navigation:** Open the Log Viewer by navigating to `/logs` in your browser, or click **Settings** → **System Logs** in the Solution Explorer (opens in a new tab). The full URL depends on your host and port (e.g., `http://localhost:5005/logs`).
 
 The Log Viewer has two tabs: **Live** and **Search**.
 
 ## Live Tab
 
-The Live tab shows a real-time stream of log entries as they are written. It connects to the application's log pipeline and displays new events as they occur.
+The Live tab shows a real-time stream of log entries as they are written. It connects via **SignalR** to the application's log pipeline and displays new events as they occur.
 
 - **Use for:** Watching current activity, debugging in real time, monitoring startup or connection attempts
-- **Streaming:** Live data is delivered via SignalR. New events appear as they are written.
+- **Streaming:** Events are delivered in batches (`LogEventBatchReceived`) or individually (`LogEventReceived`). The live view maintains a rolling buffer of the most recent **500 events** — older events scroll out as new ones arrive.
 - **Scrolling:** The view auto-scrolls to the latest entries when at the bottom. Scroll up to review older lines.
-- **Pause / Resume:** Use **Pause** to freeze the stream and inspect a section; **Resume** to continue receiving new entries.
+- **Pause / Resume** — Use **Pause** to freeze the stream and inspect a section; **Resume** to continue receiving new entries.
+- **Clear** — Use the **Clear** button to empty the current live buffer and start fresh.
+
+:::tip
+Pause the live stream before scrolling up to inspect a specific error — otherwise new events will push the view back to the bottom.
+:::
 
 ## Search Tab
 
@@ -32,6 +37,7 @@ The Search tab lets you search historical log files with filters. It is the main
 
 - **Text** — Search for a word or phrase in log messages. Matching entries appear in the results list.
 - **Level** — Filter by log level:
+  - **Verbose** — Most detailed diagnostic output (high volume)
   - **Debug** — Detailed diagnostic information
   - **Information** — General informational messages
   - **Warning** — Warnings that do not stop execution
@@ -46,10 +52,24 @@ The Search tab lets you search historical log files with filters. It is the main
 2. Click **Search** (or equivalent).
 3. Results appear in a list. Each entry typically shows:
    - **Timestamp**
-   - **Level** (e.g., INF, WRN, ERR)
+   - **Level** (e.g., VRB, DBG, INF, WRN, ERR, FTL)
    - **Category** (e.g., component or namespace)
    - **Message** (the log text)
 4. **Load more** — Scroll down to fetch the next page of results.
+
+### Log Entry Details
+
+Each log event includes:
+
+| Field | Description |
+|-------|-------------|
+| **Timestamp** | When the event occurred |
+| **Level** | Log severity (Verbose through Fatal) |
+| **Category** | Log source (e.g., `BruControl.Web`, `Interface.Communications`) |
+| **Message** | The rendered log message |
+| **MessageTemplate** | The original template with placeholders (e.g., `"Connected to {DeviceName}"`) |
+| **Properties** | Structured key-value data attached to the event |
+| **Exception** | Full exception details when the event logged an error |
 
 ### Log Format
 
@@ -59,17 +79,12 @@ Logs typically follow a structure like:
 2024-03-08 14:32:15.123 [INF] [Category] Message text
 ```
 
-- **Timestamp** — When the event occurred
-- **Level** — Abbreviated (DBG, INF, WRN, ERR, FTL) or full name
-- **Category** — Log source (e.g., `BruControl.Web`, `Interface.Communications`)
-- **Message** — The logged content
-
 ## Listing and Viewing Log Files
 
 The Log Viewer backend exposes APIs for listing and accessing log files:
 
 - **List files:** `GET /api/v1/logs/files` — returns available log file names
-- **View content:** `GET /api/v1/logs/files/{fileName}/content` — returns file content (truncated to 100 KB for large files)
+- **View content:** `GET /api/v1/logs/files/{fileName}/content` — returns file content (truncated to **100 KB** for large files)
 - **Download:** `GET /api/v1/logs/files/{fileName}` — downloads the full file
 
 The Search tab shows results with file names in the expanded entry detail. For direct file listing and download, use the API or tools that consume it.
@@ -107,8 +122,16 @@ When contacting BruControl Technical Support:
 3. **Download** the log file(s) or copy the relevant entries.
 4. **Include** the log excerpts in your support request, along with your BruControl version and a description of the problem.
 
+## Tips
+
+- Use the **Live** tab during initial setup to watch connections establish in real time
+- Set the log level to **Verbose** or **Debug** temporarily when diagnosing elusive issues, then switch back to **Information** to reduce noise
+- The 500-event buffer in Live view means very high-volume logging may cause older events to disappear quickly — use **Pause** or **Search** to capture them
+- Configure logging domains in **Settings → General** to focus on the subsystem you're troubleshooting
+
 ## Next Steps
 
 - [Troubleshooting](../appendix/troubleshooting) — Common issues and solutions
 - [Technical Assistance](../appendix/technical-assistance) — How to get help
 - [Application Setup](./setup) — Configuration and log file location
+- [Settings — General](./settings#general) — Configure logging domains and levels

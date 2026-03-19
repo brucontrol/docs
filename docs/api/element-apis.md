@@ -76,12 +76,33 @@ Web appearance stores position (X, Y), size (Width, Height), Z-order, and rotati
 
 **Batch web appearances:** All element types support `POST /api/v1/{element-type}/batch-web-appearances?themeId={themeId}` with body `{ "elementIds": ["guid1", "guid2", ...] }` (element IDs as GUID strings) to fetch multiple web appearances in one request.
 
+## Common Patchable Fields
+
+All element types share these patchable base properties:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Internal name |
+| `displayName` | string | Display label on the dashboard |
+| `userControl` | boolean | Whether end users can interact with this element |
+| `visibility` | int | `0` = Visible, `1` = Hidden, `2` = Collapsed |
+| `elementTemplateId` | GUID / null | Assign or change the element template; rebuilds element appearance |
+| `uiControls` | string / null | JSON string defining custom UI controls; rebuilds element schema |
+
+:::warning Reserved Field Names
+The following field names are reserved and cannot be used as custom properties: `id`, `workspaceId`, `enabled`. Attempting to patch these returns `400 Bad Request`.
+:::
+
+:::info Null Patch Behavior
+Setting a custom property to `null` in a PATCH request removes that property from the element. This only applies to custom (dynamic) properties — native properties cannot be removed.
+:::
+
 ## Element-Specific Notes
 
 ### Global Variable
 
 - **Route:** `/api/v1/global-variable`
-- **Native properties:** `value`, `variableName`, `variableType`, `precision`, `format`, `enableHistoricalLogging`, `loggingIntervalSeconds`
+- **Native properties:** `value`, `variableName`, `variableType`, `precision`, `format`, `enableHistoricalLogging`, `loggingIntervalSeconds`, `maxSilenceSeconds`
 
 ### Toggle Switch
 
@@ -96,18 +117,22 @@ Web appearance stores position (X, Y), size (Width, Height), Z-order, and rotati
 ### Timer
 
 - **Route:** `/api/v1/timer`
-- **Native properties:** `value` (current timer value, hh:mm:ss), `resetValue`, `type` (CountUp/CountDown), `initRunning`, `format`, `isRunning`, `reset`, `alarms`, `enableHistoricalLogging`, `loggingIntervalSeconds`
+- **Native properties:** `value` (current timer value, hh:mm:ss), `resetValue`, `type` (CountUp/CountDown), `initRunning`, `format`, `isRunning`, `reset`, `alarms`, `enableHistoricalLogging`, `loggingIntervalSeconds`, `maxSilenceSeconds`
 
 ### Alarm
 
 - **Route:** `/api/v1/alarm`
-- **Native properties:** `active` (boolean, whether alarm is triggered), `sound`, `soundFile`, `soundFile2`, `soundFile3`, `zeroFileIndex`, `fileIndex`, `loop`, `digitalOutputId`, `enableHistoricalLogging`, `loggingIntervalSeconds`
+- **Native properties:** `active` (boolean — whether alarm is triggered), `soundFile`, `loop`, `digitalOutputId`, `enableHistoricalLogging`, `loggingIntervalSeconds`, `maxSilenceSeconds`
+
+:::warning Alarm Properties Update
+The patchable properties for Alarm are `active`, `soundFile`, `loop`, `digitalOutputId`, `enableHistoricalLogging`, `loggingIntervalSeconds`, and `maxSilenceSeconds`. Fields such as `sound`, `soundFile2`, `soundFile3`, `zeroFileIndex`, and `fileIndex` are not valid patch targets.
+:::
 
 ### Script Element
 
 - **Route:** `/api/v1/script-element`
 - **Native properties:** `processId`, `variableName`
-- Links to a Process (script). Use Process API for run/stop/pause/resume.
+- Links to a Process (script). Use [Process API](./process-api) for run/stop/pause/resume.
 
 ### Chart
 
@@ -141,4 +166,11 @@ Duplicates a non-device element. Creates a copy with a unique name (e.g. "(1)", 
 }
 ```
 
-**Supported types:** global-variable, toggle-switch, button, generic, timer, alarm, script-element, profile, chart. Device elements are not supported; use the Device API for device management.
+**Supported types:** global-variable, toggle-switch, button, generic, timer, alarm, script-element, profile, chart. Device elements are not supported; use the [Device API](./device-api) for device management.
+
+## Cross-References
+
+- [Workspace API](./workspace-api) — Manage workspaces that contain elements
+- [Device API](./device-api) — Device elements (hardware-bound)
+- [Settings API](./settings-api) — Application-level configuration
+- [API Overview](./overview) — SignalR events for real-time element updates

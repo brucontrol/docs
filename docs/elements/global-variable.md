@@ -6,80 +6,139 @@ sidebar_position: 2
 
 # Global Variable
 
-A **Global Variable** stores a value that can be read and written by scripts and displayed on the Dashboard. It acts as shared state across your automation.
+A **Global Variable** element stores a value in your BruControl workspace that is independent of any device port. It is one of the most frequently used **non-device** elements: recipes, sequencing flags, operator setpoints, and scratch values can all live in globals so multiple [Script Element](./script) processes and Dashboard tiles stay aligned. Globals support several underlying data types (numeric, boolean, string, time, and datetime). The **element template** determines how that value is drawn: **gv-value** emphasizes a large numeric readout with configurable **precision**, while **gv-bool** frames a boolean as a toggle with ON/OFF labels and distinct on/off colors.
 
-## What It Is
+## When to Use a Global Variable
 
-A Global Variable is a non-device element that holds a single value. It supports multiple types: **Value** (numeric), **Boolean**, **String**, **Time Span**, and **Date/Time**.
+Reach for a global when the data is **logical state** for the batch or the workspace, not a raw sensor reading. Examples include target mash temperatures, current recipe step indices, “silent” flags that suppress alarms, or string labels that scripts compose for logging. Globals participate in the same **historical logging** machinery as other elements, so you can trend them on a [Chart](./chart) when **`EnableHistoricalLogging`** is true and intervals suit the process.
 
-## Why It Exists
+:::tip Changing templates later
 
-- **Script variables** — Store intermediate values, setpoints, and flags between script runs
-- **Display** — Show computed or script-driven values on the Dashboard
-- **User input** — With User Control enabled, allow manual override from the UI
-- **Data logging** — Optional historical logging for trending
+You can swap between **gv-value** and **gv-bool** (or other compatible templates) from the **Appearance** tab after the element exists. Re-open **Custom Properties** afterward—font sizes that looked balanced on one template may need tuning on another.
 
-## How to Add
+:::
 
-1. In Solution Explorer, right-click a **Workspace** or **Folder**
-2. Choose **Global Variable**
-3. Edit the element (double-click or context menu → Edit) to set name, type, and value
+## Creating and Naming
 
-## Native Properties
+Add a global from Solution Explorer the same way as other non-device elements (see [Elements Overview](./overview)). Choose an internal **Name** that reads well in scripts, and set **DisplayName** for operator-facing text; scripts still refer to the element by the solution name conventions your team uses. Because **`DisplayName`** is read/write from script, you can temporarily retitle a tile during a phase (“Heat ON — wait”) without renaming the underlying element.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `displayName` | string | Name shown in UI |
-| `name` | string | Script reference name (used in `"Name" Value` syntax) |
-| `variableName` | string | Alternate name (e.g. for display; falls back to `name` when empty) |
-| `variableType` | Value \| Boolean \| String \| TimeSpan \| DateTime | Data type |
-| `value` | string | Current value (format depends on type) |
-| `precision` | number | Decimal places (Value type only) |
-| `format` | string | Display format (TimeSpan, DateTime) |
-| `enableHistoricalLogging` | boolean | Log value over time |
-| `loggingIntervalSeconds` | number | Min seconds between logged values; 0 = every change |
-| `maxSilenceSeconds` | number | Force log current value if no change for N seconds (0 = disabled). Default 60 for globals. |
-| `userControl` | boolean | Allow manual edit from Dashboard |
-| `visibility` | Default \| Visible \| Hidden \| HiddenLocked | When to show on Dashboard |
+## Native Data vs Template Chrome
 
-## Custom Properties (from plugin-library)
+**Native** configuration (type, initial value, editor constraints) defines what the variable **is**. **Custom properties** from `ui-controls.json` define how it **looks**: layout switches, label typography, the **`display*`** value styling on **gv-value**, toggle styling on **gv-bool**, and the card chrome including **`headerColor`**, **`borderColor`**, **`backgroundColor`**, and optional **`image`**. Keeping that separation in mind speeds up troubleshooting: if the number is wrong, inspect value and scripts; if the number is right but ugly, inspect the template properties.
 
-Element templates (e.g., `gv-value`, `gv-bool`) define custom properties in `ui-controls.json`:
+## Custom Properties — gv-value Template
 
-| Property | Type | Group | Description |
-|----------|------|-------|-------------|
-| `showHeader` | boolean | Layout | Show header bar |
-| `showBackground` | boolean | Layout | Show element template background and border |
-| `showLabel` | boolean | Layout | Show title label |
-| `showValue` | boolean | Layout | Show value text |
-| `showToggleLabel` | boolean | Layout | Show ON/OFF text (Boolean) |
-| `onLabel` | text | Toggle | Text when true (default: ON) |
-| `offLabel` | text | Toggle | Text when false (default: OFF) |
-| `labelFontFamily`, `labelFontSize`, `labelColor` | — | Label | Font and color |
-| `valueFontFamily`, `valueFontSize`, `valueColor` | — | Value | Value styling |
-| `backgroundColor`, `borderColor` | — | Background & Border | Theme-aware overrides |
+The **gv-value** template is for numeric-style globals where a prominent readout matters. Property names are exactly as in **`element-templates/gv-value/ui-controls.json`**.
+
+| Property | Type | Default | Group | Description |
+|----------|------|---------|-------|-------------|
+| showHeader | boolean | true | Layout | Show the header bar. |
+| showBackground | boolean | true | Layout | Show element background and border. |
+| showLabel | boolean | true | Layout | Show the title label in the header. |
+| showValue | boolean | true | Layout | Show the main value text. |
+| precision | number | 0 | Layout | Decimal places for numeric display (0–6). |
+| labelFontFamily | text | — | Label | Label font family. |
+| labelFontSize | number | 12 | Label | Label size (8–48). |
+| labelFontWeight | text | — | Label | Label weight. |
+| labelFontStyle | text | normal | Label | Label style. |
+| labelColor | text | — | Label | Label color (color-alpha; theme default: textPrimary). |
+| displayColor | text | — | Display | Value text color (color-alpha; theme default: accentGreen). |
+| displayFontFamily | text | — | Display | Value font family. |
+| displayFontSize | number | 26 | Display | Value font size (10–120). |
+| displayFontWeight | text | — | Display | Value weight. |
+| displayFontStyle | text | normal | Display | Value style. |
+| backgroundColor | text | — | Background & Border | Card background (color-alpha; theme default: bgSecondary). |
+| headerColor | text | — | Background & Border | Header background (color-alpha; theme default: bgTertiary). |
+| borderColor | text | — | Background & Border | Border color (color-alpha; theme default: borderColor). |
+| image | text | — | Background & Border | Background image (file-upload). |
+
+:::info Value styling uses display*, not value*
+
+Outdated docs may mention **`valueFontFamily`**, **`valueFontSize`**, or **`valueColor`**. For **gv-value**, the supported names are **`displayFontFamily`**, **`displayFontSize`**, **`displayFontWeight`**, **`displayFontStyle`**, and **`displayColor`**.
+
+:::
+
+## Custom Properties — gv-bool Template
+
+The **gv-bool** template targets boolean globals. Label and background groups mirror **gv-value**; the toggle group adds captions and colors. Names match **`element-templates/gv-bool/ui-controls.json`**.
+
+| Property | Type | Default | Group | Description |
+|----------|------|---------|-------|-------------|
+| showHeader | boolean | true | Layout | Show the header bar. |
+| showBackground | boolean | true | Layout | Show element background and border. |
+| showLabel | boolean | true | Layout | Show the title label in the header. |
+| showValue | boolean | true | Layout | Show the toggle control. |
+| showToggleLabel | boolean | true | Layout | Show ON/OFF text beside the toggle. |
+| onLabel | text | ON | Toggle | Caption when true. |
+| offLabel | text | OFF | Toggle | Caption when false. |
+| toggleOnColor | text | — | Toggle | Track/color when on (color-alpha; theme default: accentGreen). |
+| toggleOffColor | text | — | Toggle | Track/color when off (color-alpha; theme default: bgTertiary). |
+| toggleFontFamily | text | — | Toggle | Toggle text font family. |
+| toggleFontSize | number | 19 | Toggle | Toggle text size (10–120). |
+| toggleFontWeight | text | — | Toggle | Toggle text weight. |
+| toggleFontStyle | text | normal | Toggle | Toggle text style. |
+| toggleTextColor | text | — | Toggle | Toggle text color (color-alpha; theme default: accentGreen). |
+| labelFontFamily | text | — | Label | Same semantics as **gv-value** label group. |
+| labelFontSize | number | 12 | Label | Label size (8–48). |
+| labelFontWeight | text | — | Label | Label weight. |
+| labelFontStyle | text | normal | Label | Label style. |
+| labelColor | text | — | Label | Label color (color-alpha; theme default: textPrimary). |
+| backgroundColor | text | — | Background & Border | Card background (color-alpha; theme default: bgSecondary). |
+| headerColor | text | — | Background & Border | Header background (color-alpha; theme default: bgTertiary). |
+| borderColor | text | — | Background & Border | Border color (color-alpha; theme default: borderColor). |
+| image | text | — | Background & Border | Background image (file-upload). |
 
 ## Script Integration
 
-In scripts, reference a Global Variable by its **Name**. Use **Value** for all types, including Boolean:
+Globals expose **`Value`** (read/write; type follows the variable’s configured type). For numeric globals, **`Precision`** (read/write number) controls how many decimal places are shown in contexts that honor precision.
+
+Every element also supports: **`ID`** (string, read-only), **`DisplayName`** (string, read/write), **`Visibility`** (string, read/write), **`EnableHistoricalLogging`** (boolean, read/write), **`LoggingIntervalSeconds`** (number, read/write), **`MaxSilenceSeconds`** (number, read/write).
 
 ```
-// Read value (numeric)
-"TempSetpoint" Value
+// Numeric setpoint
+new value target
+target = "Mash Temp SP" Value
+"Mash Temp SP" Value = 148.0
+"Mash Temp SP" Precision = 1
 
-// Write value
-"TempSetpoint" Value = 152
+// Boolean mode bit
+if "Boil Started" Value = off
+  "Boil Started" Value = on
+endif
 
-// Boolean: read
-"PumpOverride" Value
-
-// Boolean: set
-"PumpOverride" Value = true
+// Visibility and logging together
+"Batch ID" EnableHistoricalLogging = true
+"Batch ID" LoggingIntervalSeconds = 0
+"Batch ID" MaxSilenceSeconds = 3600
+"Batch ID" Visibility = "visible"
 ```
 
-## Use Cases
+:::warning Valid Visibility strings
 
-- **Setpoint storage** — Hold target temperature, duration, or threshold for scripts
-- **Manual override flag** — Boolean to let users bypass automation
-- **Computed display** — Script writes a calculated value; element template shows it
-- **Data logging** — Enable historical logging to chart the variable over time
+Use **`"default"`**, **`"visible"`**, **`"hidden"`**, or **`"hiddenlocked"`** only. Other strings may not round-trip correctly through the Dashboard.
+
+:::
+
+## Historical Logging and Charts
+
+Globals that change slowly (setpoints, batch IDs) still benefit from **`MaxSilenceSeconds`**: periodic samples keep [Chart](./chart) traces honest even when **`Value`** has not changed. Fast-changing computed values may need a larger **`LoggingIntervalSeconds`** to avoid oversized history. These knobs are documented at a high level on [Elements Overview](./overview).
+
+## Troubleshooting
+
+**Value “sticks” or ignores script.** Confirm no other process writes the same global every scan, and that the variable’s type matches what you assign (boolean vs numeric). **User Control** can also block operator edits without blocking scripts—verify expectations.
+
+**Decimals look wrong.** Adjust **`Precision`** in script or native settings; **`precision`** in **gv-value** custom properties also caps presentation for the template.
+
+**Template mismatch.** Booleans rendered with **gv-value** may look odd; switch to **gv-bool**. Large numbers may need **`displayFontSize`** reduced or tile width increased in **Appearance**.
+
+**Background image hides header.** Depending on theme and asset, **`image`** can dominate the card; tune **`headerColor`** and **`showHeader`** or pick a subtler image.
+
+**Charts show flat lines.** Increase **`MaxSilenceSeconds`** or confirm logging is enabled and the global actually changes during the window you are viewing.
+
+## Related Topics
+
+- [Elements Overview](./overview) — Non-device vs device elements, common configuration
+- [Toggle Switch](./toggle-switch) — Standalone boolean **State** (not the same object as a global, unless you bridge them in script)
+- [Button](./button) — Momentary actions
+- [Generic](./generic) — Diagnostic layouts without **`Value`** script API
+- [Chart](./chart) — Plotting logged globals

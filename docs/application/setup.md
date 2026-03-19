@@ -65,6 +65,10 @@ docker run -p 5005:5005 -e BRUCONTROL_DATA_DIR=/data/brucontrol -v brucontrol_da
 Set `BRUCONTROL_DATA_DIR` to the path inside the container where data is stored, and mount that path to a volume or host directory so configuration and data persist across container restarts.
 :::
 
+### Shutdown Behavior for Docker
+
+When the container receives a SIGTERM signal (e.g., `docker stop`), BruControl handles graceful shutdown. If **Shutdown Behavior** is enabled in **Settings → General**, all hardware ports are sent disable commands before disconnecting. See [Settings](./settings#general) for the shutdown behavior toggle.
+
 ## License
 
 BruControl uses a license system. The application is fully functional without activation except for interface communications—you cannot connect to hardware until a license is activated.
@@ -123,12 +127,12 @@ This folder contains:
 - **Data** — Database and historical data (if applicable)
 - **uploads** — User-uploaded files (e.g., for element templates)
 - **settings.yaml** — Application settings (database, security, etc.)
-- **migration-state.json** — Tracks completed data migrations (do not edit)
+- **migration-state.json** — Tracks completed data migrations (do not edit manually)
 
 For the Windows ZIP, `appsettings.json` in the same folder as the executable controls the web server URL and port (see [Configuring the URL and Port](#configuring-the-url-and-port)).
 
 :::danger Do Not Delete
-Do not delete or edit files in the BruControl folder without understanding their purpose or without guidance from BruControl Technical Support.
+Do not delete or edit files in the BruControl folder without understanding their purpose or without guidance from BruControl Technical Support. The `migration-state.json` file tracks which data migrations have already been applied — editing or deleting it can cause migrations to re-run or fail.
 :::
 
 ## Backup and Restore

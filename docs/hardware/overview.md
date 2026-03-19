@@ -14,6 +14,19 @@ BruControl uses commonly available, inexpensive, off-the-shelf microcontrollers 
 From here forward, and in the application itself, these microcontrollers are referred to as **interfaces**.
 :::
 
+## Supported Interfaces at a Glance
+
+| Interface | I/O Voltage | Ethernet | Wi-Fi | USB Type | Best For |
+|-----------|-------------|----------|-------|----------|----------|
+| Arduino MEGA 2560 | 5V | Shield (W5100/W5500) | Shield (WINC1500) | Type B | High I/O count, 5V systems |
+| ESP32 Dev Board | 3.3V | N/A | Built-in | Micro | Compact, wireless, Bluetooth hydrometers |
+| Adafruit Grand Central M4 | 3.3V | Shield (W5500) | Shield (WINC1500) | Micro | High I/O, 32-bit performance |
+| Adafruit Feather M0 | 3.3V | Shield (W5500) | Built-in (WINC1500) | Micro | Small footprint, built-in Wi-Fi |
+| ESP8266 (NodeMCU) | 3.3V | N/A | Built-in | Micro | Budget wireless, limited I/O |
+| Arduino UNO | 5V | N/A | N/A | Type B | Simple serial-only setups |
+
+For detailed specifications, see [Interface Overview (Appendix)](../appendix/interface-overview).
+
 ## Sourcing Interfaces
 
 The system builder can source their own interface or purchase a pre-built interface assembly. BruControl does not supply interface hardware. It is up to the system builder to determine which interface to use for the application.

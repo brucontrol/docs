@@ -22,7 +22,7 @@ BruControl is graphically driven, user friendly, intuitive, and highly flexible,
 - **No knowledge of protocols**
 - **No microcontroller programming or advanced skills**
 
-Yet it allows a user to configure anything from a single output control to a physically distributed, multiple input/output, highly integrated automated system. Built-in scripting enables automation without microcontroller programming, and multiple workspaces let you organize different machines or subsystems.
+Yet it allows a user to configure anything from a single output control to a physically distributed, multiple input/output, highly integrated automated system. Built-in scripting enables automation without microcontroller programming, and multiple workspaces let you organize different machines or subsystems. For technical integrators, BruControl exposes a full [REST API](./api/overview) with OpenAPI/Swagger documentation and a [SignalR real-time hub](./api/overview#real-time-updates-signalr) for push-based updates — enabling integration with dashboards, Node-RED, Home Assistant, and custom applications.
 
 ## Key Advantages
 

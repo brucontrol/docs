@@ -1,8 +1,8 @@
 ---
-
-## id: element-template-request-prompt-template
+id: element-template-request-prompt-template
 title: Element Template Request — Prompt Template
 sidebar_position: 3
+---
 
 # Element Template Request — Prompt Template
 
@@ -54,7 +54,10 @@ Read it carefully. The info in it is critical (flat data, ui-controls schema, SD
 2. **Empty string handling:** Use strict `!== undefined` checks (or explicit handling of `""`) when applying optional text/labels. Do **not** use `||` fallbacks for user-editable text; otherwise when a user clears a field to leave it blank, your code will overwrite with a default instead of showing nothing.
 3. **SDK registration:** **Call** `BruControl.onData(function(data) { ... })` — do **not** assign `BruControl.onData = function(...)`. Same for `onTheme`: call it with a callback. Assigning overwrites the SDK and breaks the data pipeline.
 4. **No native properties in ui-controls for device elements:** If this template is for a device element (e.g. pwmOutput, analogInput), do **not** put native properties like `value` or `state` in ui-controls.json. They would shadow live hardware data. Only include template-specific options (labels, colors, min/max for display, visibility, etc.). For `generic` elements, value/min/max can be template display config.
-5. **Initialization:** There is no onInit/onMount. Use the **first** `onData` payload as the trigger to build or update the DOM (e.g. draw gauge, set labels). Do not rely only on DOMContentLoaded; it can race with BruControl’s data.
+5. **Initialization:** There is no onInit/onMount. Use the **first** `onData` payload as the trigger to build or update the DOM (e.g. draw gauge, set labels). Do not rely only on DOMContentLoaded; it can race with BruControl's data.
 6. **ui-controls.json shape:** Flat dictionary: keys are property names, values are control definitions with `type`, `default`, `title`, `group`, etc. No `"properties"` wrapper; not standard JSON Schema.
+7. **Host pickers available:** You can use `BruControl.requestKeypad(options)`, `BruControl.requestTextInput(options)`, `BruControl.requestTimeSpanPicker(options)`, `BruControl.requestDateTimePicker(options)`, and `BruControl.requestSelection(options)` for user input dialogs. All return `Promise<string | null>`.
+8. **Cross-element subscriptions:** For advanced templates that display data from other elements, use `BruControl.subscribeElement(elementType, elementId)` and `BruControl.onElementUpdate(callback)` to receive live updates from other elements.
+9. **Theme keys:** Use CSS variables like `var(--bg-primary)`, `var(--accent-green)`, `var(--text-primary)` for theme-aware styling. The full list of theme keys is available at `BruControl.THEME_KEYS`.
 
 Take your time: get the math for gauges/pointers right, keep the code bug-free, and ensure it matches the developer guide.

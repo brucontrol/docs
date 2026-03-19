@@ -107,6 +107,10 @@ If interface connected by network, you'll need:
 - Install interface firmware
 - Download and install BruControl application
 
+:::info License Tiers
+A **Standard** license provides full control, scripting, and API access. Upgrading to a **Professional** license unlocks additional capabilities including [Mock Mode](./mocking/overview) (hardware simulation for testing without physical devices), [Data Exchange Legacy API](./api/misc-apis#data-exchange-legacy-api) (third-party integrations via HTTP), and [OpenAPI/Swagger](./api/overview) interactive documentation.
+:::
+
 ### Browser Requirements (Web Interface)
 
 The BruControl interface runs in a web browser. Use a modern browser with WebSocket support:

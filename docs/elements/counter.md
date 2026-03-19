@@ -6,117 +6,187 @@ sidebar_position: 7
 
 # Counter
 
-A **Counter** element counts high-speed pulses from an encoder, flow meter, hall-effect sensor, or similar device. It provides both a **total count** and a **rate** (counts per interval).
+A **Counter** element accumulates pulses from a digital flow meter, encoder, hall sensor, or any source that produces discrete edges faster than you would comfortably sample with a normal **Digital Input**. It reports a running **Total** and derived **Rate** so you can monitor consumption, speed, or production counts from the Dashboard and from Process scripts.
 
-## What It Is
+## What it is
 
-A Counter element uses a hardware counter on the interface to count pulses. The **Sampling Period** defines the interval for rate calculation. The **Primary Display Channel** selects whether the display shows Count or Rate.
+The Counter binds to a **Counter** port on an interface. Hardware or firmware counts transitions on the pin; BruControl exposes the aggregate **Total** and rate information. **SamplingPeriod** (read/write, 1–10 seconds in the documented range) governs how the platform times rate-related updates—tune it to match how quickly your process meaningfully changes without overloading communication.
 
-## Hardware Connection
-
-Connect the pulse source to the interface counter pin:
-
-- **Flow meter**: Pulse output to counter pin, power and ground as per datasheet
-- **Hall-effect sensor**: Output to counter pin
-- **Encoder**: A or B channel (or both for quadrature, if supported) to counter pin
+**RawRate** and **Rate** are read-only numeric values scripts can use for logic and logging; which one you prefer depends on whether you need the least processed tap (**RawRate**) or the value aligned with the same smoothing the UI favors (**Rate**).
 
 :::tip
-Counter pins are often dedicated hardware inputs. Check your interface wiring map for pins marked (C) for Counter.
+
+When commissioning a new meter, compare **Total** against a known volume or manual count first. Once totals match, tune **SamplingPeriod** and dashboard precision so **Rate** updates feel responsive without flickering.
+
 :::
 
-## Port Type
+## Hardware connection
 
-**Counter** — Use a pin designated as Counter Input (C) on your interface wiring map.
+Wire the pulse output of your sensor to the designated **Counter** pin per the wiring map, with appropriate voltage levels (often 5 V or 3.3 V logic). Open-collector outputs may need a pull-up. Keep signal wires short and separated from motor or relay cabling where possible.
 
-## Native Properties
+:::warning
 
-| Property | Type | Description |
-|----------|------|-------------|
-| **Total** | number | Total count (calibrated). Read-only. |
-| **Rate** | number | Rate (counts per interval, calibrated). Read-only. |
-| **RawValue** | number | Raw count before calibration |
-| **RawRate** | number | Raw rate before calibration |
-| **CountPrecision** | number | Decimal places for count display. Read-only (configured in Calibration tab). |
-| **RatePrecision** | number | Decimal places for rate display. Read-only (configured in Calibration tab). |
-| **CountPrefix** | string | Text before count. Read-only (configured in Calibration tab). |
-| **CountSuffix** | string | Text after count. Read-only (configured in Calibration tab). |
-| **RatePrefix** | string | Text before rate. Read-only (configured in Calibration tab). |
-| **RateSuffix** | string | Text after rate. Read-only (configured in Calibration tab). |
-| **Enabled** | boolean | Whether the device is active |
-| **User Control** | boolean | Allow user interaction with the element |
-| **Refresh Multiple** | number | Refresh rate multiplier (1–60) |
-| **SamplingPeriod** | number | Sampling period in seconds (1–10) for rate calculation. Read/write. |
-| **PrimaryDisplayChannel** | 0 or 1 | 0 = Count, 1 = Rate. Read/write. |
+Applying mains or higher voltages directly to a logic counter input will destroy the interface. Use isolators or level shifters when the field device is not logic-level safe.
 
-## Custom Properties
+:::
 
-From the default Counter element template (`counter`):
+## Port type
 
-| Property | Type | Default | Group | Description |
-|----------|------|---------|-------|--------------|
-| showHeader | boolean | true | Layout | Show header bar |
-| showBackground | boolean | true | Layout | Show element template background and border |
-| showLabel | boolean | true | Layout | Show title label in header |
-| hiddenRowKeys | array | — | Layout | Hide rows: "count", "rate" |
-| showValue | boolean | true | Layout | Show primary value rows |
-| showSecondaryRows | boolean | true | Layout | Show secondary detail rows |
-| labelFontFamily | font-family | — | Label | Label font |
-| labelFontSize | number | 12 | Label | Label font size (8–48) |
-| labelFontWeight | text | "500" | Label | Label font weight |
-| labelFontStyle | text | "normal" | Label | Label font style |
-| labelColor | color | (theme) | Label | Label color |
-| valueFontFamily | font-family | — | Value | Value font |
-| valueFontSize | number | 14 | Value | Value font size (10–120) |
-| valueFontWeight | text | "700" | Value | Value font weight |
-| valueFontStyle | text | "normal" | Value | Value font style |
-| valueColor | color | (theme) | Value | Value color |
-| backgroundColor | color | (theme) | Background & Border | Element template background |
-| headerColor | color | (theme) | Background & Border | Header background |
-| borderColor | color | (theme) | Background & Border | Border color |
-| rowLabelColor | color | (theme) | Rows | Row label color |
-| rowValueColor | color | (theme) | Rows | Row value color |
+**Counter** — Use only pins your board documents as high-speed or dedicated counter inputs.
+
+## How to add
+
+1. Confirm the interface firmware and wiring map expose a **Counter** port.
+2. **Add Device Element** → **Counter** → select interface and port.
+3. Set **Display Name**, **Enabled**, logging, and **SamplingPeriod** in the editor.
+4. Style the card with the template’s custom properties (default template **`counter`**).
+
+## Native and editor properties (summary)
+
+The editor also provides standard device options (**User Control**, visibility, historical logging, refresh behavior). Use calibrations if your solution applies scaling to counts or rates for a particular meter K-factor workflow.
+
+## Custom properties (template)
+
+From `ui-controls.json` for the default **Counter** template.
+
+### Layout
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| showHeader | boolean | true | Show header bar |
+| showBackground | boolean | true | Show element background and border |
+| showLabel | boolean | true | Show title label in header |
+| showValue | boolean | true | Show primary value rows |
+| showSecondaryRows | boolean | true | Show secondary detail rows |
+
+### Label
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| labelFontFamily | text | — | Header label font |
+| labelFontSize | number | 12 | Label size (8–48) |
+| labelFontWeight | text | "500" | Label weight |
+| labelFontStyle | text | "normal" | Label style |
+| labelColor | text | — | Label color (theme: textPrimary) |
+
+### Count
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| showCount | boolean | true | Show the Count section |
+| countLabel | text | "Count" | Label beside the count (e.g. Count, Total) |
+| countPrecision | number | 0 | Decimal places for count (0–6) |
+| countColor | text | — | Count value color (theme: accentGreen) |
+| countBg | text | — | Count box background (theme: bgTertiary) |
+| countLabelColor | text | — | Count label color (theme: textSecondary) |
+| countFont | text | — | Count value font family |
+| countSize | number | null | Count value size px (8–120) |
+| countWeight | text | — | Count value weight |
+| countStyle | text | — | Count value style |
+| countLabelFontFamily | text | — | Count label font family |
+| countLabelFontSize | number | 10 | Count label size (8–24) |
+| countLabelFontWeight | text | — | Count label weight |
+| countLabelFontStyle | text | "normal" | Count label style |
+
+### Rate
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| showRate | boolean | true | Show the Rate section |
+| ratePrecision | number | 2 | Decimal places for rate (0–6) |
+| rateColor | text | — | Rate value color (theme: accentGreen) |
+| rateLabelColor | text | — | Rate label color (theme: textSecondary) |
+| rateFont | text | — | Rate value font family |
+| rateSize | number | null | Rate value size px (8–120) |
+| rateWeight | text | — | Rate value weight |
+| rateStyle | text | — | Rate value style |
+
+### Background and border
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| backgroundColor | text | — | Card background (theme: bgSecondary) |
+| headerColor | text | — | Header background (theme: bgTertiary) |
+| borderColor | text | — | Border color (theme: borderColor) |
+| image | text | — | Card background image (file upload); replaces color/border presentation per template |
+
+:::info
+
+Use **showSecondaryRows** to simplify the card when only **Total** matters for operators, or when vertical space on the Dashboard is tight. **headerColor** and **image** should still preserve enough contrast for **countColor** / **rateColor** against their backgrounds.
+
+:::
+
+## Script integration — common element properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| ID | Read-only | Unique element identifier |
+| DisplayName | Read/write | Dashboard label |
+| Visibility | Read/write | `"default"`, `"visible"`, `"hidden"`, `"hiddenlocked"` |
+| EnableHistoricalLogging | Read/write | Historical logging on/off |
+| LoggingIntervalSeconds | Read/write | Minimum seconds between log entries |
+| MaxSilenceSeconds | Read/write | Force a log after silence; `0` disables |
+
+## Script integration — common device properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| Enabled | Read/write | Communication active |
+| Connected | Read-only | Link to interface healthy |
+| RefreshMultiple | Read/write | Refresh multiplier (1–60) |
+| DisplayText | Read-only | UI-formatted text |
+| PortID | Read-only | Assigned port id |
+
+## Script integration — counter properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| SamplingPeriod | Read/write | Sampling window for rate timing (1–10 s) |
+| Total | Read-only | Accumulated count |
+| RawRate | Read-only | Raw rate value |
+| Rate | Read-only | Rate value (presentation-aligned) |
+
+### Examples
+
+Log totals and rate:
+
+```
+new value gallons
+gallons = "Main Flow" Total
+new value gpm
+gpm = "Main Flow" Rate
+print gallons
+print gpm
+```
+
+Slow down host traffic when idle:
+
+```
+if "Process Active" Value = off
+  "Main Flow" RefreshMultiple = 20
+else
+  "Main Flow" RefreshMultiple = 1
+endif
+```
+
+Adjust sampling for a sluggish display:
+
+```
+"Main Flow" SamplingPeriod = 5
+```
 
 ## Calibrations
 
-Counter supports calibrations. Use the **Calibration** tab to add transforms:
+If your workflow applies calibrations to scale pulses to engineering units, configure them on the **Calibration** tab; **DisplayText** reflects those transforms for operator-facing strings.
 
-- **Multiplier** / **Divider** — Scale count or rate (e.g., pulses per gallon)
-- **Offset** — Add or subtract
-- **Floor** / **Ceiling** — Clamp range
+## Troubleshooting
 
-See [Calibrations Overview](./calibrations-overview.md) for details.
-
-## Script Integration
-
-### Read Count
-
-```
-new value totalPulses
-totalPulses = "Flow Meter" Total
-```
-
-### Read Rate
-
-```
-new value flowRate
-flowRate = "Flow Meter" Rate
-```
-
-### Set Sampling Period (optional)
-
-```
-"Flow Meter" SamplingPeriod = 5
-"Flow Meter" PrimaryDisplayChannel = 1
-```
-
-### Common Patterns
-
-```
-// Check flow rate
-if "Flow Meter" Rate < 1
-  print "Low flow detected"
-endif
-
-// Wait for minimum volume (count)
-wait "Flow Meter" Total >= 1000 60000
-```
+| Symptom | Things to check |
+|---------|-----------------|
+| Total does not increment | Wiring, active-high vs active-low, sensor power; **Enabled** and **Connected**; correct **Counter** pin |
+| Rate jumps or reads zero | **SamplingPeriod** too long/short for pulse frequency; compare **RawRate** and **Rate**; mechanical slip or electrical noise |
+| Values freeze | **Connected** false (USB/network/interface reset); **RefreshMultiple** too high |
+| Dashboard cluttered | **showRate**, **showCount**, **showSecondaryRows**; template layout |
+| Script cannot write Total | **Total** is read-only—reset flows are handled via device-specific or calibration workflows, not direct assignment |
+| Logging gaps | **LoggingIntervalSeconds**, **MaxSilenceSeconds**, and whether **EnableHistoricalLogging** is on |
+| Poor legibility | **countBg** / **rateLabelColor** vs **countColor** / **rateColor**; **headerColor** and **image** contrast |

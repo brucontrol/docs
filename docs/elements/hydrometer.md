@@ -6,104 +6,178 @@ sidebar_position: 10
 
 # Hydrometer
 
-A **Hydrometer** element receives data from electronic hydrometers such as iSpindel and compatible devices. It reports **temperature** and **specific gravity** (SG) for fermentation monitoring.
+The **Hydrometer** element integrates electronic hydrometers such as the **iSpindel** and compatible telemetry devices. These sensors report **tilt-derived specific gravity** and often an onboard **temperature**, letting brewers and other operators track fermentation progress without opening a vessel. In BruControl, the element maps to a **Hydrometer** port on an interface that receives the device’s payloads (commonly via Wi-Fi bridges or serial forwarding, depending on your hardware stack).
 
-## What It Is
+## What it is
 
-Electronic hydrometers float in the fermenting liquid and transmit temperature and specific gravity via Wi-Fi or Bluetooth to a gateway that forwards data to BruControl. The element displays both values and supports calibrations for each channel.
+A **Hydrometer** device element decodes the sensor’s transmission and exposes two script-visible numbers: **`SG`** (specific gravity) and **`Temp`** (temperature). The Dashboard template shows styled rows for temperature and specific gravity with independent precision and typography.
 
-## Hardware Connection
+:::info
 
-- **iSpindel and similar**: Configure the device to send data to a BruControl-compatible gateway or service. The interface receives the data over the network or through a bridge.
-- **Color**: Each hydrometer can be assigned a color (Red, Green, Black, Purple, Orange, Blue, Yellow, Pink) to identify it when multiple devices are used.
+**RawTemp**, **RawSG**, **Color**, **PrimaryDisplayChannel**, and similar fields may appear in the **native** or **designer** UI for configuration and diagnostics. They are **not** script-accessible. In Process scripts, only **`SG`** and **`Temp`** are available from the hydrometer element itself—plan diagnostics and transforms around that contract.
 
-:::tip
-See the BruControl documentation and iSpindel setup guides for configuring the hydrometer to communicate with your system.
 :::
 
-## Port Type
+## Hardware connection
 
-**Hydrometer** — Uses a dedicated hydrometer port or network input on the interface.
+Follow your hydrometer vendor’s pairing guide: charging, Wi-Fi provisioning, and reporting interval all affect how quickly **`Temp`** and **`SG`** refresh in BruControl. Ensure the interface or gateway you use is on the same network plan and that firewall rules allow the microcontroller to receive UDP/TCP or serial frames as required. Physical placement still matters—strap length and trub can shift tilt and therefore apparent gravity.
 
-## Native Properties
+:::tip
 
-| Property | Type | Description |
-|----------|------|-------------|
-| **Temp** | number | Temperature (calibrated). Read-only. |
-| **SG** | number | Specific gravity (calibrated). Read-only. |
-| **RawTemp** | number | Raw temperature before calibration |
-| **RawSG** | number | Raw specific gravity before calibration |
-| **TempPrecision** | number | Decimal places for temperature |
-| **SGPrecision** | number | Decimal places for SG |
-| **TempPrefix** | string | Text before temperature |
-| **TempSuffix** | string | Text after temperature |
-| **SGPrefix** | string | Text before SG |
-| **SGSuffix** | string | Text after SG |
-| **Color** | number | Beacon color (1–8) |
-| **Enabled** | boolean | Whether the device is active |
-| **User Control** | boolean | Allow interaction (read-only) |
-| **Refresh Multiple** | number | Refresh rate multiplier (1–60) |
-| **Primary Display Channel** | 0 or 1 | 0 = Temp, 1 = SG |
+When comparing **`SG`** to manual samples, allow time for equilibrium and temperature compensation assumptions to match your calibration workflow. Log **`Temp`** alongside **`SG`** so post-run analysis can separate thermal effects from true gravity movement.
 
-## Custom Properties
+:::
 
-From the default Hydrometer element template (`hydrometer`):
+## Port type
 
-| Property | Type | Default | Group | Description |
-|----------|------|---------|-------|--------------|
-| showHeader | boolean | true | Layout | Show header bar |
-| showBackground | boolean | true | Layout | Show element template background and border |
-| showLabel | boolean | true | Layout | Show title label in header |
-| hiddenRowKeys | array | — | Layout | Hide rows: "temperature", "specificgravity" |
-| showValue | boolean | true | Layout | Show primary value rows |
-| labelFontFamily | font-family | — | Label | Label font |
-| labelFontSize | number | 12 | Label | Label font size (8–48) |
-| labelFontWeight | text | "500" | Label | Label font weight |
-| labelFontStyle | text | "normal" | Label | Label font style |
-| labelColor | color | (theme) | Label | Label color |
-| valueFontFamily | font-family | — | Value | Value font |
-| valueFontSize | number | 14 | Value | Value font size (10–120) |
-| valueFontWeight | text | "700" | Value | Value font weight |
-| valueFontStyle | text | "normal" | Value | Value font style |
-| valueColor | color | (theme) | Value | Value color |
-| backgroundColor | color | (theme) | Background & Border | Element template background |
-| headerColor | color | (theme) | Background & Border | Header background |
-| borderColor | color | (theme) | Background & Border | Border color |
-| rowLabelColor | color | (theme) | Rows | Row label color |
-| rowValueColor | color | (theme) | Rows | Row value color |
+**Hydrometer** — Available only where the interface definition lists hydrometer support.
+
+## How to add
+
+1. Commission the physical hydrometer per vendor instructions.
+2. **Add Device Element** → **Hydrometer** → select the interface and **Hydrometer** port that receives its data.
+3. Set **Display Name**, logging, and refresh options like any other device element.
+4. Tune the **`hydrometer`** template: **tempPrecision**, **sgPrecision**, colors, and optional **image** / **headerColor** for your Dashboard theme.
+
+## Native and editor properties (summary)
+
+Editor-only fields (including raw readings, color hints, or channel selection where provided) configure how the device is interpreted and displayed. Scripts do not see those properties—use **`SG`**, **`Temp`**, **`DisplayText`**, and common device diagnostics instead.
+
+## Custom properties (template)
+
+From `ui-controls.json` for **`hydrometer`**.
+
+### Layout
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| showHeader | boolean | true | Show header bar |
+| showBackground | boolean | true | Show element background and border |
+| showLabel | boolean | true | Show title label in header |
+| showValue | boolean | true | Show primary value rows |
+
+### Label
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| labelFontFamily | text | — | Header label font |
+| labelFontSize | number | 12 | Label size (8–48) |
+| labelFontWeight | text | "500" | Label weight |
+| labelFontStyle | text | "normal" | Label style |
+| labelColor | text | — | Label color (theme: textPrimary) |
+
+### Temperature
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| showTemperature | boolean | true | Show the Temperature section |
+| tempPrecision | number | 1 | Decimal places for temperature (0–6) |
+| tempColor | text | — | Temperature value color (theme: accentGreen) |
+| tempBg | text | — | Temperature box background (theme: bgTertiary) |
+| tempLabelColor | text | — | Temperature label color (theme: textSecondary) |
+| tempFont | text | — | Temperature value font family |
+| tempSize | number | null | Temperature value size (8–120 px) |
+| tempWeight | text | — | Temperature value weight |
+| tempStyle | text | — | Temperature value style |
+
+### Specific gravity
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| showSpecificGravity | boolean | true | Show the Specific Gravity section |
+| sgPrecision | number | 3 | Decimal places for SG (0–6) |
+| sgColor | text | — | SG value color (theme: accentGreen) |
+| sgBg | text | — | SG box background (theme: bgTertiary) |
+| sgLabelColor | text | — | SG label color (theme: textSecondary) |
+| sgFont | text | — | SG value font family |
+| sgSize | number | null | SG value size (8–120 px) |
+| sgWeight | text | — | SG value weight |
+| sgStyle | text | — | SG value style |
+
+### Background and border
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| backgroundColor | text | — | Card background (theme: bgSecondary) |
+| headerColor | text | — | Header background (theme: bgTertiary) |
+| borderColor | text | — | Border color (theme: borderColor) |
+| image | text | — | Background image for the card |
+
+:::warning
+
+Do not assume **RawTemp** or **RawSG** are writable from scripts—they are UI/native aids. Automations should use **`Temp`**, **`SG`**, or a **Global Variable** you copy into via script.
+
+:::
+
+## Script integration — common element properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| ID | Read-only | Unique element identifier |
+| DisplayName | Read/write | Dashboard label |
+| Visibility | Read/write | `"default"`, `"visible"`, `"hidden"`, `"hiddenlocked"` |
+| EnableHistoricalLogging | Read/write | Historical logging |
+| LoggingIntervalSeconds | Read/write | Minimum seconds between log entries |
+| MaxSilenceSeconds | Read/write | Silence heartbeat; `0` disables |
+
+## Script integration — common device properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| Enabled | Read/write | Communication on/off |
+| Connected | Read-only | Interface link status |
+| RefreshMultiple | Read/write | Refresh multiplier (1–60) |
+| DisplayText | Read-only | Operator-facing formatted string |
+| PortID | Read-only | Port identifier |
+
+## Script integration — hydrometer properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| SG | Read-only | Specific gravity |
+| Temp | Read-only | Temperature reported by the hydrometer |
+
+### Examples
+
+Track fermentation progress:
+
+```
+new value gravity
+gravity = "FV1 Hydrometer" SG
+new value fermTemp
+fermTemp = "FV1 Hydrometer" Temp
+```
+
+Gate alarms on connectivity:
+
+```
+new bool linkOk
+linkOk = "FV1 Hydrometer" Connected
+if linkOk = off
+  print "Hydrometer offline"
+endif
+```
+
+Log what operators see:
+
+```
+new text status
+status = "FV1 Hydrometer" DisplayText
+print status
+```
 
 ## Calibrations
 
-Hydrometer supports calibrations for both temperature and specific gravity. Use the **Calibration** tab to add transforms for each channel.
+If your workflow applies calibrations to **`SG`** or **`Temp`**, use the **Calibration** tab; **`DisplayText`** will include those transforms for display-aligned logging.
 
-See [Calibrations Overview](./calibrations-overview.md) for details.
+## Troubleshooting
 
-## Script Integration
-
-### Read Temperature
-
-```
-new value fermTemp
-fermTemp = "iSpindel 1" Temp
-```
-
-### Read Specific Gravity
-
-```
-new value sg
-sg = "iSpindel 1" SG
-```
-
-### Common Patterns
-
-```
-// Check fermentation progress
-if "iSpindel 1" SG <= 1.010
-  print "Fermentation complete"
-endif
-
-// Temperature alert
-if "iSpindel 1" Temp > 75
-  print "Fermenter too warm!"
-endif
-```
+| Symptom | Things to check |
+|---------|-----------------|
+| Stale **SG** / **Temp** | **Connected**, **Enabled**, hydrometer battery, Wi-Fi, gateway, reporting interval |
+| Values differ from vendor app | Unit assumptions; calibrations; compare **DisplayText** with vendor formatting |
+| Script cannot set **SG** | Only **`SG`** and **`Temp`** are exposed as readings—both read-only |
+| Missing **RawTemp** in script expected | **RawTemp** is **not** script-accessible; use **`Temp`** or native UI |
+| Dashboard too busy | **showTemperature**, **showSpecificGravity**, **showValue** toggles |
+| Hard to read | **tempColor**/**tempBg**, **sgColor**/**sgBg**, plus **headerColor**/**image** contrast |
+| History gaps | **EnableHistoricalLogging**, **LoggingIntervalSeconds**, **MaxSilenceSeconds** |

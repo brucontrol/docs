@@ -6,7 +6,7 @@ sidebar_position: 3
 
 # Workspaces
 
-A workspace is a container for elements—the building blocks of your control interface. Each workspace has its own dashboard where you arrange elements, charts, buttons, and device controls.
+A workspace is a container for elements—the building blocks of your control interface. Each workspace has its own dashboard where you arrange elements, charts, buttons, and device controls. Think of workspaces as separate pages or screens for your brewing system.
 
 ## What Is a Workspace?
 
@@ -35,7 +35,20 @@ When you have two or more *visible* workspaces, a tab bar appears above the Dash
 - **Reorder tabs** — Drag a tab left or right to change the order
 - **Current workspace** — The selected tab is highlighted
 
-The Dashboard always shows the elements belonging to the currently selected workspace.
+The Dashboard always shows the elements belonging to the currently selected workspace. On first load, the first visible workspace is automatically selected.
+
+## Hiding and Showing Workspaces
+
+You can hide a workspace so it does not appear in the tab bar without deleting it:
+
+1. **Right-click** the workspace in the Solution Explorer.
+2. Select **Hide Workspace**.
+
+The workspace and its elements still exist but are not shown in the tab bar. To make it visible again, right-click and select **Show Workspace**.
+
+:::tip
+Hiding workspaces is useful for in-progress layouts or seasonal setups you want to keep but not display.
+:::
 
 ## Adding Elements to a Workspace
 
@@ -55,7 +68,7 @@ Elements are added from the Solution Explorer:
    - **Toggle Switch** — On/off control
    - **Folder** — Organize elements in subfolders
 
-3. The new element appears in the Solution Explorer and on the Dashboard.
+3. The new element appears in the Solution Explorer and on the Dashboard. New elements are placed at the center of the current viewport.
 
 Elements must have **unique names** within the application. BruControl assigns default names, but you can rename them in the element's properties (Edit drawer).
 
@@ -80,13 +93,41 @@ To move an element to another workspace:
 
 The element is removed from the current workspace and added to the selected one.
 
-## Saving
+## Background Images
 
-BruControl saves your configuration automatically. Workspaces and elements are stored in the configuration file (`.brucfg`); dashboard layouts (positions, zoom) are stored in the web database. The default data folder is `Documents\BruControl` (Windows) or `~/Documents/BruControl` (Linux). No manual save action is required for normal operation.
+Workspaces can have background images to provide visual context for your layout (e.g., a piping diagram or equipment photo). Background images are configured per workspace through the element appearance system and can vary by theme.
+
+## Per-Theme Layout Persistence
+
+Workspace canvas state is saved **per theme**. This means each theme stores its own:
+
+- **Zoom level** and **pan position** (`canvasX`, `canvasY`)
+- **Tool mode** (Pan or Edit)
+- **Canvas lock state**
+
+When you switch themes, BruControl restores the zoom, pan, and tool mode specific to that theme. This lets you maintain different layout views for desktop vs. mobile themes.
+
+## Clearing a Workspace
+
+To remove all elements from a workspace without deleting the workspace itself:
+
+1. **Right-click** the workspace in the Solution Explorer.
+2. Select **Clear Workspace**.
 
 :::warning Deleting a Workspace
 When you delete a workspace, all of its elements are also deleted. This cannot be undone. Use **Clear Workspace** if you want to remove all elements but keep the workspace itself.
 :::
+
+## Saving
+
+BruControl saves your configuration automatically. Workspaces and elements are stored in the configuration file (`.brucfg`); dashboard layouts (positions, zoom) are stored in the web database. The default data folder is `Documents\BruControl` (Windows) or `~/Documents/BruControl` (Linux). No manual save action is required for normal operation.
+
+## Tips
+
+- Use one workspace per major system (e.g., "HLT & Mash", "Boil Kettle", "Fermentation") for clean organization
+- Hide workspaces you're not actively using to keep the tab bar tidy
+- Reorder tabs so your most-used workspace is first — it will be auto-selected on load
+- Use folders within workspaces to group related elements (e.g., "Temperatures", "Valves", "Pumps")
 
 ## Next Steps
 

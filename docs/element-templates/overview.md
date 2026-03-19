@@ -8,6 +8,8 @@ sidebar_position: 1
 
 An **element template** defines the visual representation of an element on the Dashboard. Each element (timer, button, global variable, device element, etc.) is rendered using a template—a small, interactive card or control that displays data and lets you interact with it.
 
+Whether you're a user picking a template from the Plugin Store, or a developer building your own, the element template system is how BruControl connects raw element data to a visual widget on the Dashboard.
+
 ## Element + Template = Visual
 
 The dashboard display is the combination of:
@@ -15,7 +17,20 @@ The dashboard display is the combination of:
 1. **Element** — The underlying data and logic (e.g., a Timer with elapsed time, a Digital Output with on/off state).
 2. **Template** — The visual design and behavior (HTML, CSS, JavaScript) that defines how the element is rendered.
 
-The Dashboard fetches the element's assigned template and injects it into a sandboxed iframe. Layout (position, size, rotation) is stored per theme in **Appearance** entities.
+## Data Flow
+
+The data flow from element to screen works like this:
+
+1. **Element model** — The backend maintains the element's state (value, properties, enabled/disabled, etc.)
+2. **Flat data object** — The element's properties are flattened into a single JavaScript object (no nesting)
+3. **Iframe + SDK** — The compiled template HTML is loaded in a sandboxed iframe. The Element Template SDK (injected automatically) passes data to the template via **Penpal v7** (a lightweight iframe communication library)
+4. **Template renders** — Your template's `onData` callback receives the flat data object and renders the UI
+
+```
+Element Model → Flat Data Object → Penpal v7 → iframe SDK → Template renders
+```
+
+The host also sends **theme colors** (via `onTheme`) so templates can adapt to the user's color theme.
 
 ## Template Sources
 

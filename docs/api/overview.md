@@ -35,9 +35,23 @@ BruControl exposes an OpenAPI (Swagger) specification and interactive UI for exp
 
 Swagger and the OpenAPI document require a **Professional license**. Without it, requests to `/swagger` or `/openapi` return `403 Forbidden`.
 
-## Authentication
+## Authentication & CSRF
 
-The BruControl API is designed for use within a trusted environment (local network or same machine). Authentication behavior depends on the deployment configuration. When security features are enabled, consult the application settings for API access requirements.
+The BruControl API is designed for use within a trusted environment (local network or same machine). The web UI authenticates via a session cookie and CSRF token:
+
+1. **Obtain a session** — Call `GET /api/v1/session`. The server sets an `HttpOnly` session cookie and returns a CSRF token:
+
+```json
+{ "csrfToken": "abc123...", "expiresAtUtc": "2026-04-01T00:00:00Z" }
+```
+
+2. **Include the CSRF token** — For all mutating requests (`POST`, `PATCH`, `PUT`, `DELETE`), include the `X-CSRF-Token` header with the token from step 1.
+
+3. **Session cookie** — The session cookie is sent automatically by the browser. External API clients must persist cookies across requests.
+
+:::info License-Gated Endpoints
+Some endpoints require a specific license tier. These are marked with `[ApiAccess(LicenseType.Professional)]` in the codebase. Calling a gated endpoint without the required license returns `403 Forbidden`.
+:::
 
 ## Common Patterns
 
@@ -82,6 +96,16 @@ Example:
 
 Most resources use GUIDs (e.g. `550e8400-e29b-41d4-a716-446655440000`). Device types use string IDs (e.g. `MEGA`, `ESP32`).
 
+### Error Responses
+
+API errors return an appropriate HTTP status code with a body that is either a plain string or a JSON object:
+
+```json
+{ "error": "Description of the problem" }
+```
+
+Common status codes: `400` (bad request / validation), `403` (license required), `404` (not found), `409` (conflict), `500` (server error).
+
 ## API Sections
 
 | Section | Description |
@@ -89,10 +113,99 @@ Most resources use GUIDs (e.g. `550e8400-e29b-41d4-a716-446655440000`). Device t
 | [Workspace API](./workspace-api) | Workspaces, elements, canvas layout |
 | [Element APIs](./element-apis) | Global variables, toggles, buttons, timers, alarms, scripts, charts, profiles, generic elements |
 | [Device API](./device-api) | Devices, ports, mock mode, device types, diagnostics |
-| [Process API](./process-api) | Scripts (processes), run/stop/resume/step |
+| [Process API](./process-api) | Scripts (processes), run/stop/resume/step/load |
 | [Settings API](./settings-api) | Application settings |
-| [Miscellaneous APIs](./misc-apis) | Element templates, themes, color sets, logs, version, uptime, explorer folders, data views, chart data, scripting, license, session, security, plugin registry, configurations, system |
+| [Miscellaneous APIs](./misc-apis) | Element templates, themes, color sets, logs, version, uptime, explorer folders, data views, chart data, scripting, license, session, security, plugin registry, configurations, system, **media**, **file upload**, **data exchange** |
 
-## Real-Time Updates
+## Real-Time Updates (SignalR)
 
-BruControl uses SignalR for real-time updates. Connect to the hub to receive live changes for elements, processes, and devices without polling. See the application source for hub endpoints and message contracts.
+BruControl uses [SignalR](https://learn.microsoft.com/en-us/aspnet/core/signalr/introduction) for real-time push updates. Connect to the hub to receive live changes for elements, processes, and devices without polling.
+
+### Main Hub
+
+| Property | Value |
+|----------|-------|
+| **URL** | `/hubs/brucontrol` |
+| **Transports** | WebSockets (preferred), Server-Sent Events, Long Polling |
+| **Auth** | Session cookie (call `GET /api/v1/session` first) |
+
+### Server Methods (invoke from client)
+
+| Method | Parameters | Description |
+|--------|-----------|-------------|
+| `SubscribeToAllElements` | — | Receive all element CRUD and value events |
+| `UnsubscribeFromAllElements` | — | Stop receiving element events |
+| `SubscribeToWorkspace` | `workspaceId` | Receive element events for one workspace |
+| `UnsubscribeFromWorkspace` | `workspaceId` | Stop workspace-scoped events |
+| `SubscribeToAllProcesses` | — | Receive all process state events |
+| `UnsubscribeFromAllProcesses` | — | Stop receiving process events |
+| `SubscribeToProcess` | `processId` | Receive events for one process |
+| `UnsubscribeFromProcess` | `processId` | Stop single-process events |
+| `SubscribeToChartSamples` | `chartId` | Receive live chart data points |
+| `UnsubscribeFromChartSamples` | `chartId` | Stop chart sample stream |
+| `SubscribeToDataViewSamples` | `dataViewId` | Receive live data view samples |
+| `UnsubscribeFromDataViewSamples` | `dataViewId` | Stop data view sample stream |
+
+### Client Events (received from server)
+
+**Element events** — For each of the 9 non-device element types (GlobalVariable, ToggleSwitch, Button, Generic, Timer, Alarm, ScriptElement, Chart, Profile), the hub sends `{Type}Updated`, `{Type}Created`, and `{Type}Deleted` events with parameters `(elementId, data)`.
+
+**Device element events** — `DeviceElementUpdated`, `DeviceElementCreated`, `DeviceElementDeleted` for base property changes. Port-specific value changes use `DigitalOutStateChanged`, `DigitalInValueChanged`, `DutyCycleValueChanged`, `PWMOutValueChanged`, `AnalogInValueChanged`, `CounterValueChanged`, `OWTempValueChanged`, `SPISensorValueChanged`, `HydrometerValueChanged`, `HysteresisValueChanged`, `PIDValueChanged`, `DeadbandValueChanged` — each with parameters `(portId, elementId, data)`.
+
+**Fine-grained events:**
+
+| Event | Parameters | Description |
+|-------|-----------|-------------|
+| `ElementPropertyChanged` | `elementId, elementType, propertyName, newValue` | Single property changed |
+| `ElementVisibilityChanged` | `elementId, elementType, visibility` | Visibility state changed |
+
+**Process events:**
+
+| Event | Parameters | Description |
+|-------|-----------|-------------|
+| `ProcessUpdated` | `processId, data` | Process patched (name, script) |
+| `ProcessStateChanged` | `processId, stateData` | Execution state changed (Running/Paused/Stopped) |
+| `ProcessVariablesUpdated` | `processId, variables` | Script local variables updated |
+| `ProcessOutputReceived` | `processId, text` | Print statement or system message |
+
+**Device & system events:**
+
+| Event | Parameters | Description |
+|-------|-----------|-------------|
+| `DeviceStatusChanged` | `deviceId, data` | Device connected/disconnected/mock mode changed |
+| `MockDevicesChanged` | — | Mock device list changed |
+
+**Chart and data view samples:**
+
+| Event | Parameters | Description |
+|-------|-----------|-------------|
+| `ChartSampleReceived` | `chartId, channelKey, timestampUnixMs, value, oscillationDutyPercent?, oscillationPeriodMs?` | Live chart data point |
+| `DataViewSampleReceived` | `dataViewId, channelKey, timestampUnixMs, value` | Live data view data point |
+
+### Mock Device Hub
+
+A separate hub exists for the mock device page:
+
+| Property | Value |
+|----------|-------|
+| **URL** | `/hubs/device?tcpPort={port}` |
+
+Events: `DeviceStatus`, `AllPorts`, `RecentMessages` (on connect), `PortUpdated`, `PortDeleted`, `MessageLogged` (ongoing).
+
+:::tip Connection Example
+```js
+import { HubConnectionBuilder } from '@microsoft/signalr';
+
+const connection = new HubConnectionBuilder()
+  .withUrl('/hubs/brucontrol', { withCredentials: true })
+  .withAutomaticReconnect()
+  .build();
+
+await connection.start();
+await connection.invoke('SubscribeToAllElements');
+
+connection.on('GlobalVariableUpdated', (elementId, data) => {
+  console.log('Variable changed:', elementId, data.value);
+});
+```
+:::

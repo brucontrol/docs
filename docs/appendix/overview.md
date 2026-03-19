@@ -10,104 +10,53 @@ This appendix provides detailed technical information, troubleshooting guides, a
 
 ## What's in the Appendix
 
-### Interface Information
+### Interface Reference
 
 Detailed specifications and configuration information for supported interfaces:
 
-- **Interface Overview** - Complete list of supported microcontrollers
-- **Interface Firmware Versions** - Compatibility and version information
-- **Interface Recommendations** - Guidance on selecting the right interface
-- **Interface Wiring Maps** - Detailed pin assignments for each interface type
-- **Interface Specific Considerations** - Special notes for specific models
+- [Interface Overview](./interface-overview) — Complete list of supported microcontrollers, specifications, and I/O capabilities
+- [Interface-Specific Considerations](./interface-specific) — Per-board notes (WINC1500 firmware, SPI sensors, ESP32 AP mode, power-on configs, data storage)
+- [WINC1500 Wi-Fi Considerations](./winc1500-wifi) — Wi-Fi module setup, firmware updating, power requirements, and troubleshooting
 
 ### Troubleshooting
 
 Guides to help resolve common issues:
 
-- **Troubleshooting Interface Network Connectivity** - Diagnose and fix network problems
-- **Interface Control Codes** - Debug commands for interface testing
-- **Power Failures** - Handling and recovering from power interruptions
-- **Common Issues** - Solutions to frequently encountered problems
-
-### Technical Details
-
-In-depth technical information:
-
-- **SPI Sensor Considerations** - Working with SPI-based sensors
-- **WINC1500 Wi-Fi Considerations** - Wi-Fi module setup and troubleshooting
-- **iSpindel Hydrometer Considerations** - Integration with iSpindel devices
-- **Data Storage Considerations** - Managing historical data
-- **Analog Input Considerations** - Best practices for analog sensors
-- **Linear Calibration Principles** - Understanding sensor calibration
-
-### Configuration
-
-Advanced configuration topics:
-
-- **BruControl as a Server** - Running BruControl in server mode
-- **Power-On Device Configurations** - Setting default states
-- **Device Elements Enabled/Affected via Scripts** - Scriptable element properties
-- **Data Exchange Protocol** - Communication with external systems
-
-### Upgrade Guides
-
-Instructions for upgrading from previous versions:
-
-- **Upgrade from v1.0** - Migration guide
-- **Upgrade from v1.1** - What's new and how to upgrade
-- **Upgrade from v1.2RC** - Release candidate to stable migration
-
-### Version History
-
-Complete changelog of BruControl releases:
-
-- **Version History – v1.1** - Features and fixes
-- **Version History – v1.2RC** - Release candidate changes
-- **Version History – Current Release** - Changelog and updates
+- [Troubleshooting](./troubleshooting) — Interface connectivity, firmware upload, common errors, web application issues, and interface control codes
+- [Troubleshooting Network Connectivity](./troubleshooting-network) — Detailed network diagnostic procedures for Ethernet, Wi-Fi, and subnet issues
 
 ### Support
 
 Getting help when you need it:
 
-- **Technical Assistance** - How to get support
-- **Community Resources** - Forums and user groups
-- **Documentation Updates** - Where to find the latest information
-
-## How to Use This Appendix
-
-The appendix is organized as a reference guide. You don't need to read it cover-to-cover. Instead:
-
-1. **Use the search function** - Find specific topics quickly
-2. **Browse by category** - Explore related topics together
-3. **Follow cross-references** - Links connect related information
-4. **Bookmark frequently used pages** - Quick access to important references
+- [Technical Assistance](./technical-assistance) — Contact channels, log files, license/purchasing info
 
 ## Quick Links
 
 ### Most Referenced Pages
 
-- [Interface Overview](./interface-overview) - Interface specifications and capabilities
-- [Troubleshooting Network Connectivity](./troubleshooting-network) - Fix connection issues
-- [Troubleshooting](./troubleshooting) - Common issues and solutions
-- [Technical Assistance](./technical-assistance) - Get help
+- [Interface Overview](./interface-overview) — Interface specifications and capabilities
+- [Troubleshooting](./troubleshooting) — Common issues and solutions
+- [Troubleshooting Network Connectivity](./troubleshooting-network) — Fix connection issues
+- [Technical Assistance](./technical-assistance) — Get help
 
 ### For New Users
 
-- [Interface Firmware Installation](../hardware/firmware-installation) - Get started
-- [System Requirements](../requirements) - What you need
+- [Interface Firmware Installation](../hardware/firmware-installation) — Get started with firmware
+- [System Requirements](../requirements) — What you need
+- [Quick Start Guide](../quick-start) — End-to-end setup walkthrough
 
 ### For Advanced Users
 
-- [Element Properties in Scripts](../scripting/element-properties) - Scriptable properties
+- [Interface-Specific Considerations](./interface-specific) — Power-on configs, data storage, ESP32 AP mode
+- [Element Properties in Scripts](../scripting/element-properties) — Scriptable properties
+- [API Overview](../api/overview) — REST API and SignalR reference
 
-:::info Coming Soon
-Detailed appendix pages are being developed from the original documentation. Check back for comprehensive reference materials.
-:::
+## How to Use This Appendix
 
-## Contributing
+The appendix is organized as a reference guide. You don't need to read it cover-to-cover. Instead:
 
-Found an error or have a suggestion? The BruControl documentation is continuously improved based on user feedback.
-
-## Document Version
-
-This documentation covers the current BruControl release.
+1. **Use the search function** — Find specific topics quickly
+2. **Browse by category** — Explore related topics together
+3. **Follow cross-references** — Links connect related information
+4. **Bookmark frequently used pages** — Quick access to important references

@@ -64,6 +64,16 @@ Returns ports available for the device based on its wiring map and supported por
 
 **Response:** Array of `SupportedPortViewModel`
 
+### Refresh Device Connection
+
+```
+POST /api/v1/device/{id}/refresh
+```
+
+Closes and reinitializes the device connection. Use when the device is not communicating but should be — for example, after startup timing issues or a transient network failure.
+
+**Response:** `DeviceViewModel`, `400 Bad Request`, or `404 Not Found`
+
 ### Toggle Mock Mode
 
 ```
@@ -81,6 +91,10 @@ Enables or disables mock mode for a device. When enabled, creates a mock device 
 ```
 
 **Response:** `DeviceViewModel` or `403 Forbidden` (license), `404 Not Found`
+
+:::tip Mock Mode
+See the [Mocking guide](../mocking/overview) for full details on mock mode, the mock page, and the mock device hub.
+:::
 
 ## Device Type Endpoints
 
@@ -245,6 +259,25 @@ DELETE /api/v1/device-element/{id}
 - **PATCH** — Partially updates element. Send JSON object with fields to change. Returns `DeviceElementFlatViewModel`
 - **DELETE** — Returns `204 No Content` or `404 Not Found`
 
+### Get Available Inputs
+
+```
+GET /api/v1/device-element/{id}/available-inputs
+```
+
+Returns the available input ports for a control element (Hysteresis, PID, Deadband). The response lists configured AnalogInput, OWTemp, and SPISensor ports on the same device that can serve as input sources.
+
+**Response:** Array of `AvailableInputPortViewModel`:
+
+```json
+[
+  { "id": "port-guid", "name": "AnalogInput A0", "portType": "AnalogInput" },
+  { "id": "port-guid", "name": "OWTemp 1", "portType": "OWTemp" }
+]
+```
+
+Returns `404` if the device element is not found. Returns an empty array if no suitable input ports exist.
+
 ### Type-Specific Endpoints (12 device element types)
 
 Each of the 12 device element types has dedicated endpoints for create, list, get-by-id, and patch. Use type-specific GET/PATCH when you need the full detail view model (port value, calibrations, type-specific properties).
@@ -267,3 +300,9 @@ Each of the 12 device element types has dedicated endpoints for create, list, ge
 **Create request body:** `DeviceElementCreateViewModel` (workspaceId, portId, displayName, etc.)
 
 **Delete:** Use the generic `DELETE /api/v1/device-element/{id}` for all types. There is no type-specific delete endpoint.
+
+## Cross-References
+
+- [Element APIs](./element-apis) — Non-device elements (dashboard)
+- [Process API](./process-api) — Script execution
+- [Mocking](../mocking/overview) — Mock mode for testing without hardware

@@ -76,13 +76,17 @@ sidebar_position: 2
 - **Data Views** – Customizable views for historical data presentation alongside the Dashboard
 - Multiple, fully customizable layouts with user selectable images and formatting
 - Supports multiple control types per physical device (e.g. Duty Cycle and PID)
+- **File management** — Upload, organize, rename, and move files via the built-in file manager or API
 
-### Communication
+### Communication & Integration
 
 - Communicates with multiple local or remote interfaces for unlimited I/O
 - Local interfaces connect via USB & remote interfaces via standard TCP network
 - Requires no programming for setup or user interface configuration
-- Data Exchange and REST API (OpenAPI/Swagger) permit communication with external networked systems
+- **REST API** (OpenAPI/Swagger) — Full programmatic access to workspaces, elements, devices, processes, and settings
+- **Data Exchange Legacy Protocol** — Read and write global variables from third-party systems (Node-RED, Home Assistant, custom scripts) via simple HTTP GET/PUT endpoints
+- **SignalR real-time hub** — Push-based WebSocket updates for elements, processes, devices, and charts without polling
+- **Media slug system** — Map friendly names to uploaded files for script image references
 
 ### Automation & Scripting
 
@@ -97,6 +101,7 @@ sidebar_position: 2
 - Layered calibrations including Thermistor, RTD, offset, Multiplier, Lookup, etc.
 - Security system to limit unauthorized changes to environment or device states
 - **Mock mode** – Redirect device communication to a software simulator for testing without hardware
+- **Configurations** – Save and switch between named configurations for different setups
 
 ### Alarms & Timers
 

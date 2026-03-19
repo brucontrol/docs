@@ -6,13 +6,15 @@ sidebar_position: 4
 
 # Context Menu
 
-Right-click (or tap the ⋮ button on touch devices) any item in the Solution Explorer to open a context menu with actions for that item. The menu shows different options depending on what you clicked.
+Right-click (or tap the **⋮ button** on touch devices) any item in the Solution Explorer to open a context menu with actions for that item. The menu shows different options depending on what you clicked.
 
 ## How to Use
 
-1. Right-click an item in the tree (workspace, script, element, device, folder, etc.)
+1. **Right-click** an item in the tree (workspace, script, element, device, folder, etc.)
 2. Choose an action from the menu
 3. The menu closes after you select an action
+
+On touch devices, a ⋮ (vertical ellipsis) button appears next to items. Tap it to open the same context menu.
 
 ## Actions by Target
 
@@ -33,14 +35,14 @@ Right-click (or tap the ⋮ button on touch devices) any item in the Solution Ex
 | Generic | Add a generic element |
 | Global Variable | Add a global variable |
 | Profile | Add a profile element |
-| Script | Add a script element |
+| Script | Add a script element (inspector) |
 | Timer | Add a timer element |
 | Toggle Switch | Add a toggle switch element |
 | Folder | Create a folder to organize elements |
-| Rename Workspace | Change the workspace name |
+| Rename Workspace | Change the workspace name (opens rename modal) |
 | Hide Workspace / Show Workspace | Hide or show the workspace in the tab bar |
-| Clear Workspace | Remove all elements from the workspace (elements are deleted) |
-| Delete Workspace | Delete the workspace and its elements |
+| Clear Workspace | Remove all elements from the workspace (elements are deleted, workspace remains) |
+| Delete Workspace | Delete the workspace and all its elements |
 
 ### Workspace Folder
 
@@ -48,7 +50,7 @@ Right-click (or tap the ⋮ button on touch devices) any item in the Solution Ex
 |--------|-------------|
 | New Folder | Create a subfolder |
 | Rename Folder | Change the folder name |
-| Delete Folder | Delete the folder (elements move to workspace root) |
+| Delete Folder | Delete the folder (elements move to the parent level, not deleted) |
 
 ### Processes Folder
 
@@ -64,7 +66,7 @@ Right-click (or tap the ⋮ button on touch devices) any item in the Solution Ex
 | New Script | Create a script in this folder |
 | New Folder | Create a subfolder |
 | Rename Folder | Change the folder name |
-| Delete Folder | Delete the folder |
+| Delete Folder | Delete the folder (scripts move to parent) |
 
 ### Process (Script)
 
@@ -72,7 +74,8 @@ Right-click (or tap the ⋮ button on touch devices) any item in the Solution Ex
 |--------|-------------|
 | Run | Start the script |
 | Stop | Stop the running script |
-| Edit Script | Open the script editor |
+| Edit Script | Open the script in the Script Panel editor |
+| Rename Script | Change the script name |
 | Delete Script | Delete the script |
 
 :::tip Pause and Resume
@@ -84,16 +87,17 @@ Pause and Resume are available in the **Script Panel** when a script is running,
 | Action | Description |
 |--------|-------------|
 | Edit [Type] | Open the edit drawer for that element |
+| Rename [Type] | Change the element name |
 | Move to Workspace | Move the element to a different workspace |
 | Duplicate | Create a copy of the element (non-device elements only) |
 | Delete [Type] | Delete the element |
 
-### Device Elements (Digital Output, Analog Input, etc.)
+### Device Elements (Digital Output, Analog Input, Hysteresis, PID, etc.)
 
 | Action | Description |
 |--------|-------------|
 | Edit [Type] | Open the edit drawer |
-| Calibrations... | Open calibrations for analog/control elements (Analog Input, Counter, OW Temp, etc.) |
+| Calibrations... | Open calibrations for analog/control elements (Analog Input, Counter, OW Temp, SPI Sensor, Hydrometer, PWM Output) |
 | Move to Workspace | Move the element to a different workspace |
 | Delete [Type] | Delete the device element |
 
@@ -123,6 +127,7 @@ Pause and Resume are available in the **Script Panel** when a script is running,
 | Action | Description |
 |--------|-------------|
 | Open | Open the data view in the Data Explorer |
+| Rename | Change the data view name |
 | Duplicate | Create a copy of the data view |
 | Delete Data View | Delete the data view |
 
@@ -132,10 +137,34 @@ Pause and Resume are available in the **Script Panel** when a script is running,
 |--------|-------------|
 | New Interface | Add a new interface (opens device creation) |
 
+### Media Folder
+
+| Action | Description |
+|--------|-------------|
+| Open | Open the media browser view |
+
+### Settings — Shutdown
+
+Selecting **Shutdown** from the Settings tree opens the Shutdown dialog with options to keep ports active or close all ports before shutting down. See [Settings](../application/settings#shutdown) for details.
+
 ## Drag and Drop
 
 You can also drag items to move them:
 
-- **Elements** — Drag into a folder or to another workspace (via Move to Workspace)
+- **Elements** — Drag into a folder, to the workspace root, or use Move to Workspace for cross-workspace moves
 - **Processes** — Drag into script folders
-- **Folders** — Drag to reorder or nest
+- **Folders** — Drag to reorder or nest within other folders
+- **Workspace tabs** — Drag tabs in the tab bar to reorder workspaces
+
+## Tips
+
+- Right-click is the primary way to create new items — workspaces, elements, scripts, folders, interfaces, and data views
+- Use **Duplicate** to quickly create copies of elements with the same configuration
+- **Move to Workspace** is the only way to transfer elements between workspaces
+- On touch devices, look for the **⋮ button** — it provides the same actions as right-click
+
+## Related
+
+- [Adding Elements](./add-elements) — Detailed guide to creating elements
+- [Folders](./folders) — Organizing with folders
+- [Tree Structure](./tree-structure) — What's in the tree

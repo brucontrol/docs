@@ -6,101 +6,173 @@ sidebar_position: 9
 
 # SPI Sensor
 
-An **SPI Sensor** element reads data from SPI-connected devices, such as RTD (resistance temperature device) boards, specialized ADC boards, or other SPI peripherals.
+An **SPI Sensor** element reads a sensor or front-end board attached to the interface over the **Serial Peripheral Interface (SPI)** bus. This pattern is common for precision analog front ends, RTD or thermocouple converters, and other peripherals that expose a measured quantity as a digital register read rather than a single analog voltage pin.
 
-## What It Is
+## What it is
 
-SPI (Serial Peripheral Interface) is a high-speed serial bus. SPI sensors are typically daughter boards or modules connected to the interface's SPI pins (MOSI, MISO, SCK, CS). The element reads a numeric value from the device.
+The **SPISensor** port encapsulates SPI framing, chip select, and device-specific decoding on the firmware side. BruControl surfaces **`Value`** as the primary calibrated reading and **`RawValue`** as the diagnostic pre-calibration number. **`PollRate`** and **`AvgWeight`** behave like an **Analog Input**: you choose how often to sample and how aggressively to smooth, trading noise rejection against latency and bus utilization.
 
-## Hardware Connection
-
-Connect the SPI sensor board to the interface:
-
-- **SPI pins**: MOSI, MISO, SCK, and one or more chip-select (CS) per device
-- **Power**: Follow the sensor board's datasheet for VCC and GND
+Typical **`PollRate`** values fall in the **250–25000 ms** range (matching other polled sensor elements in BruControl), and **`AvgWeight`** accepts **1–100** percent weighting for averaging.
 
 :::tip
-SPI wiring is board-specific. See the wiring map and interface documentation for your RTD or SPI sensor board. Some interfaces use a dedicated SPI bus for sensors.
+
+When bringing up a new SPI board, read **`RawValue`** while applying known physical inputs (ice bath, shunt voltage, etc.). Once **`RawValue`** tracks expectations, layer calibrations so **`Value`** matches field standards—avoid chasing calibration math before the bus is stable.
+
 :::
 
-## Port Type
+## Hardware connection
 
-**SPISensor** — Use a port designated for SPI Sensor on your interface wiring map.
+Route **MOSI**, **MISO**, **SCK**, and **CS** (or the names your interface uses) per the wiring map. Match logic voltage (3.3 V vs 5 V), keep leads short, and share a solid ground reference. Some boards require specific power-up sequencing or delay after reset; follow the manufacturer datasheet alongside your interface documentation.
 
-## Native Properties
+:::warning
 
-| Property | Type | Description |
-|----------|------|-------------|
-| **Value** | number | Current value (calibrated). Read-only. |
-| **RawValue** | number | Raw value before calibration. Read-only. |
-| **Precision** | number | Decimal places for display. Read-only (configured in Calibration tab). |
-| **Prefix** | string | Text before value. Read-only (configured in Calibration tab). |
-| **Suffix** | string | Text after value. Read-only (configured in Calibration tab). |
-| **Enabled** | boolean | Whether the device is active |
-| **User Control** | boolean | Allow user interaction with the element |
-| **Refresh Multiple** | number | Refresh rate multiplier (1–60) |
-| **PollRate** | number | Poll rate in ms (250–25000). Read/write. |
-| **AvgWeight** | number | Averaging weight (1–100). Read/write. |
+SPI is sensitive to incorrect mode (clock polarity/phase) and edge rates. If the device shares the bus with other peripherals, ensure chip-select discipline in firmware so two devices never drive MISO simultaneously.
 
-## Custom Properties
+:::
 
-From the default SPI Sensor element template (`spi-sensor`):
+## Port type
 
-| Property | Type | Default | Group | Description |
-|----------|------|---------|-------|--------------|
-| showHeader | boolean | true | Layout | Show header bar |
-| showBackground | boolean | true | Layout | Show element template background and border |
-| showLabel | boolean | true | Layout | Show title label in header |
-| hiddenRowKeys | array | — | Layout | Hide rows: "value" |
-| showValue | boolean | true | Layout | Show primary value rows |
-| labelFontFamily | font-family | — | Label | Label font |
-| labelFontSize | number | 12 | Label | Label font size (8–48) |
-| labelFontWeight | text | "500" | Label | Label font weight |
-| labelFontStyle | text | "normal" | Label | Label font style |
-| labelColor | color | (theme) | Label | Label color |
-| valueFontFamily | font-family | — | Value | Value font |
-| valueFontSize | number | 14 | Value | Value font size (10–120) |
-| valueFontWeight | text | "700" | Value | Value font weight |
-| valueFontStyle | text | "normal" | Value | Value font style |
-| valueColor | color | (theme) | Value | Value color |
-| backgroundColor | color | (theme) | Background & Border | Element template background |
-| headerColor | color | (theme) | Background & Border | Header background |
-| borderColor | color | (theme) | Background & Border | Border color |
-| rowLabelColor | color | (theme) | Rows | Row label color |
-| rowValueColor | color | (theme) | Rows | Row value color |
+**SPISensor** — Only available on interfaces and pins that list SPI sensor capability.
+
+## How to add
+
+1. Verify the interface firmware supports the target SPI device or a compatible profile.
+2. **Add Device Element** → **SPI Sensor** → select interface and **SPISensor** port.
+3. Configure **`PollRate`**, **`AvgWeight`**, and calibrations so **`Value`** reflects engineering units.
+4. Apply the default template **`spi-sensor`** (or another compatible template) and tune **`reading*`** and **`headerColor`** / **image** for the Dashboard.
+
+## Native and editor properties (summary)
+
+Editor tabs expose device enablement, user control, logging, and calibration chains analogous to other numeric sensors. **`DisplayText`** aggregates formatting so scripts can log exactly what operators see.
+
+## Custom properties (template)
+
+From `ui-controls.json` for **`spi-sensor`**.
+
+### Layout
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| showHeader | boolean | true | Show header bar |
+| showBackground | boolean | true | Show element background and border |
+| showLabel | boolean | true | Show title label in header |
+| showValue | boolean | true | Show primary value rows |
+| precision | number | 2 | Decimal places for value display (0–6) |
+
+### Label
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| labelFontFamily | text | — | Header label font |
+| labelFontSize | number | 12 | Label size (8–48) |
+| labelFontWeight | text | "500" | Label weight |
+| labelFontStyle | text | "normal" | Label style |
+| labelColor | text | — | Label color (theme: textPrimary) |
+
+### Reading
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| showReading | boolean | true | Show the value reading section |
+| readingColor | text | — | Reading value color (theme: accentGreen) |
+| readingBg | text | — | Reading box background (theme: bgTertiary) |
+| readingLabelColor | text | — | Reading label color (theme: textSecondary) |
+| readingFont | text | — | Reading value font family |
+| readingSize | number | null | Reading value size (8–120 px) |
+| readingWeight | text | — | Reading value weight |
+| readingStyle | text | — | Reading value style |
+
+### Background and border
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| backgroundColor | text | — | Card background (theme: bgSecondary) |
+| headerColor | text | — | Header background (theme: bgTertiary) |
+| borderColor | text | — | Border color (theme: borderColor) |
+| image | text | — | Background image; replaces flat color/border styling per template rules |
+
+:::info
+
+**precision** applies to how the primary reading is rendered; **`readingSize`** and **`readingWeight`** control emphasis. When using **image**, verify **readingColor** remains readable on busy photographs—**readingBg** can restore a calm panel over the photo.
+
+:::
+
+## Script integration — common element properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| ID | Read-only | Unique element identifier |
+| DisplayName | Read/write | Dashboard label |
+| Visibility | Read/write | `"default"`, `"visible"`, `"hidden"`, `"hiddenlocked"` |
+| EnableHistoricalLogging | Read/write | Historical logging |
+| LoggingIntervalSeconds | Read/write | Minimum seconds between log samples |
+| MaxSilenceSeconds | Read/write | Silence heartbeat; `0` disables |
+
+## Script integration — common device properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| Enabled | Read/write | Communication on/off |
+| Connected | Read-only | Interface link status |
+| RefreshMultiple | Read/write | Refresh multiplier (1–60) |
+| DisplayText | Read-only | UI-formatted value string |
+| PortID | Read-only | Port identifier |
+
+## Script integration — SPI sensor properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| PollRate | Read/write | Poll interval in ms (typically 250–25000) |
+| AvgWeight | Read/write | Averaging weight (1–100 %) |
+| RawValue | Read-only | Raw reading before calibrations |
+| Value | Read-only | Calibrated reading |
+
+### Examples
+
+Read the processed value:
+
+```
+new value rtdTemp
+rtdTemp = "Boil RTD" Value
+```
+
+Slow polling during soak, fast during heat-up:
+
+```
+if "Boil Phase" Value = on
+  "Boil RTD" PollRate = 250
+else
+  "Boil RTD" PollRate = 2000
+endif
+```
+
+Heavy filtering when steam noise is present:
+
+```
+"Boil RTD" AvgWeight = 75
+```
+
+Surface operator text:
+
+```
+new text line
+line = "Boil RTD" DisplayText
+print line
+```
 
 ## Calibrations
 
-SPI Sensor supports calibrations. Use the **Calibration** tab to add transforms:
+Apply multipliers, offsets, lookup tables, or specialized transforms on the **Calibration** tab. Order matters; see [Calibrations Overview](./calibrations-overview.md).
 
-- **RTD** — Resistance temperature device (PT100/RTD)
-- **Multiplier** / **Divider** — Scale raw value
-- **Offset** — Add or subtract
-- **FahrenheitToCelsius** / **CelsiusToFahrenheit** — Unit conversion
-- **Floor** / **Ceiling** — Clamp range
+## Troubleshooting
 
-See [Calibrations Overview](./calibrations-overview.md) for details.
-
-## Script Integration
-
-### Read Value
-
-```
-new value temp
-temp = "RTD Probe" Value
-```
-
-### Wait for Condition
-
-```
-wait "RTD Probe" Value >= 150 30000
-```
-
-### Common Patterns
-
-```
-// Temperature monitoring
-if "Vessel Temp" Value > 180
-  print "Over temperature!"
-endif
-```
+| Symptom | Things to check |
+|---------|-----------------|
+| No updates | **Enabled**, **Connected**, SPI wiring, power, chip-select; **`RefreshMultiple`** not extreme |
+| Garbage **RawValue** | SPI mode, voltage levels, ground, cable length, conflicting devices on the bus |
+| Sluggish response | **`PollRate`** too high; **`AvgWeight`** too heavy |
+| Noisy **Value** | Increase **`AvgWeight`**; shielding; separate SPI from switching loads |
+| **Value** wrong but **RawValue** sane | Calibration coefficients and order |
+| Script cannot set **Value** | **Value** is read-only—adjust hardware scaling via calibrations or **`PollRate`** / **`AvgWeight`** |
+| Dashboard unreadable | **readingBg** vs **readingColor**; **headerColor** and **image** contrast |
+| Sparse history | **EnableHistoricalLogging**, **LoggingIntervalSeconds**, **MaxSilenceSeconds** |

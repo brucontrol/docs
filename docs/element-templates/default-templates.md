@@ -18,8 +18,36 @@ Resolution order (first match wins):
 
 ## Changing the Default
 
-- **Per element** — In the element Edit Drawer, Appearance tab, choose a different template from the Element Template dropdown. This affects only that element.
-- **Per type (global)** — Use the template defaults API (`PUT /api/v1/element-template/defaults`) to set which template is the default for each element type. New elements of that type will use the new default.
+### Per element
+
+In the element Edit Drawer, Appearance tab, choose a different template from the **Element Template** dropdown. This affects only that element.
+
+### Per type (global)
+
+Use the template defaults API to set which template is the default for each element type:
+
+```
+PUT /api/v1/element-template/defaults
+```
+
+**Example payload:**
+
+```json
+{
+  "defaults": [
+    {
+      "elementType": "timer",
+      "elementTemplateId": "abc12345-6789-..."
+    },
+    {
+      "elementType": "globalVariable-value",
+      "elementTemplateId": "def98765-4321-..."
+    }
+  ]
+}
+```
+
+New elements of that type will use the new default template.
 
 ## New Element Behavior
 
@@ -36,3 +64,17 @@ defaultFor: timer
 ```
 
 This becomes `DefaultForTypes: ["timer"]` when installed. Only one template should be the default for a given type; if multiple plugins declare it, the most recently updated template wins unless you override.
+
+## Override Precedence
+
+| Priority | Source | How to set |
+|----------|--------|------------|
+| 1 (highest) | User override | Edit Drawer → Element Template dropdown, or defaults API |
+| 2 | `defaultFor` in manifest | Plugin `element-template.yaml` |
+| 3 (lowest) | `supportedTypes` match | Any template that supports the element type |
+
+## Related Topics
+
+- [Templates](templates.md) — What templates are, supportedTypes
+- [Plugin Store](plugin-store.md) — Install template plugins
+- [Element Template Developer Guide](element-template-developer-guide.md) — Build your own templates

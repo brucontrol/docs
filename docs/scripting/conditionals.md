@@ -6,7 +6,7 @@ sidebar_position: 5
 
 # Conditionals (if / elseif / else / endif)
 
-Sometimes you want to do something only when a condition is true. Conditionals let you make decisions in your script.
+Sometimes you want to do something only when a condition is true. Conditionals let you make decisions in your script — checking sensor readings, comparing values, and branching your logic accordingly.
 
 ## Simple if / endif
 
@@ -53,22 +53,22 @@ else
 endif
 ```
 
-## Comparison operators
+## Comparison Operators
 
-| Operator | Meaning |
-|----------|---------|
-| == | Equal |
-| != | Not equal |
-| &gt; | Greater than |
-| &lt; | Less than |
-| &gt;= | Greater than or equal |
-| &lt;= | Less than or equal |
+| Operator | Meaning | Example |
+|----------|---------|---------|
+| `==` | Equal | `if x == 10` |
+| `!=` | Not equal | `if x != 0` |
+| `>` | Greater than | `if temp > 150` |
+| `<` | Less than | `if temp < 32` |
+| `>=` | Greater than or equal | `if level >= 50` |
+| `<=` | Less than or equal | `if count <= 5` |
 
 :::warning Double equals
 For "equal to," use **two** equals signs: `==`. A single `=` is for assignment.
 :::
 
-## Boolean operators (and / or)
+## Boolean Operators (and / or)
 
 Combine conditions with `and` or `or`:
 
@@ -82,13 +82,75 @@ if "Pump" State == on or "Valve" State == on
 endif
 ```
 
-You can also use `&&` for and and `||` for or.
+You can also use `&&` for `and` and `||` for `or`.
+
+### Parenthesized grouping
+
+When combining `and` and `or` in the same condition, use parentheses to make the grouping explicit:
+
+```
+if (temp > 100 or temp < 0) and "Pump" State == off
+  print "Out of range and pump is off"
+endif
+```
+
+Without parentheses, the behavior may not match your intent. Always group sub-expressions when mixing `and` with `or`.
 
 :::warning Mixing AND and OR
-When combining `and` and `or` in the same condition, use parentheses to group sub-expressions. For example: `if (temp > 100 or temp < 0) and "Pump" State == off`
+Always use parentheses when combining `and` and `or` in the same condition to avoid ambiguous evaluation order.
 :::
 
-## Using element properties in conditions
+## Comparing Different Types
+
+### Numbers
+
+```
+new value x
+x = 42
+if x > 10
+  print "Big number"
+endif
+```
+
+### Strings
+
+String comparisons work with `==` and `!=`:
+
+```
+new string mode
+mode = "auto"
+if mode == "auto"
+  print "Running in auto mode"
+endif
+```
+
+### Booleans
+
+```
+if "Pump" State == on
+  print "Pump is running"
+endif
+
+if "Alarm" Active == true
+  print "Alarm triggered!"
+endif
+```
+
+### Time values
+
+Time comparisons work with all operators:
+
+```
+if "Timer 1" Value > 00:05:00
+  print "Timer exceeded 5 minutes"
+endif
+
+if "Timer 1" Value >= 01:00:00
+  stop "Timer 1"
+endif
+```
+
+### Element properties in conditions
 
 ```
 if "Temp Probe" Value > 150
@@ -98,9 +160,13 @@ endif
 if "Alarm" Active == true
   print "Alarm triggered!"
 endif
+
+if "Script 2" state == "Running"
+  print "Script 2 is active"
+endif
 ```
 
-## Nested conditionals
+## Nested Conditionals
 
 You can put an `if` inside another `if`:
 
@@ -141,9 +207,13 @@ if temp > 150
 endif
 ```
 
-## Common mistake: Unclosed blocks
+The editor auto-indents after `if`, `else`, `elseif`, and `while` lines, and auto-outdents after `endif` and `endwhile`.
 
-Every `if` needs an `endif`. If you forget it, the script will fail.
+## Common Mistakes
+
+### Unclosed blocks
+
+Every `if` needs an `endif`. If you forget it, the validator will report an error at the end of the script.
 
 ❌ **Wrong:**
 ```
@@ -157,6 +227,34 @@ if x > 10
 if x > 10
   print "big"
 endif
+```
+
+:::warning Validator catches unclosed blocks
+The validator detects unclosed `if`/`endif` blocks and reports: `Missing 1 "endif" statement(s)` at the end of the script. It also catches unmatched `endif` without a corresponding `if`.
+:::
+
+### Single equals instead of double
+
+❌ **Wrong:**
+```
+if x = 10    // This is assignment, not comparison!
+```
+
+✅ **Right:**
+```
+if x == 10
+```
+
+### Complex conditions without parentheses
+
+❌ **Ambiguous:**
+```
+if temp > 100 or temp < 0 and "Pump" State == off
+```
+
+✅ **Clear:**
+```
+if (temp > 100 or temp < 0) and "Pump" State == off
 ```
 
 ## Next Steps

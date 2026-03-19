@@ -6,7 +6,7 @@ sidebar_position: 2
 
 # Troubleshooting
 
-This guide covers common issues and solutions when using BruControl.
+This guide covers common issues and solutions when using BruControl, including interface connectivity, firmware, web application problems, and SignalR connection issues.
 
 ## Interface Not Found
 
@@ -112,6 +112,43 @@ When an IP address is changed, the host computer's network card may cache the ol
 
 BruControl cannot communicate with an interface via serial (USB) when debug reporting is enabled. Disable debug (Level 0) before connecting BruControl.
 
+## Web Application Troubleshooting
+
+If the BruControl web UI is not loading or behaving unexpectedly, check the following.
+
+### Port Already in Use
+
+If BruControl fails to start with a "port in use" error:
+
+- Another application (or another instance of BruControl) may be using port 5005
+- Check with `netstat -ano | findstr :5005` on Windows or `lsof -i :5005` on Linux
+- Change the port in Settings → Services → API Service Port, or in `appsettings.json`
+
+### Firewall Blocking Access
+
+- Ensure Windows Firewall allows inbound connections on port 5005 (or your configured port)
+- For remote access, ensure the firewall allows connections from other machines on the network
+- Antivirus software may also block connections — add an exception for `BruControl.WebHost.exe`
+
+### Browser Compatibility
+
+- Use a modern browser: Chrome, Edge, Firefox, or Safari (current versions)
+- BruControl requires WebSocket support for real-time updates; very old browsers may not work
+- If the UI loads but data doesn't update, check the browser console for WebSocket connection errors
+
+### SignalR Connection Issues
+
+The BruControl web UI uses SignalR (WebSockets) for real-time updates. If elements stop updating or show stale data:
+
+- **Check the connection indicator** — The UI shows connection status; "Reconnecting" or "Disconnected" indicates a problem
+- **Proxy/reverse proxy** — If BruControl is behind a reverse proxy (nginx, IIS), ensure WebSocket passthrough is enabled
+- **Transport fallback** — SignalR automatically falls back from WebSockets → Server-Sent Events → Long Polling. If WebSockets are blocked, performance degrades but functionality is preserved
+- **Session expiry** — If the CSRF token expires, the page may need a refresh. See [API Overview](../api/overview) for session/CSRF details
+
+:::tip
+Open your browser's Developer Tools → Network tab and filter by "WS" to verify the WebSocket connection to `/hubs/brucontrol` is established.
+:::
+
 ## Log Viewer
 
 The Log Viewer (route: `/logs`) provides search and filter capabilities for application logs. Use it to:
@@ -121,7 +158,7 @@ The Log Viewer (route: `/logs`) provides search and filter capabilities for appl
 - Identify configuration errors
 - Gather information for technical support
 
-Log files are stored in the BruControl data directory (e.g. `Documents\BruControl\Logs`). When contacting support, include relevant log excerpts or attach log files.
+Log files are stored in the BruControl data directory (e.g. `Documents\BruControl\Logs`). When contacting support, include relevant log excerpts or attach log files. You can also access logs programmatically via the [Logs API](../api/misc-apis#logs-logsearchcontroller).
 
 ## Interface Control Codes
 

@@ -6,7 +6,9 @@ sidebar_position: 3
 
 # Mock Page
 
-The Mock Page lets you inspect and control a mock device. Open it at **`/mock/:tcpPort`** (e.g., `/mock/12345`), where `tcpPort` is the port assigned when mock mode was enabled.
+The Mock Page lets you inspect and control a mock device in real time. Open it at **`/mock/:tcpPort`** (e.g., `/mock/12345`), where `tcpPort` is the port assigned when mock mode was enabled.
+
+You can also open it from the Solution Explorer: expand **Mocks**, right-click the mock device, and select **Open Controls (New Tab)**.
 
 ## What It Shows
 
@@ -17,19 +19,72 @@ The Mock Page lets you inspect and control a mock device. Open it at **`/mock/:t
 | **Port controls** | Set values, temperature, specific gravity, or parameters for testing |
 | **Message log** | Communication traffic between BruControl and the mock device |
 
-## Port State
+## Port State Table
 
-The port table lists each port with its number, type, name, value, and display. It is read-only; use **Port controls** to set values and simulate sensor readings or actuator states.
+The port table lists each port with its number, type, name, current value, and display representation. This table is read-only and updates in real time as BruControl sends commands or as you manipulate port controls.
+
+## Port Controls
+
+Port controls let you simulate hardware responses. The available controls depend on the port type:
+
+| Port Type | Controls | Description |
+|-----------|----------|-------------|
+| **Digital Output** | ON/OFF toggle | Reflects the state BruControl commands; the mock device accepts the command |
+| **Digital Input** | ON/OFF toggle | Set the input state to simulate a switch, float, or sensor |
+| **PWM Output** | Read-only value | Shows the PWM duty cycle value commanded by BruControl |
+| **Analog Input** | Numeric input (0–1023 or 0–4095) | Set the raw ADC value to simulate a sensor reading |
+| **Counter** | Pulse button, total/rate display | Simulate pulse inputs for flow meters or encoders |
+| **OW Temp (1-Wire)** | Temperature input (°F or °C) | Set the temperature reading to simulate a DS18B20 sensor |
+| **SPI Sensor (RTD)** | Temperature input | Set the RTD reading to simulate a PT100/PT1000 sensor |
+| **Hydrometer** | SG input, Temperature input | Set specific gravity and temperature to simulate an iSpindel or Tilt |
+| **Hysteresis** | Read-only (driven by input) | Shows the on/off state driven by the linked input port |
+| **PID** | Read-only (driven by input) | Shows the PID output value driven by the linked input port |
+| **Deadband** | Read-only (driven by input) | Shows the deadband output driven by the linked input port |
+| **Duty Cycle** | Read-only | Shows the duty cycle on/off cycling |
+
+:::tip Testing Workflows
+Set analog input values to simulate temperature changes, then observe how hysteresis, PID, or deadband control elements respond. This is a powerful way to test control logic without real hardware.
+:::
 
 ## Message Log
 
-The message log shows the protocol messages exchanged with the mock device. Use it to:
+The message log shows the raw protocol messages exchanged between BruControl and the mock device. Each entry includes:
+
+- **Direction** — Sent (from BruControl) or Received (from mock)
+- **Message** — The protocol string (e.g. `!13,4,50,1000;`)
+- **Timestamp** — When the message was exchanged
+
+Use the message log to:
 
 - Verify that BruControl is sending the expected commands
-- Debug communication issues
-- Understand the device protocol
+- Debug communication issues or script behavior
+- Understand the device protocol format
 
 You can clear the log to focus on recent traffic.
+
+## SignalR Connection
+
+The mock page connects to a dedicated DeviceHub SignalR endpoint:
+
+```
+/hubs/device?tcpPort={port}
+```
+
+### Events Received on Connect
+
+| Event | Description |
+|-------|-------------|
+| `DeviceStatus` | Initial device status (name, connection state) |
+| `AllPorts` | Full snapshot of all port states |
+| `RecentMessages` | Buffered recent protocol messages |
+
+### Ongoing Events
+
+| Event | Description |
+|-------|-------------|
+| `PortUpdated` | A port value changed (from BruControl command or manual control) |
+| `PortDeleted` | A port was removed from the mock device |
+| `MessageLogged` | A new protocol message was sent or received |
 
 ## Use During Testing
 
@@ -37,6 +92,12 @@ You can clear the log to focus on recent traffic.
 2. A mock device appears under **Mocks** in the Solution Explorer. Right-click it → **Open Controls (New Tab)**, or navigate to `/mock/{port}`.
 3. Run your scripts or interact with the dashboard.
 4. Watch port values and messages update in real time.
-5. Manually set port values to simulate hardware responses.
+5. Manually set port values (temperature, SG, analog inputs) to simulate hardware responses.
+6. Verify that control elements (hysteresis, PID, deadband) respond correctly to simulated inputs.
 
-The mock page connects to the DeviceHub SignalR endpoint (`/hubs/device?tcpPort=...`) to receive live updates (`PortUpdated`, `PortDeleted`, `MessageLogged`) and initial data on connect (`DeviceStatus`, `AllPorts`, `RecentMessages`).
+## Cross-References
+
+- [Mock Mode](./mock-mode) — Enable/disable mock mode, API endpoint
+- [Mocking Overview](./overview) — What mocking is and why to use it
+- [Device API](../api/device-api) — Device management endpoints
+- [API Overview](../api/overview) — Main hub and mock device hub SignalR reference

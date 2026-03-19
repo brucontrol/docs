@@ -16,7 +16,7 @@ sidebar_position: 2
 2. **Add manifest** — `element-template.yaml` with `name`, `description`, `supportedTypes` (and optionally `defaultFor`)
 3. **Add source files** — `index.html`, `style.css`, `index.js` (all required)
 4. **Add ui-controls** — `ui-controls.json` if your template has configurable properties
-5. **Use the SDK** — Call `BruControl.onData(callback)` to receive element data; use `BruControl.updateProperties(props)` or host pickers (`requestKeypad`, etc.) to send changes
+5. **Use the SDK** — Call `BruControl.onData(callback)` to receive element data; use `BruControl.updateProperties(props)` or host pickers (`requestKeypad`, `requestSelection`, etc.) to send changes
 
 ## Checklist for LLM
 
@@ -28,7 +28,7 @@ When generating a plugin from a photo or spec:
 - [ ] Add `ui-controls.json` if the template needs configurable options (colors, fonts, visibility)
 - [ ] Use `BruControl.onData(render)` to receive and render element data
 - [ ] Use `BruControl.updateProperties({ key: value })` for user-controlled changes
-- [ ] Use `BruControl.requestKeypad`, `requestTextInput`, etc. for input dialogs when appropriate
+- [ ] Use `BruControl.requestKeypad`, `requestTextInput`, `requestSelection`, etc. for input dialogs when appropriate
 - [ ] Resolve colors via `BruControl.getTheme()` or `getComputedStyle` for theme-aware styling
 - [ ] Use strict `!== undefined` checks for optional text (not `||`) so users can intentionally blank fields
 - [ ] Read custom properties at root level: `data.title`, `data.min` — not `data.appearance.title`
@@ -254,8 +254,9 @@ Optional. Maps dependency names to CDN URLs. Loaded before the SDK.
 | `font-style` | Font style |
 | `text-align` | Text alignment |
 | `color-alpha` | Color picker; hex #RRGGBB or #RRGGBBAA; theme-aware via `x-theme-default` |
-| `range` | Slider (use min, max, step) |
+| `element-ref` | References another element by ID |
 | `file-upload` | File picker; use `x-accept`, `x-picker-title` |
+| `range` | Slider (use min, max, step) |
 
 ### Fields
 
@@ -422,13 +423,23 @@ The SDK is injected into every compiled template iframe. Your template runs in a
 
 - **`window.BruControl`** — Public API
 - **Host → Template:** `receiveData`, `receiveTheme`, `receiveSamples`, `receiveElementUpdate`
-- **Template → Host:** `updateProperties`, `requestKeypad`, `requestTextInput`, `fetchSamples`, `subscribeElement`, etc.
+- **Template → Host:** `updateProperties`, `requestKeypad`, `requestTextInput`, `requestSelection`, `fetchSamples`, `subscribeElement`, etc.
 
 **Registration methods, not properties:** `onData`, `onTheme`, `onSamples`, and `onElementUpdate` are **methods you call with a callback**. Do not assign to them (e.g. `BruControl.onData = function(data) { ... }`). Assigning overwrites the internal method and breaks the data pipeline. Always call: `BruControl.onData(function(data) { ... })`.
 
 **No explicit init hook:** There is no `onInit` or `onMount`. The first time your `onData` callback runs is the de facto initialization. Use that first payload to build or update the DOM. Relying only on `DOMContentLoaded` can race with BruControl's template injection — the host may not have sent data yet.
 
-**CDN scripts loaded before your code:** Penpal, Chart.js, Chart.js date adapter.
+**CDN scripts loaded before your code:** The following libraries are injected into every template iframe before the SDK and your code:
+
+| Library | Version | Global |
+|---------|---------|--------|
+| Penpal | v7.0.4 | `window.Penpal` |
+| Chart.js | 4.4.6 | `window.Chart` (also `window.BruControlLibs.Chart`) |
+| chartjs-adapter-date-fns | 3.x | (auto-registers with Chart.js) |
+
+:::tip BruControlLibs.Chart
+To access Chart.js from your template, use `window.BruControlLibs.Chart` or `window.Chart`. The SDK sets up `BruControlLibs.Chart` as a convenience reference.
+:::
 
 **Safe area:** The SDK injects `body { padding: 1px; }` so borders/shadows are not clipped.
 
@@ -507,6 +518,7 @@ function handleToggleClick() {
 | `requestTextInput` | `(options?) => Promise<string \| null>` | Entered text or null | Text input flyout. |
 | `requestTimeSpanPicker` | `(options?) => Promise<string \| null>` | ISO 8601 duration or null | Time span picker. |
 | `requestDateTimePicker` | `(options?) => Promise<string \| null>` | ISO 8601 datetime or null | Date/time picker. |
+| `requestSelection` | `(options?) => Promise<string \| null>` | Selected item value or null | Selection dialog with a list of options. |
 
 **requestKeypad options:** `{ currentValue, label, min, max, precision, allowNegative }`
 
@@ -515,6 +527,38 @@ function handleToggleClick() {
 **requestTimeSpanPicker options:** `{ currentValue, label, allowDays, maxHours }`
 
 **requestDateTimePicker options:** `{ currentValue, label, minDate, maxDate }`
+
+**requestSelection options:** `{ items, label, currentValue }`
+
+- `items` — Array of selection items (each with a value and display label)
+- `label` — Title for the selection dialog
+- `currentValue` — Currently selected value (for highlighting)
+
+**Example (requestSelection):**
+```javascript
+function openModeSelector() {
+  if (!window.BruControl || !window.BruControl.requestSelection) return;
+  window.BruControl.requestSelection({
+    items: [
+      { value: 'auto', label: 'Automatic' },
+      { value: 'manual', label: 'Manual' },
+      { value: 'off', label: 'Off' }
+    ],
+    label: 'Select Mode',
+    currentValue: currentData.mode || 'auto'
+  }).then(function(result) {
+    if (result !== null && window.BruControl) {
+      window.BruControl.updateProperties({ mode: result });
+    }
+  });
+}
+```
+
+### Constants
+
+| Name | Value | Description |
+|------|-------|-------------|
+| `THEME_KEYS` | Array of strings | All theme CSS variable names. See [Theme and Colors](#9-theme-and-colors). |
 
 ---
 
@@ -532,7 +576,11 @@ Accent: `accent-primary`, `accent-hover`, `accent-blue`, `accent-green`, `accent
 
 Input: `input-background`, `input-foreground`, `input-border`
 
-(Plus scrollbar, list, editor keys — see full list in SDK source.)
+Scrollbar: `scrollbar-bg`, `scrollbar-thumb`, `scrollbar-thumb-hover`
+
+List: `list-active-background`, `list-active-hover-background`
+
+Editor: `editor-line-highlight`, `editor-line-number`, `editor-line-number-active`, `editor-cursor`, `editor-execution-line-running`, `editor-execution-line-paused`, `editor-execution-glyph-running`, `editor-execution-glyph-paused`, `editor-comment`, `editor-string`, `editor-keyword`, `editor-type`, `editor-function`, `editor-operator`
 
 ### Using Theme in Your Template
 
@@ -627,6 +675,23 @@ window.BruControl.requestDateTimePicker({
 }).then(function(result) {
   if (result != null && window.BruControl) {
     window.BruControl.updateProperties({ value: String(result) });
+  }
+});
+```
+
+### Selection Dialog
+
+```javascript
+window.BruControl.requestSelection({
+  items: [
+    { value: 'fahrenheit', label: 'Fahrenheit' },
+    { value: 'celsius', label: 'Celsius' }
+  ],
+  label: 'Select Unit',
+  currentValue: currentData.unit || 'fahrenheit'
+}).then(function(result) {
+  if (result !== null && window.BruControl) {
+    window.BruControl.updateProperties({ unit: result });
   }
 });
 ```
@@ -777,204 +842,36 @@ The following is the canonical Element Template SDK injected into every compiled
     window.BruControlLibs.Chart = window.Chart;
   }
 
-  function _notifyData(data) {
-    var previousChartId = _currentData && _currentData.id ? String(_currentData.id) : null;
-    _currentData = data;
-    var nextChartId = _currentData && _currentData.id ? String(_currentData.id) : null;
-
-    if (previousChartId !== nextChartId) {
-      if (previousChartId && _parentConnection && _parentConnection.unsubscribeSamples) {
-        _parentConnection.unsubscribeSamples({ chartId: previousChartId }).catch(function(err) {
-          console.error('[BruControl SDK] unsubscribeSamples failed:', err);
-        });
-      }
-      _subscribedChartId = null;
-    }
-
-    if (_sampleCallbacks.length > 0 && nextChartId && _parentConnection && _parentConnection.subscribeSamples && _subscribedChartId !== nextChartId) {
-      _parentConnection.subscribeSamples({ chartId: nextChartId }).then(function() {
-        _subscribedChartId = nextChartId;
-      }).catch(function(err) {
-        console.error('[BruControl SDK] subscribeSamples failed:', err);
-      });
-    }
-
-    for (var i = 0; i < _dataCallbacks.length; i++) {
-      try { _dataCallbacks[i](data); } catch(e) { console.error('[BruControl SDK] onData callback error:', e); }
-    }
-  }
-
-  function _applyTheme(theme) {
-    _theme = theme && typeof theme === 'object' && !Array.isArray(theme) ? theme : {};
-    var styleEl = document.getElementById('brucontrol-theme-vars');
-    if (!styleEl) {
-      styleEl = document.createElement('style');
-      styleEl.id = 'brucontrol-theme-vars';
-      document.head.appendChild(styleEl);
-    }
-    var parts = [];
-    for (var k in _theme) {
-      if (Object.prototype.hasOwnProperty.call(_theme, k) && _theme[k]) {
-        parts.push('--' + k + ': ' + _theme[k]);
-      }
-    }
-    styleEl.textContent = parts.length ? ':root { ' + parts.join('; ') + ' }' : '';
-    for (var j = 0; j < _themeCallbacks.length; j++) {
-      try { _themeCallbacks[j](_theme); } catch(e) { console.error('[BruControl SDK] onTheme callback error:', e); }
-    }
-  }
-
-  function _notifySamples(sample) {
-    for (var i = 0; i < _sampleCallbacks.length; i++) {
-      try { _sampleCallbacks[i](sample); } catch(e) { console.error('[BruControl SDK] onSamples callback error:', e); }
-    }
-  }
-
-  function _notifyElementUpdate(payload) {
-    var key = payload.elementType + ':' + payload.elementId;
-    _elementSubscriptions[key] = payload.data;
-    for (var i = 0; i < _elementUpdateCallbacks.length; i++) {
-      try { _elementUpdateCallbacks[i](payload); } catch(e) { console.error('[BruControl SDK] onElementUpdate callback error:', e); }
-    }
-  }
+  function _notifyData(data) { /* ...internal... */ }
+  function _applyTheme(theme) { /* ...internal... */ }
+  function _notifySamples(sample) { /* ...internal... */ }
+  function _notifyElementUpdate(payload) { /* ...internal... */ }
 
   window.BruControl = {
-    onData: function(callback) {
-      if (typeof callback !== 'function') return;
-      _dataCallbacks.push(callback);
-      if (_currentData) {
-        try { callback(_currentData); } catch(e) { console.error('[BruControl SDK] onData callback error:', e); }
-      }
-    },
-    onTheme: function(callback) {
-      if (typeof callback !== 'function') return;
-      _themeCallbacks.push(callback);
-      if (_theme && Object.keys(_theme).length > 0) {
-        try { callback(_theme); } catch(e) { console.error('[BruControl SDK] onTheme callback error:', e); }
-      }
-    },
-    onSamples: function(callback) {
-      if (typeof callback !== 'function') return;
-      _sampleCallbacks.push(callback);
-      var chartId = _currentData && _currentData.id ? String(_currentData.id) : null;
-      if (chartId && _parentConnection && _parentConnection.subscribeSamples && _subscribedChartId !== chartId) {
-        _parentConnection.subscribeSamples({ chartId: chartId }).then(function() {
-          _subscribedChartId = chartId;
-        }).catch(function(err) {
-          console.error('[BruControl SDK] subscribeSamples failed:', err);
-        });
-      }
-    },
-    updateProperties: function(props) {
-      if (!props || typeof props !== 'object' || Array.isArray(props)) {
-        console.warn('[BruControl SDK] updateProperties expects a plain object, got:', typeof props);
-        return;
-      }
-      if (_parentConnection) {
-        _parentConnection.updateProperties(props);
-      } else {
-        console.warn('[BruControl SDK] updateProperties called but no parent connection established yet');
-      }
-    },
+    onData: function(callback) { /* register data callback */ },
+    onTheme: function(callback) { /* register theme callback */ },
+    onSamples: function(callback) { /* register samples callback */ },
+    updateProperties: function(props) { /* send property updates to host */ },
     getData: function() { return _currentData; },
     getTheme: function() { return _theme; },
-    fetchSamples: function(elementId, index, since, points) {
-      if (!_parentConnection || !_parentConnection.fetchSamples) return Promise.resolve([]);
-      return _parentConnection.fetchSamples({ elementId: elementId, index: index, since: since, points: points });
-    },
-    fetchChartChannels: function() {
-      if (!_parentConnection || !_parentConnection.fetchChartChannels) return Promise.resolve([]);
-      return _parentConnection.fetchChartChannels({});
-    },
-    subscribeSamples: function(chartId) {
-      if (!_parentConnection || !_parentConnection.subscribeSamples) return Promise.resolve(false);
-      var targetChartId = chartId || (_currentData && _currentData.id ? String(_currentData.id) : null);
-      if (!targetChartId) return Promise.resolve(false);
-      return _parentConnection.subscribeSamples({ chartId: targetChartId }).then(function(result) {
-        _subscribedChartId = targetChartId;
-        return result;
-      });
-    },
-    unsubscribeSamples: function(chartId) {
-      if (!_parentConnection || !_parentConnection.unsubscribeSamples) return Promise.resolve(false);
-      var targetChartId = chartId || _subscribedChartId;
-      if (!targetChartId) return Promise.resolve(false);
-      return _parentConnection.unsubscribeSamples({ chartId: targetChartId }).then(function(result) {
-        if (_subscribedChartId === targetChartId) _subscribedChartId = null;
-        return result;
-      });
-    },
-    subscribeElement: function(elementType, elementId) {
-      if (!elementType || !elementId) {
-        console.warn('[BruControl SDK] subscribeElement requires elementType and elementId');
+    fetchSamples: function(elementId, index, since, points) { /* ... */ },
+    fetchChartChannels: function() { /* ... */ },
+    subscribeSamples: function(chartId) { /* ... */ },
+    unsubscribeSamples: function(chartId) { /* ... */ },
+    subscribeElement: function(elementType, elementId) { /* ... */ },
+    unsubscribeElement: function(elementType, elementId) { /* ... */ },
+    onElementUpdate: function(callback) { /* register element update callback */ },
+    getElementData: function(elementType, elementId) { /* ... */ },
+    requestKeypad: function(options) { /* ... */ },
+    requestTextInput: function(options) { /* ... */ },
+    requestTimeSpanPicker: function(options) { /* ... */ },
+    requestDateTimePicker: function(options) { /* ... */ },
+    requestSelection: function(options) {
+      if (!_parentConnection || !_parentConnection.requestSelection) {
+        console.warn('[BruControl SDK] requestSelection not available');
         return Promise.resolve(null);
       }
-      var key = elementType + ':' + elementId;
-      if (!_parentConnection || !_parentConnection.subscribeElement) {
-        console.warn('[BruControl SDK] subscribeElement called but no parent connection established yet');
-        return Promise.resolve(null);
-      }
-      return _parentConnection.subscribeElement({ elementType: elementType, elementId: elementId }).then(function(data) {
-        _elementSubscribedKeys[key] = true;
-        if (data) {
-          _elementSubscriptions[key] = data;
-          _notifyElementUpdate({ elementType: elementType, elementId: elementId, data: data });
-        }
-        return data;
-      }).catch(function(err) {
-        console.error('[BruControl SDK] subscribeElement failed:', err);
-        return null;
-      });
-    },
-    unsubscribeElement: function(elementType, elementId) {
-      if (!elementType || !elementId) return Promise.resolve(false);
-      var key = elementType + ':' + elementId;
-      delete _elementSubscribedKeys[key];
-      delete _elementSubscriptions[key];
-      if (!_parentConnection || !_parentConnection.unsubscribeElement) return Promise.resolve(false);
-      return _parentConnection.unsubscribeElement({ elementType: elementType, elementId: elementId }).then(function(result) {
-        return result;
-      }).catch(function(err) {
-        console.error('[BruControl SDK] unsubscribeElement failed:', err);
-        return false;
-      });
-    },
-    onElementUpdate: function(callback) {
-      if (typeof callback !== 'function') return;
-      _elementUpdateCallbacks.push(callback);
-    },
-    getElementData: function(elementType, elementId) {
-      if (!elementType || !elementId) return null;
-      var key = elementType + ':' + elementId;
-      return _elementSubscriptions[key] || null;
-    },
-    requestKeypad: function(options) {
-      if (!_parentConnection || !_parentConnection.requestKeypad) {
-        console.warn('[BruControl SDK] requestKeypad not available');
-        return Promise.resolve(null);
-      }
-      return _parentConnection.requestKeypad(options || {});
-    },
-    requestTextInput: function(options) {
-      if (!_parentConnection || !_parentConnection.requestTextInput) {
-        console.warn('[BruControl SDK] requestTextInput not available');
-        return Promise.resolve(null);
-      }
-      return _parentConnection.requestTextInput(options || {});
-    },
-    requestTimeSpanPicker: function(options) {
-      if (!_parentConnection || !_parentConnection.requestTimeSpanPicker) {
-        console.warn('[BruControl SDK] requestTimeSpanPicker not available');
-        return Promise.resolve(null);
-      }
-      return _parentConnection.requestTimeSpanPicker(options || {});
-    },
-    requestDateTimePicker: function(options) {
-      if (!_parentConnection || !_parentConnection.requestDateTimePicker) {
-        console.warn('[BruControl SDK] requestDateTimePicker not available');
-        return Promise.resolve(null);
-      }
-      return _parentConnection.requestDateTimePicker(options || {});
+      return _parentConnection.requestSelection(options || {});
     },
     THEME_KEYS: ['bg-primary','bg-secondary','bg-tertiary','bg-hover','bg-active','bg-selection','text-primary','text-secondary','text-muted','border-color','border-subtle','border-focus','accent-primary','accent-hover','accent-blue','accent-green','accent-yellow','accent-orange','accent-purple','accent-red','scrollbar-bg','scrollbar-thumb','scrollbar-thumb-hover','list-active-background','list-active-hover-background','editor-line-highlight','editor-line-number','editor-line-number-active','editor-cursor','editor-execution-line-running','editor-execution-line-paused','editor-execution-glyph-running','editor-execution-glyph-paused','editor-comment','editor-string','editor-keyword','editor-type','editor-function','editor-operator','input-background','input-foreground','input-border']
   };
@@ -990,12 +887,7 @@ The following is the canonical Element Template SDK injected into every compiled
         receiveData: function(data) { _notifyData(data); },
         receiveTheme: function(theme) { _applyTheme(theme); },
         receiveSamples: function(sample) { _notifySamples(sample); },
-        receiveElementUpdate: function(payload) {
-          if (payload && payload.elementType && payload.elementId) {
-            var key = payload.elementType + ':' + payload.elementId;
-            if (_elementSubscribedKeys[key]) _notifyElementUpdate(payload);
-          }
-        }
+        receiveElementUpdate: function(payload) { /* ... */ }
       }
     });
     connection.promise.then(function(parent) {
@@ -1012,6 +904,10 @@ The following is the canonical Element Template SDK injected into every compiled
   }
 })();
 ```
+
+:::info Abbreviated for readability
+The SDK source above is abbreviated — internal callback notification functions are shown as comments. The full implementation is in `elementTemplateSdk.ts`. The API surface (all methods on `window.BruControl`) is complete and accurate.
+:::
 
 ---
 
@@ -1045,7 +941,7 @@ Defining a property in ui-controls.json makes BruControl treat it as a **static 
 
 ### Method registration vs. property assignment
 
-`BruControl.onData`, `onTheme`, `onSamples`, and `onElementUpdate` are **registration methods**: you must **call** them and pass a callback. Assigning to them overwrites the SDK’s internal method and silently breaks the data pipeline.
+`BruControl.onData`, `onTheme`, `onSamples`, and `onElementUpdate` are **registration methods**: you must **call** them and pass a callback. Assigning to them overwrites the SDK's internal method and silently breaks the data pipeline.
 
 ```javascript
 // ❌ Wrong: overwrites the internal method; no data will flow

@@ -6,7 +6,7 @@ sidebar_position: 7
 
 # File Manager
 
-The File Manager lets you browse, upload, download, and organize files on the server where BruControl is running. It is useful for managing scripts, configuration backups, and other files without leaving the application.
+The File Manager lets you browse, upload, download, and organize files on the server where BruControl is running. It is useful for managing scripts, configuration backups, alarm sounds, custom images, and other files without leaving the application.
 
 ## Accessing the File Manager
 
@@ -36,9 +36,10 @@ The root is the `uploads` folder inside the BruControl data directory (e.g., `Do
 
 Use uploads for:
 
+- **Alarm sounds** — Upload `.wav` or `.mp3` files to use as alarm sounds
 - **Process scripts** — Store script files to reference or import from Processes
 - **Configuration backups** — Save copies of `.brucfg` or other config files
-- **Custom assets** — Images, sounds, or other resources for your setup
+- **Custom assets** — Images, sounds, or other resources for element templates
 
 ## Viewing and Downloading Files
 
@@ -71,13 +72,17 @@ These actions help keep your file storage organized.
 ## Deleting Files and Folders
 
 - **Delete** — Click **Delete** on a file or folder. Confirm when prompted.
-- **Warning:** Deletion is permanent. Ensure you have backups of important files before deleting.
+
+:::danger
+Deletion is permanent. Ensure you have backups of important files before deleting.
+:::
 
 ## Use Cases
 
 | Task | How |
 |------|-----|
 | **Back up configuration** | Upload or copy `.brucfg` files from Documents\BruControl to the file manager, or open them in a new tab and save to an external location |
+| **Store alarm sounds** | Create a `sounds` folder, upload `.wav` files, then reference them in alarm element settings |
 | **Store custom scripts** | Create a folder, upload script files, reference them from BruControl if supported |
 | **Share files** | Upload files to a shared location accessible via the File Manager |
 | **Organize backups** | Create dated folders (e.g., `backups/2024-03-08`) and upload config backups |
@@ -90,7 +95,7 @@ In some parts of BruControl (e.g., selecting an alarm sound file or a custom ass
 
 - **Frontend:** `FileManager` component at `/files` route
 - **Backend:** `FileUploadController` at `api/v1/files`; `FileStorageService` manages files under the user data directory's `uploads` subfolder
-- **File serving:** Files are served at `/uploads/{path}` for viewing or downloading
+- **File serving:** Files are served at `/uploads/{path}` for viewing or downloading. Each file entry includes its `contentType` and direct `url` for access.
 
 ## Next Steps
 

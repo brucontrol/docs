@@ -6,111 +6,170 @@ sidebar_position: 8
 
 # 1-Wire Temperature (OW Temp)
 
-An **OW Temp** (1-Wire Temperature) element reads temperature from DS18B20 or compatible 1-Wire sensors. Multiple sensors can share a single bus.
+The **1-Wire Temperature** element (often called **OW Temp**) reads Dallas/Maxim **1-Wire** temperature sensors such as the DS18B20 family. A single data line plus ground (and parasitic or powered 3.3 V / 5 V arrangements per your board) can support multiple probes on a bus; this element represents **one** selected sensor index on the assigned **OWTemp** port.
 
-## What It Is
+## What it is
 
-A 1-Wire temperature sensor uses a single data line (plus power and ground) for communication. Multiple DS18B20 sensors can be daisy-chained. Each sensor has an address; the **Sensor Index** selects which sensor on the bus this element reads.
+The interface firmware performs 1-Wire discovery and conversion, then BruControl exposes **`Value`** as the temperature in the unit chosen by **`Unit`**. **`RawValue`** is the read-only numeric reading before the same calibration layer you might apply elsewhere on the element—use it to confirm the probe is responding when **`Value`** looks wrong after scaling.
 
-## Hardware Connection
+**SensorIndex** (read/write, 0–99) selects which device on the bus maps to this element when more than one sensor shares the port. **`Unit`** is a **string** in scripts: assign **`"Fahrenheit"`** or **`"Celsius"`** exactly—do not use numeric enums like `0` or `1`.
 
-- **Single sensor**: Connect data (DQ), VDD, and GND per the DS18B20 datasheet. A 4.7 kΩ pull-up resistor on the data line is typically required.
-- **Multiple sensors**: All sensors share the same data line. Each has a unique 64-bit address; the interface discovers them and assigns indices.
+:::warning
 
-:::tip
-1-Wire is sensitive to cable length and noise. Keep the bus short and use shielded cable if needed. For long runs, consider a dedicated 1-Wire interface or powered bus.
+**Unit** in Process scripts uses the string values **`"Fahrenheit"`** and **`"Celsius"`**. Assigning a number will not switch units the way you expect.
+
 :::
 
-## Port Type
+## Hardware connection
 
-**OWTemp** — Use a pin designated for 1-Wire (O) on your interface wiring map.
+Connect the probe’s data pin to the **OWTemp** pin from the wiring map, ground to ground, and power per the sensor datasheet (parasitic mode vs strong pull-up has strict timing requirements). Use appropriate pull-up resistance on the data line (commonly 4.7 kΩ at 5 V; follow your interface documentation). Keep cable length within the limits your firmware supports; star topology and long unshielded runs are common sources of conversion failures.
 
-## Native Properties
+:::tip
 
-| Property | Type | Description |
-|----------|------|-------------|
-| **Value** | number | Current temperature (calibrated). Read-only. |
-| **RawValue** | number | Raw temperature before calibration. Read-only. |
-| **Precision** | number | Decimal places for display. Read-only (configured in Calibration tab). |
-| **Prefix** | string | Text before value. Read-only (configured in Calibration tab). |
-| **Suffix** | string | Text after value. Read-only (configured in Calibration tab). |
-| **Enabled** | boolean | Whether the device is active |
-| **User Control** | boolean | Allow user interaction with the element |
-| **Refresh Multiple** | number | Refresh rate multiplier (1–60). Read/write. |
-| **SensorIndex** | number | Sensor index on bus (0–99). Read/write. |
-| **Unit** | 0 or 1 | 0 = Celsius, 1 = Fahrenheit. Read/write. |
+If readings are `85 °C` or obviously wrong on DS18B20 devices, that often indicates a failed conversion or weak power—verify pull-up, supply current, and that the bus settles before the next read.
 
-## Custom Properties
+:::
 
-From the default OW Temp element template (`ow-temp`):
+## Port type
 
-| Property | Type | Default | Group | Description |
-|----------|------|---------|-------|--------------|
-| showHeader | boolean | true | Layout | Show header bar |
-| showBackground | boolean | true | Layout | Show element template background and border |
-| showLabel | boolean | true | Layout | Show title label in header |
-| hiddenRowKeys | array | — | Layout | Hide rows: "temperature" |
-| showValue | boolean | true | Layout | Show primary value rows |
-| decimalPlaces | number | 1 | Value | Decimal places (0–5) |
-| labelFontFamily | font-family | — | Label | Label font |
-| labelFontSize | number | 12 | Label | Label font size (8–48) |
-| labelFontWeight | text | "500" | Label | Label font weight |
-| labelFontStyle | text | "normal" | Label | Label font style |
-| labelColor | color | (theme) | Label | Label color |
-| valueFontFamily | font-family | — | Value | Value font |
-| valueFontSize | number | 14 | Value | Value font size (10–120) |
-| valueFontWeight | text | "700" | Value | Value font weight |
-| valueFontStyle | text | "normal" | Value | Value font style |
-| valueColor | color | (theme) | Value | Value color |
-| backgroundColor | color | (theme) | Background & Border | Element template background |
-| headerColor | color | (theme) | Background & Border | Header background |
-| borderColor | color | (theme) | Background & Border | Border color |
-| rowLabelColor | color | (theme) | Rows | Row label color |
-| rowValueColor | color | (theme) | Rows | Row value color |
+**OWTemp** — Dedicated 1-Wire bus pin on the interface, not a generic digital I/O unless the map explicitly allows sharing.
+
+## How to add
+
+1. Wire the probe and confirm the interface shows 1-Wire capability on the chosen pin.
+2. **Add Device Element** → **1-Wire Temperature** / **OW Temp** → pick interface and port.
+3. Set **SensorIndex** to match the ordering your firmware uses when multiple sensors exist.
+4. Choose display precision with template property **decimalPlaces** and set **`Unit`** from the editor or script.
+5. Apply calibrations if you need probe-specific offset or scaling.
+
+## Native and editor properties (summary)
+
+Standard device fields (**Enabled**, **User Control**, logging, refresh) apply. Calibrations can refine **`Value`** after the sensor’s native conversion.
+
+## Custom properties (template)
+
+Default template **`ow-temp`**.
+
+### Layout
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| showHeader | boolean | true | Show header bar |
+| showBackground | boolean | true | Show element background and border |
+| showLabel | boolean | true | Show title label in header |
+| showValue | boolean | true | Show primary value rows |
+| decimalPlaces | number | 1 | Decimal places for temperature (0–5) |
+
+### Label
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| labelFontFamily | text | — | Header label font |
+| labelFontSize | number | 12 | Label size (8–48) |
+| labelFontWeight | text | "500" | Label weight |
+| labelFontStyle | text | "normal" | Label style |
+| labelColor | text | — | Label color (theme: textPrimary) |
+
+### Temperature
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| showTemperature | boolean | true | Show the Temperature section |
+| temperatureColor | text | — | Value color (theme: accentGreen) |
+| temperatureBg | text | — | Value box background (theme: bgTertiary) |
+| temperatureLabelColor | text | — | Label color (theme: textSecondary) |
+| temperatureFont | text | — | Value font family |
+| temperatureSize | number | null | Value size px (8–120) |
+| temperatureWeight | text | — | Value weight |
+| temperatureStyle | text | — | Value style |
+
+### Background and border
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| backgroundColor | text | — | Card background (theme: bgSecondary) |
+| headerColor | text | — | Header background (theme: bgTertiary) |
+| borderColor | text | — | Border color (theme: borderColor) |
+| image | text | — | Background image upload for the card |
+
+:::info
+
+**decimalPlaces** controls how many digits appear in the temperature row; it works together with **temperatureSize** and **temperatureColor** for glanceable tanks and fermenters. **image** can reinforce branding but should not obscure the temperature text—adjust **temperatureBg** and **temperatureColor** if needed.
+
+:::
+
+## Script integration — common element properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| ID | Read-only | Unique element identifier |
+| DisplayName | Read/write | Dashboard label |
+| Visibility | Read/write | `"default"`, `"visible"`, `"hidden"`, `"hiddenlocked"` |
+| EnableHistoricalLogging | Read/write | Historical logging |
+| LoggingIntervalSeconds | Read/write | Minimum seconds between log points |
+| MaxSilenceSeconds | Read/write | Silence heartbeat interval; `0` off |
+
+## Script integration — common device properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| Enabled | Read/write | Communication on/off |
+| Connected | Read-only | Interface link status |
+| RefreshMultiple | Read/write | Refresh multiplier (1–60) |
+| DisplayText | Read-only | Formatted UI string |
+| PortID | Read-only | Port identifier |
+
+## Script integration — 1-Wire properties
+
+| Property | Access | Description |
+|----------|--------|-------------|
+| SensorIndex | Read/write | Sensor index on the bus (0–99) |
+| Unit | Read/write | `"Fahrenheit"` or `"Celsius"` (string) |
+| RawValue | Read-only | Raw reading before calibrations |
+| Value | Read-only | Temperature after processing |
+
+### Examples
+
+Read temperature in the current unit:
+
+```
+new value mashTemp
+mashTemp = "Mash Probe" Value
+```
+
+Switch display and script-facing unit to Celsius:
+
+```
+"FV Temp" Unit = "Celsius"
+```
+
+Select the second sensor on a shared bus:
+
+```
+"RIMS Outlet" SensorIndex = 1
+```
+
+Compare raw vs calibrated when debugging:
+
+```
+new value raw
+raw = "FV Temp" RawValue
+print raw
+```
 
 ## Calibrations
 
-OW Temp supports calibrations. Use the **Calibration** tab to add transforms:
+Use the **Calibration** tab when you need offset or scaling after the chip’s conversion. See [Calibrations Overview](./calibrations-overview.md).
 
-- **Multiplier** / **Divider** — Scale temperature
-- **Offset** — Add or subtract (e.g., probe offset)
-- **FahrenheitToCelsius** / **CelsiusToFahrenheit** — Unit conversion
-- **Floor** / **Ceiling** — Clamp range
+## Troubleshooting
 
-See [Calibrations Overview](./calibrations-overview.md) for details.
-
-## Script Integration
-
-### Read Temperature
-
-```
-new value temp
-temp = "Mash Temp" Value
-```
-
-### Wait for Temperature
-
-```
-wait "Boil Temp" Value >= 212 60000
-```
-
-### Set Sensor or Unit (optional)
-
-```
-"Mash Temp" SensorIndex = 0
-"Mash Temp" Unit = 1
-```
-
-### Common Patterns
-
-```
-// Temperature control
-if "Fermenter Temp" Value > 68
-  "Cooling" State = on
-else
-  "Cooling" State = off
-endif
-
-// Ramp check
-wait "Mash Temp" Value >= 152 120000
-```
+| Symptom | Things to check |
+|---------|-----------------|
+| No reading or fixed fault value | **Connected**, **Enabled**, pull-up, power mode, cable length, **SensorIndex** pointing at a missing device |
+| Wrong sensor | **SensorIndex** order vs physical labeling; power-cycle and rescan if your workflow requires it |
+| Unit surprises in script | **Unit** must be **`"Fahrenheit"`** or **`"Celsius"`** strings |
+| UI shows wrong decimals | **decimalPlaces** in template; calibrations rounding |
+| Good **RawValue**, bad **Value** | Calibration chain order and coefficients |
+| Intermittent spikes | Electrical noise, loose connectors, insufficient delay between conversions |
+| Logging too coarse/fine | **LoggingIntervalSeconds**, **MaxSilenceSeconds**, **EnableHistoricalLogging** |
+| Hard-to-read Dashboard | **temperatureColor** on **temperatureBg**; **headerColor** and **image** contrast |

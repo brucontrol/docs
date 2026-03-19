@@ -6,7 +6,7 @@ sidebar_position: 5
 
 # Updates and Releases
 
-BruControl checks for updates and provides download information for new versions. This page explains how updates work and where to get the latest release.
+BruControl checks for updates and provides download information for new versions. This page explains how updates work, what the version indicator tells you, and where to get the latest release.
 
 ## How BruControl Checks for Updates
 
@@ -15,7 +15,17 @@ BruControl periodically fetches version information from the brucontrol-releases
 - **Stable channel** — Uses `version.json` from the main branch
 - **Beta channel** — Uses `version-beta.json` for pre-release versions
 
-The application compares the latest available version with the version you are running. If a newer version exists, the **VersionStatus** component in the app header shows an update indicator (orange dot, pulsing).
+The application compares the latest available version with the version you are running. Results are cached for approximately **15 minutes** to avoid excessive requests.
+
+## Version Status Indicator
+
+The **VersionStatus** component in the application header displays your current version. When a newer version is available:
+
+- An **orange pulsing dot** appears next to the version number
+- **Hover** over the version indicator to see a tooltip with the release notes URL
+- **Click** the link to visit the release notes page where you can download the update
+
+If your version is current, the indicator remains neutral with no pulsing dot.
 
 ### Version Check API
 
@@ -27,8 +37,6 @@ The version check is available at `GET /api/v1/version` (optionally `?beta=true`
 - **Release Notes URL** — Link to release notes
 - **Windows Download URL** — Direct link to the Windows ZIP (when provided)
 - **Docker Image** — Docker image name and tag (when provided)
-
-Results are cached for about 15 minutes to avoid excessive requests.
 
 ## Where to Download
 
@@ -75,7 +83,7 @@ The version check uses different JSON files for each channel, so you only see up
 
 1. **Back up** your `Documents\BruControl` folder (especially `.brucfg` files).
 2. **Download** the latest release ZIP.
-3. **Close** BruControl if it is running.
+3. **Close** BruControl if it is running (use **Settings → Shutdown** for a clean shutdown).
 4. **Extract** the new files, overwriting the old application files. Do not overwrite or delete your Documents\BruControl folder.
 5. **Run** the new executable.
 
@@ -87,6 +95,12 @@ Your configuration, workspaces, and data remain in Documents\BruControl and are 
 2. **Pull** the new image: `docker pull <image>:<new-tag>`
 3. **Stop** the running container.
 4. **Start** a new container with the new image, using the same volume mounts and environment.
+
+## Tips
+
+- Check the **header version indicator** regularly — the pulsing orange dot makes updates easy to spot
+- Always **back up your configuration** before updating, especially the `.brucfg` files
+- Use the **beta channel** if you want early access to new features, but switch back to stable for production systems
 
 ## Next Steps
 

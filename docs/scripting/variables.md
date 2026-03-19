@@ -6,7 +6,7 @@ sidebar_position: 3
 
 # Variables
 
-A **variable** is a place to store a value so you can use it later. Variables let you hold sensor readings, count things, and remember numbers or text between steps.
+A **variable** is a place to store a value so you can use it later. Variables let you hold sensor readings, count things, remember numbers or text between steps, and build complex logic.
 
 ## Creating Variables (new)
 
@@ -55,6 +55,14 @@ message = "Mash complete"
 `now` is a special value that means "the current date and time."
 :::
 
+## Variable Scope
+
+Variables are **global to the script** they're declared in. Once created, a variable is available in every section of that script — it persists across `goto` and `call` jumps. Variables are **not** shared between scripts; each Process element has its own variable space.
+
+:::info Redeclaration
+If you execute `new value x` when a variable named `x` already exists, the existing variable is replaced with a fresh one of the new type. Avoid redeclaring variables unintentionally.
+:::
+
 ## Assigning Values
 
 Use the equals sign to assign a value to a variable. Spaces on each side are required.
@@ -76,7 +84,18 @@ x = x + 3    // x is now 10
 x = x * 2    // x is now 20
 x = x - 5    // x is now 15
 x = x / 3    // x is now 5
+x = x ^ 2    // x is now 25 (power)
 ```
+
+### Arithmetic operators
+
+| Operator | Meaning | Example |
+|----------|---------|---------|
+| `+` | Addition | `x = x + 3` |
+| `-` | Subtraction | `x = x - 2` |
+| `*` | Multiplication | `x = x * 2` |
+| `/` | Division | `x = x / 3` |
+| `^` | Power (exponentiation) | `x = x ^ 2` |
 
 ### Shorthand operators
 
@@ -88,6 +107,31 @@ x /= 2    // Same as x = x / 2
 x ^= 2    // Same as x = x ^ 2 (power)
 ```
 
+### Parenthesized expressions
+
+You can use parentheses to group sub-expressions:
+
+```
+new value y
+y = (2 + 3) * 4       // y is 20
+y = (x + 3) * 2       // groups addition before multiplication
+y = (x ^ 2) + 1       // power first, then add
+```
+
+:::info One operator per line (without parentheses)
+Without parentheses, each line supports one arithmetic operation. Use parenthesized expressions or intermediate variables for complex calculations:
+
+```
+// Using parentheses
+y = (x + 3) * 2
+
+// Using intermediate variables
+new value temp
+temp = x + 3
+y = temp * 2
+```
+:::
+
 ## Boolean Constants
 
 Use `true`/`false` or `on`/`off` for boolean values:
@@ -95,8 +139,24 @@ Use `true`/`false` or `on`/`off` for boolean values:
 ```
 new bool pumpOn
 pumpOn = true
-pumpOn = on
+pumpOn = on      // same as true
+pumpOn = false
+pumpOn = off     // same as false
 ```
+
+### Boolean from expression
+
+You can assign a boolean expression to a bool variable:
+
+```
+new bool isHot
+new value temp
+temp = 155
+isHot = temp > 150              // isHot is true
+isHot = temp > 100 and temp < 200  // compound expression
+```
+
+The right side is evaluated as a boolean expression; the result is assigned to the variable. See [Conditionals](./conditionals) for more on boolean operators.
 
 ## Time Literals
 
@@ -109,15 +169,35 @@ new time duration
 duration = 01:30:00
 ```
 
+## DateTime Literals
+
+DateTime values can be assigned from `now` or from a string literal in the format `"MM-DD-YYYY hh:mm:ss AM/PM"`:
+
+```
+new datetime dt
+dt = now
+dt = "03-18-2024 09:00:00 PM"
+```
+
 ## String Operations
 
 ### Concatenation
 
-Strings can be combined. Numeric values are converted to text when used inline:
+Strings can be combined with `+`. Numeric values are converted to text when concatenated:
 
 ```
 new string str
 str = "Temp: " + "Temp Probe" Value
+print str
+```
+
+### The @ prefix
+
+If a string value might match an element name, use the `@` prefix to tell BruControl to treat it as a literal string, not an element reference:
+
+```
+new string name
+name = @Hello        // literal string "Hello", even if an element named "Hello" exists
 ```
 
 ## Deleting Variables
@@ -147,11 +227,12 @@ new value sensorReading
 sensorReading = "Temp Probe" Value
 ```
 
-Inline math is supported (one operator per line):
+Inline math with element values is supported:
 
 ```
 new value y
 y = "Sensor" Value + 5
+y = "Sensor" Value * 2
 ```
 
 ## Date/Time Operations
@@ -170,7 +251,15 @@ Time values can be added or subtracted from datetime values:
 ```
 new datetime dt
 dt = now
-dt = dt + 00:10:00
+dt = dt + 00:10:00    // add 10 minutes
+```
+
+### Time arithmetic
+
+```
+new time t
+t = 01:00:00
+t = t + 00:30:00     // t is now 01:30:00
 ```
 
 ## Common Patterns
@@ -203,12 +292,47 @@ sleep 5000
 goto "accumulate"
 ```
 
+### Temperature conversion
+
+```
+new value celsius
+new value fahrenheit
+celsius = "Temp Probe" Value
+fahrenheit = (celsius * 9 / 5) + 32
+print "Temp: " + fahrenheit + "°F"
+```
+
+### Elapsed time tracking
+
+```
+new datetime startTime
+new datetime currentTime
+startTime = now
+
+[loop]
+currentTime = now
+print "Started at: " + startTime
+sleep 5000
+goto "loop"
+```
+
 ## Best Practices
 
 1. **Use descriptive names** — `temperatureReading` is better than `x`
 2. **Initialize variables** — Always set an initial value before use
 3. **Clean up when done** — Use `delete` or `clear` to free memory
 4. **Choose the right type** — Use the appropriate variable type for your data
+5. **Avoid redeclaration** — Don't `new` a variable that already exists unless you intend to reset it
+
+## Tips and Gotchas
+
+:::warning Type mismatch
+The validator will flag assignments where the value doesn't match the variable type. For example, assigning a time literal to a `value` variable produces: `Type mismatch: cannot assign "01:00:00" to value variable "x". Expected: a number or expression`.
+:::
+
+:::tip IntelliSense for variables
+After declaring a variable, the editor's IntelliSense will suggest it when you start typing its name. Variable suggestions show the type and declaration line.
+:::
 
 ## Next Steps
 

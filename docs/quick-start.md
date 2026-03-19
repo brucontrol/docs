@@ -40,6 +40,10 @@ Once BruControl is running:
 4. Click **Create Interface**
 5. The interface appears under Interfaces. Expand Interfaces to see it. Select the interface in the tree to configure connection details (IP/port for TCP, or COM port for Serial) and enable it (required for creating device elements).
 
+:::tip No Hardware? Use Mock Mode
+If you don't have a physical interface yet, you can still explore BruControl using **Mock Mode** (requires Professional license). After creating an interface, right-click it → **Enable Mock Mode**. BruControl creates a software simulator that behaves like real hardware. See [Mocking Overview](./mocking/overview) for details.
+:::
+
 ### 6. Create a Test Device Element
 
 Test your setup with the onboard LED:
@@ -71,6 +75,7 @@ Now that you have a working setup, explore these areas:
 - [Device Elements](./elements/device-elements-overview) - Configure inputs and outputs
 - [Workspaces](./application/workspaces) - Design your control interface
 - [Scripting Basics](./scripting/introduction) - Automate your processes
+- [Plugin Store](./api/misc-apis#plugin-registry-pluginregistrycontroller) - Browse and install element templates and color themes
 
 ## Need Help?
 

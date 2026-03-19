@@ -19,14 +19,21 @@ BruControl communicates with one or more microcontroller interfaces (such as Ard
 
 ## Main Areas of the Interface
 
+The interface is built with **resizable split panes** (powered by Allotment). You can drag the dividers between the Solution Explorer, Dashboard, and Script Panel to customize how much space each area gets. Panel visibility (explorer shown/hidden, script panel shown/hidden) is **persisted in a cookie** so your layout preference is restored when you return.
+
 ### Header
 
 The header bar shows status and controls:
 
 - **Panel toggles** — Show or hide the Configuration (Solution Explorer) panel and the Script Panel
-- **Status indicators** — Version, uptime, device connections (connected/total), and license status
+- **Status indicators** — Version (with update indicator), device connections (connected/total), and license status
+- **Uptime ticker** — A real-time counter showing how long the application has been running since it was started
 - **Enable/Disable all ports** — Quick controls for all interface ports
-- **Theme selector** — Switch between light and dark themes
+- **Theme selector** — Choose from 7+ built-in color sets: VS Code Dark, Cream Sand, Neobrutal, Laurel Swamp, Inkwell, Newsprint, and Kitty Meow Meow. You can also create custom color sets with full control over backgrounds, text, borders, accents, scrollbars, and editor syntax colors.
+
+:::info Theme System
+BruControl uses a full **color set** system, not a simple light/dark toggle. Each color set defines 40+ CSS variables covering the entire UI. Select a color set from the header dropdown, or create your own in the Plugin Store.
+:::
 
 ### Solution Explorer (Left Panel)
 
@@ -36,8 +43,9 @@ The Solution Explorer is the tree on the left side of the application (labeled *
 - **Processes** — Automation scripts (processes) you can run, pause, or stop (folders available for organization)
 - **Data Views** — Configurable views over chart and time-series data
 - **Interfaces** — Your connected hardware devices (click a device to open the Device Editor)
+- **Media** — Shared media assets (images, sounds) available to element templates
 - **Mocks** — Simulated devices (only visible when mock mode is enabled)
-- **Settings** — Application configuration
+- **Settings** — Application configuration (General, Security, License, Data Storage, Data Explorer, Element Templates, Device Types, Plugin Store, System Logs, and Shutdown)
 
 Use the Solution Explorer to create workspaces, add elements, manage processes, and open settings. Right-click items for context menus with actions like New, Edit, Rename, Delete, and Run. The left panel can be toggled on or off via the header.
 
@@ -48,9 +56,9 @@ The Dashboard is the main canvas where your workspace elements appear. Each work
 - **Arrange elements** — Drag, resize, and layer elements
 - **Zoom and pan** — Navigate large layouts
 - **Switch workspaces** — Use the workspace tab bar above the dashboard
-- **Edit elements** — In Select mode, select an element and click Edit to open its properties drawer
+- **Edit elements** — In Edit mode, select an element and click Edit to open its properties drawer
 
-The Dashboard shows real-time values, buttons, switches, charts, timers, alarms, and device controls.
+The Dashboard shows real-time values, buttons, switches, charts, timers, alarms, and device controls. When an alarm is active, the **alarm sound player** plays the configured audio file. If the browser blocks autoplay, a banner appears at the top of the dashboard with an **Enable Audio** button so you can allow playback.
 
 ### Script Panel (Bottom Panel)
 
@@ -64,7 +72,17 @@ Scripts use a simple language with variables, conditionals, timers, alarms, and 
 
 ### Settings (Solution Explorer)
 
-Settings control how BruControl behaves. Open Settings by expanding **Settings** in the Solution Explorer and selecting an item (e.g., General, Security, License). Settings open in a modal. Settings panels include: **General**, **Security**, **License**, **Data Storage**, **Element Templates**, and **Device Types**. **Plugin Store** and **System Logs** open in separate browser tabs.
+Settings control how BruControl behaves. Open Settings by expanding **Settings** in the Solution Explorer and selecting an item (e.g., General, Security, License). Settings open in a modal. Settings panels include: **General**, **Security**, **License**, **Data Storage**, **Data Explorer**, **Element Templates**, and **Device Types**. **Plugin Store** and **System Logs** open in separate browser tabs. **Shutdown** opens a dedicated shutdown dialog.
+
+## Security and Access Control
+
+### PIN Lock Gate
+
+When a security PIN is configured, BruControl gates the entire application behind a **PIN lock screen**. You must enter the correct PIN before any content is visible. This protects your system from unauthorized access on shared or public displays.
+
+### Unsaved Changes Protection
+
+BruControl uses a **browser navigation guard** (BeforeUnloadGuard) that warns you before leaving the page if there are unsaved changes. If you try to close the browser tab or navigate away, the browser will show a confirmation dialog.
 
 ## Tabs and Navigation
 
@@ -84,11 +102,24 @@ Data Views appear in the Solution Explorer under **Data Views**. Selecting a dat
 
 Interfaces (your hardware devices) are listed under **Interfaces** in the Solution Explorer. Each interface shows connection status. Add interfaces by right-clicking **Interfaces** → **New Interface**. Configure device types and firmware in **Settings** → **Device Types**. Click a device to open the Device Editor.
 
+## Shutdown
+
+To shut down the application, select **Shutdown** from the Settings tree in the Solution Explorer. The shutdown dialog presents two options:
+
+- **Keep Ports & Shutdown** — Shuts down the application while leaving hardware ports in their current state
+- **Close Ports & Shutdown** — Sends disable commands to all active ports before shutting down (recommended when you want equipment to turn off safely)
+
+If there are devices with active, enabled ports, the dialog displays a warning so you can make an informed choice.
+
+:::warning
+Choosing **Keep Ports & Shutdown** leaves hardware in its current state. If outputs are active (heaters on, pumps running), they will remain active after BruControl shuts down until the hardware is independently powered off or reset.
+:::
+
 ## Mobile and Tablet Layout
 
 On mobile and tablet devices, the layout adapts:
 
-- **Bottom navigation** — Switch between Dashboard and Script panels
+- **Bottom navigation** — Switch between Explorer, Dashboard (Workspace), and Script panels
 - **Sidebar drawer** — The Solution Explorer opens in a slide-out drawer (tap Explorer in the bottom nav to open)
 - **Workspace tabs** — Still appear above the Dashboard when multiple workspaces exist
 
@@ -103,6 +134,13 @@ Some features open in separate pages or new tabs:
 - **Device Diagnostics** (`/device/:id/diagnostics`) — Per-device diagnostics
 - **Mock Device** (`/mock/:port`) — Simulate a device for testing
 
+## Tips
+
+- **Resize panels** by dragging the dividers between Solution Explorer, Dashboard, and Script Panel
+- **Hide panels** you don't need to maximize Dashboard space — your preferences are saved automatically
+- **Use keyboard shortcuts** on the dashboard: **H** for Pan mode, **V** for Edit mode, **Escape** to deselect, **Space** (hold) to temporarily pan while in Edit mode
+- **Choose a color set** that works for your environment — dark themes reduce glare for brewery settings, while light themes like Cream Sand or Newsprint work well in bright spaces
+
 ## Next Steps
 
 - [Application Setup](./setup) — Download, install, license, and first run
@@ -111,3 +149,4 @@ Some features open in separate pages or new tabs:
 - [Data Views](./data-views) — Create and configure data views
 - [File Manager](./file-manager) — Browse, upload, and download files
 - [Log Viewer](./log-viewer) — Search and filter logs for troubleshooting
+- [Dashboard Overview](../dashboard/overview) — Canvas, elements, overlays, and interactions

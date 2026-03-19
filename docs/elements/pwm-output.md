@@ -6,99 +6,157 @@ sidebar_position: 5
 
 # PWM Output
 
-A **PWM (Pulse Width Modulation) Output** produces a variable output level by varying the duty cycle of a high-frequency square wave. It can drive proportional valves, variable-speed motors, dimmable lights, or (with an RC filter) an analog voltage.
+A **PWM Output** element controls a pulse-width or scaled analog-style output on the interface. Scripts set a **RequestedValue** (read/write); the device applies calibration and hardware mapping, producing **Value** (calibrated, read-only) and **RawValue** (0–255 style raw output, read-only) for feedback and diagnostics. The dashboard can emphasize **current** output vs **requested** target with separate styling groups.
 
-## What It Is
+## What it does
 
-A PWM Output typically outputs 0–255 (8-bit) or 0–100% to the interface. The interface drives the pin with a PWM signal. The **Requested Value** is what you set; the **Value** is the calibrated output (if calibrations are applied).
+**RequestedValue** is your control input: set it from scripts, bindings, or manual UI where supported. The firmware translates that request into the electrical PWM (or DAC) output according to port configuration and calibration. **Value** reflects the effective output after calibration layers; **RawValue** exposes the underlying numeric drive level before calibration interpretation.
 
-## Hardware Connection
-
-- **Direct PWM**: Connect the pin to a PWM-compatible device (e.g., LED dimmer, motor driver). Many Arduino pins support hardware PWM.
-- **Analog output**: Use an RC low-pass filter (resistor + capacitor) to convert PWM to a DC voltage for analog devices.
-
-:::tip
-Check your interface wiring map for pins marked (P) for PWM. Not all pins support hardware PWM.
+:::info
+Naming recap: **RequestedValue** = what you ask for; **Value** = calibrated result as seen by the element; **RawValue** = low-level hardware magnitude. Use the right one for control vs monitoring.
 :::
 
-## Port Type
+## Typical applications
 
-**PWMOutput** — Use a pin designated as PWM Output (P) on your interface wiring map.
+- LED brightness, fan speed (with suitable drivers), heater SSR modulation.
+- Any port documented as PWM or analog output on your interface.
+- Closed-loop setups where another element (PID, hysteresis) writes **RequestedValue**.
 
-## Native Properties
+:::tip
+If the load does not respond linearly to **RequestedValue**, fix calibration on the port or add a curve in logic rather than guessing scaling in the UI only.
+:::
 
-| Property | Type | Description |
-|----------|------|-------------|
-| **Value** | number | Current output value (after calibration). Read-only. |
-| **RawValue** | number | Raw output (0–255). Read-only. |
-| **RequestedValue** | number | Target output value. Read/write. |
-| **Precision** | number | Decimal places for display. Read-only (configured in device settings). |
-| **Prefix** | string | Text before value (e.g., unit). Read-only (configured in device settings). |
-| **Suffix** | string | Text after value. Read-only (configured in device settings). |
-| **Enabled** | boolean | Whether the device is active |
-| **User Control** | boolean | Allow manual adjustment from the Dashboard |
-| **Refresh Multiple** | number | Refresh rate multiplier (1–60) |
+## Adding a PWM Output element
 
-## Custom Properties
+1. Configure the **Interface** with an available PWM (or analog output) port.
+2. **Add Device Element** → **PWM Output**.
+3. Assign device and port; set default **RequestedValue** if the designer allows.
+4. Tune **current** vs **requested** presentation and **precision** for readability.
 
-From the default PWM Output element template (`pwm-output`):
+## Custom properties (appearance)
 
-| Property | Type | Default | Group | Description |
-|----------|------|---------|-------|--------------|
-| showHeader | boolean | true | Layout | Show header bar |
-| showBackground | boolean | true | Layout | Show element template background and border |
-| showLabel | boolean | true | Layout | Show title label in header |
-| hiddenRowKeys | array | — | Layout | Hide rows: "value", "requested" |
-| showValue | boolean | true | Layout | Show primary value rows |
-| showFooter | boolean | true | Layout | Show footer controls |
-| labelFontFamily | font-family | — | Label | Label font |
-| labelFontSize | number | 12 | Label | Label font size (8–48) |
-| labelFontWeight | text | "500" | Label | Label font weight |
-| labelFontStyle | text | "normal" | Label | Label font style |
-| labelColor | color | (theme) | Label | Label color |
-| valueFontFamily | font-family | — | Value | Value font |
-| valueFontSize | number | 14 | Value | Value font size (10–120) |
-| valueFontWeight | text | "700" | Value | Value font weight |
-| valueFontStyle | text | "normal" | Value | Value font style |
-| valueColor | color | (theme) | Value | Value color |
-| backgroundColor | color | (theme) | Background & Border | Element template background |
-| headerColor | color | (theme) | Background & Border | Header background |
-| borderColor | color | (theme) | Background & Border | Border color |
-| rowLabelColor | color | (theme) | Rows | Row label color |
-| rowValueColor | color | (theme) | Rows | Row value color |
+Keys match the PWM Output `ui-controls.json`.
 
-## Calibrations
+### Layout
 
-PWM Output supports calibrations. Use the **Calibration** tab in the Edit Drawer to apply transforms (e.g., Multiplier, Offset, Floor, Ceiling) to convert between your desired units and the raw 0–255 range.
+| Property | Notes |
+|----------|--------|
+| `showHeader` | boolean, default `true`. |
+| `showBackground` | boolean, default `true`. |
+| `showLabel` | boolean, default `true`. |
+| `showValue` | boolean, default `true`. |
+| `showFooter` | boolean, default `true`. |
+| `precision` | number, default `2`, range `0`–`6` decimals. |
 
-## Script Integration
+### Label
 
-### Read Value
+| Property | Notes |
+|----------|--------|
+| `labelFontFamily` | text, inherits when empty. |
+| `labelFontSize` | number, default `12`, range `8`–`48`. |
+| `labelFontWeight` | text, default `"500"`. |
+| `labelFontStyle` | text, default `"normal"`. |
+| `labelColor` | text, default theme `textPrimary`. |
+
+### Current section (measured / effective output)
+
+| Property | Notes |
+|----------|--------|
+| `showCurrent` | boolean, default `true`. |
+| `currentColor` | default theme `accentGreen`. |
+| `currentBg` | default theme `bgTertiary`. |
+| `currentLabelColor` | default theme `textSecondary`. |
+| `currentFont` | text, default `""`. |
+| `currentSize` | number, default `null`, range `8`–`120`. |
+| `currentWeight` | text, default `""`. |
+| `currentStyle` | text, default `""`. |
+
+### Requested section (setpoint / command)
+
+| Property | Notes |
+|----------|--------|
+| `showRequested` | boolean, default `true`. |
+| `requestedColor` | default theme `accentGreen`. |
+| `requestedBg` | default theme `bgTertiary`. |
+| `requestedLabelColor` | default theme `textSecondary`. |
+| `requestedFont` | text, default `""`. |
+| `requestedSize` | number, default `null`, range `8`–`120`. |
+| `requestedWeight` | text, default `""`. |
+| `requestedStyle` | text, default `""`. |
+
+### Background and chrome
+
+| Property | Notes |
+|----------|--------|
+| `backgroundColor` | default theme `bgSecondary`. |
+| `headerColor` | default theme `bgTertiary`. |
+| `borderColor` | default theme `borderColor`. |
+| `image` | file-upload — optional background image. |
+
+## Script properties — common to all elements
+
+| Property | Type | Access | Description |
+|----------|------|--------|-------------|
+| `ID` | string | RO | Unique id. |
+| `DisplayName` | string | RW | Label on the element. |
+| `Visibility` | string | RW | `default`, `visible`, `hidden`, `hiddenlocked`. |
+| `EnableHistoricalLogging` | boolean | RW | Enable history database writes. |
+| `LoggingIntervalSeconds` | number | RW | Minimum seconds between stored samples; `0` every change. |
+| `MaxSilenceSeconds` | number | RW | Re-log after N seconds without change; `0` disabled. |
+
+## Script properties — all device elements
+
+| Property | Type | Access | Description |
+|----------|------|--------|-------------|
+| `Enabled` | boolean | RW | Disables I/O when false. |
+| `Connected` | boolean | RO | Interface connectivity. |
+| `RefreshMultiple` | number | RW | Slows refresh polling when increased. |
+| `DisplayText` | string | RO | Formatted textual representation from port. |
+| `PortID` | string | RO | Port identifier string. |
+
+## Script properties — PWM Output only
+
+| Property | Type | Access | Description |
+|----------|------|--------|-------------|
+| `Value` | number | RO | Current output after calibration. |
+| `RawValue` | number | RO | Raw drive level (e.g., 0–255) before calibration. |
+| `RequestedValue` | number | RW | Target output; firmware maps to hardware. |
+
+:::warning
+Writing **RequestedValue** out of range for your calibration may clamp or saturate at the hardware/firmware limits. Always confirm against interface documentation and measured output.
+:::
+
+## Example scripts
+
+Set half-scale request (adjust magnitude to your calibration):
 
 ```
-new value pumpSpeed
-pumpSpeed = "Pump PWM" Value
+FanPWM.RequestedValue = 128;
 ```
 
-### Write Requested Value
+Slewing ramp (pseudo-code style step):
 
 ```
-"Pump PWM" RequestedValue = 128
-"Valve PWM" RequestedValue = 75
+var target = 200;
+var step = 5;
+if (FanPWM.RequestedValue < target) {
+    FanPWM.RequestedValue = FanPWM.RequestedValue + step;
+}
 ```
 
-### Common Patterns
+Monitor raw vs calibrated for debugging:
 
 ```
-// Set pump to 50%
-"Recirc Pump" RequestedValue = 127
-
-// Ramp valve open (0-100% or 0-255 raw)
-new value v
-v = 0
-while v < 100
-  "Proportional Valve" RequestedValue = v
-  v = v + 10
-  sleep 1000
-endwhile
+if (FanPWM.RawValue != FanPWM.Value) {
+    // Calibration is shifting the effective output
+}
 ```
+
+## Troubleshooting
+
+- **RequestedValue changes but load is dead** — Verify **Enabled**, **Connected**, wiring, and that the port is PWM-capable. Check **RawValue** for any movement at the driver level.
+- **Value lags RequestedValue** — Normal under calibration or rate limits; reduce **RefreshMultiple** if the UI seems too slow, within performance constraints.
+- **Output saturates at min/max** — Calibration or hardware ceiling; inspect port settings and physical supply voltage to the load driver.
+- **DisplayText confusing** — Prefer **Value** / **RawValue** / **RequestedValue** in scripts; **DisplayText** is formatted for humans and may include units.
+- **Footers or decimals look wrong** — Adjust **precision**; **current**\* vs **requested**\* control which row’s typography applies.
+- **No trend data** — Turn on **EnableHistoricalLogging** and tune **LoggingIntervalSeconds**; steady outputs may need **MaxSilenceSeconds** to appear on time-series charts.

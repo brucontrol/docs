@@ -27,6 +27,11 @@ x = 10
 y = 5
 x = x + y
 print x
+
+// Using parenthesized expressions
+new value z
+z = (x + 3) * 2
+print z
 ```
 
 ## Boil Kettle Ramp-Up
@@ -103,6 +108,188 @@ print errorCount
 wait "Cooler Temp" Connected == true
 sleep 1000
 goto "loop"
+```
+
+## PID Tuning from Script
+
+Adjust PID parameters and start a controlled heating process:
+
+```
+[main]
+// Configure PID
+"Mash PID" Target = 152
+"Mash PID" Kp = 5.0
+"Mash PID" Ki = 0.1
+"Mash PID" Kd = 2.0
+"Mash PID" Reversed = false
+"Mash PID" MaxOutput = 100
+"Mash PID" Enabled = true
+
+// Wait for temperature to reach target
+wait "Mash Temp" Value >= 150
+print "Mash temperature reached!"
+```
+
+## Counter Monitoring
+
+Monitor a flow meter and track total volume:
+
+```
+[main]
+new value totalPulses
+new value rate
+
+[loop]
+totalPulses = "Flow Meter" Total
+rate = "Flow Meter" Rate
+print "Total: " + totalPulses + " Rate: " + rate
+if rate < 0.5
+  print "Warning: Low flow rate"
+endif
+sleep 2000
+goto "loop"
+```
+
+## Display to LCD
+
+Send text to an LCD connected to an interface:
+
+```
+[main]
+new value temp
+temp = "Temp Probe" Value
+display "MEGA" 1 "Temperature: "
+display "MEGA" 2 temp
+sleep 5000
+goto "main"
+```
+
+:::info Display restrictions
+The `display` command text cannot contain these characters: `/!?$,;`
+:::
+
+## Sync and Autosync
+
+Batch property changes and sync manually for coordinated updates:
+
+```
+[main]
+autosync off
+"Motor 1" State = on
+"Motor 2" State = on
+"Valve 1" State = on
+sync "Motor 1"
+sync "Motor 2"
+sync "Valve 1"
+autosync on
+```
+
+## Workspace Show/Hide/Reveal
+
+Control which workspaces are visible from script:
+
+```
+[main]
+show workspace "Dashboard"
+hide workspace "Settings"
+
+sleep 10000
+
+reveal workspace "Settings"
+```
+
+## DateTime Operations
+
+```
+[main]
+new datetime startTime
+new datetime dt
+new string timeStr
+
+startTime = now
+print "Started at: " + startTime
+
+// Assign a specific datetime
+dt = "03-18-2024 09:00:00 PM"
+print dt
+
+// Add time to a datetime
+dt = now
+dt = dt + 01:00:00
+print "One hour from now: " + dt
+```
+
+## String Concatenation with Element Values
+
+```
+[main]
+new string status
+new value temp
+temp = "Temp Probe" Value
+status = "Current temp: " + temp + " degrees"
+print status
+```
+
+## Process State Checking
+
+Check if another script is running before starting it:
+
+```
+[main]
+if "Script 2" state == "Running"
+  print "Script 2 already running, skipping"
+else
+  start "Script 2"
+  print "Started Script 2"
+endif
+```
+
+## Visibility Control
+
+Show or hide elements dynamically:
+
+```
+[main]
+// Hide the advanced controls initially
+"PID Controls" Visibility = hidden
+"Debug Panel" Visibility = hidden
+
+wait "Show Advanced" State == on
+"PID Controls" Visibility = visible
+"Debug Panel" Visibility = visible
+print "Advanced controls visible"
+```
+
+## Multi-Script Coordination
+
+One script starts and monitors another:
+
+```
+// Main Controller Script
+[main]
+print "Starting worker..."
+start "Worker Script"
+
+[monitor]
+if "Worker Script" state == "Stopped"
+  print "Worker finished"
+  goto done
+endif
+sleep 1000
+goto monitor
+
+[done]
+print "All complete"
+```
+
+```
+// Worker Script
+[main]
+print "Working..."
+"Pump 1" State = on
+sleep 10000
+"Pump 1" State = off
+print "Work done"
 ```
 
 ## Simple Conditionals
@@ -214,6 +401,42 @@ goto "main"
 "Pump 1" State = on
 sleep 5000
 "Pump 1" State = off
+```
+
+## Brewing Mash Step Schedule
+
+A multi-step mash with timed temperature holds:
+
+```
+[main]
+new value step
+step = 1
+
+[step1]
+print "Step 1: Protein rest at 122F"
+"Mash PID" Target = 122
+"Mash PID" Enabled = true
+wait "Mash Temp" Value >= 120
+start "Mash Timer"
+wait "Mash Timer" Value >= 00:20:00
+stop "Mash Timer"
+reset "Mash Timer"
+
+[step2]
+print "Step 2: Saccharification at 152F"
+"Mash PID" Target = 152
+wait "Mash Temp" Value >= 150
+start "Mash Timer"
+wait "Mash Timer" Value >= 00:60:00
+stop "Mash Timer"
+reset "Mash Timer"
+
+[step3]
+print "Step 3: Mash out at 170F"
+"Mash PID" Target = 170
+wait "Mash Temp" Value >= 168
+print "Mash complete!"
+"Mash PID" Enabled = false
 ```
 
 ## Next Steps

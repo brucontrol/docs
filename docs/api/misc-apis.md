@@ -6,7 +6,7 @@ sidebar_position: 7
 
 # Miscellaneous APIs
 
-Additional APIs for element templates, themes, color sets, logs, version, uptime, explorer folders, data views, chart data, scripting, security, session, license, configuration, and system operations.
+Additional APIs for element templates, themes, color sets, logs, version, uptime, explorer folders, data views, chart data, scripting, security, session, license, configuration, plugin registry, system, media, file management, and data exchange.
 
 ## Element Templates (`ElementTemplateController`)
 
@@ -181,7 +181,17 @@ POST   /api/v1/security/unlock
 GET /api/v1/session
 ```
 
-Creates or returns an existing session and provides a CSRF token for the SPA. Returns `{ "csrfToken": "...", "expiresAtUtc": "..." }`.
+Creates or returns an existing session and provides a CSRF token for the SPA. The server sets an `HttpOnly` session cookie and returns the token in the response body.
+
+**Response:**
+
+```json
+{ "csrfToken": "abc123...", "expiresAtUtc": "2026-04-01T00:00:00Z" }
+```
+
+:::info CSRF Flow
+For all mutating requests (`POST`, `PATCH`, `PUT`, `DELETE`), include the CSRF token as the `X-CSRF-Token` header. The session cookie is sent automatically by the browser. See [API Overview](./overview) for full authentication details.
+:::
 
 ## License (`LicenseController`)
 
@@ -222,23 +232,138 @@ POST /api/v1/plugin-registry/sync
 POST /api/v1/plugin-registry/install
 POST /api/v1/plugin-registry/update
 POST /api/v1/plugin-registry/sideload
+POST /api/v1/plugin-registry/revert-to-stable
 ```
 
 - **sync** — Force sync of official plugins and color themes from registry
 - **install** — Install from registry. Body: `{ "manifestId": "..." }`
 - **update** — Update installed plugin. Body: `{ "manifestId": "..." }`
 - **sideload** — Install from GitHub. Body: `{ "repo": "...", "path": "...", "ref": "..." }`
+- **revert-to-stable** — Revert a beta plugin to its stable version. Reassigns all elements using the beta template to the stable version, then removes the beta template. Body: `{ "manifestId": "{uuid}-beta" }`. The `manifestId` must end with `-beta`. Returns the stable `ElementTemplateViewModel`.
+
+**Status codes for revert-to-stable:**
+
+| Code | Meaning |
+|------|---------|
+| `200` | Reverted successfully; returns stable template |
+| `400` | `manifestId` missing or not a beta ID |
+| `404` | Beta plugin not installed, or stable version not found |
+| `502` | Failed to fetch stable plugin from upstream registry |
 
 ## System (`SystemController`)
 
 ```
 GET  /api/v1/system/port-status
 POST /api/v1/system/disable-all-ports
-POST /api/v1/system/enable-all-ports
 POST /api/v1/system/shutdown
 ```
 
-- **port-status** — Whether any devices have connected/enabled ports
-- **disable-all-ports** — Disable all enabled ports
-- **enable-all-ports** — Enable all disabled ports that have elements
-- **shutdown** — Graceful shutdown. Body: `{ "disableAll": true }` (optional)
+- **port-status** — Whether any devices have connected and enabled ports. Response: `{ "anyConnectedEnabledPorts": true, "anyConnectedDisabledPorts": false }`
+- **disable-all-ports** — Disable all enabled ports on all connected devices. Response: `{ "disabled": 5 }`
+- **shutdown** — Graceful shutdown. Optional body: `{ "disableAll": true }` to disable all ports before shutdown. Response: `{ "message": "Shutting down...", "disableAll": true }`
+
+## Media API (`MediaController`)
+
+The Media API manages slug-to-file mappings for media assets. Slugs are human-friendly identifiers used in scripts to reference images (e.g. `"Element" imageUrl = "my_boil_img"`).
+
+```
+GET    /api/v1/media
+GET    /api/v1/media/slugs
+GET    /api/v1/media/resolve?slug={slug}
+PATCH  /api/v1/media
+DELETE /api/v1/media/{slug}
+```
+
+| Method | URL | Description | Request | Response |
+|--------|-----|-------------|---------|----------|
+| `GET` | `/api/v1/media` | List all media items with their slugs | — | Array of `MediaItemViewModel` |
+| `GET` | `/api/v1/media/slugs` | Get all slug names (for IntelliSense) | — | Array of strings |
+| `GET` | `/api/v1/media/resolve?slug={slug}` | Resolve a slug to a file URL | Query: `slug` (required) | File URL string, or `404` |
+| `PATCH` | `/api/v1/media` | Create or update a slug mapping | `{ "slug": "my_img", "path": "/uploads/boil.png" }` | `204 No Content` |
+| `DELETE` | `/api/v1/media/{slug}` | Delete a slug mapping (file is not deleted) | — | `204 No Content` |
+
+:::info
+The slug system allows scripts to reference media by a stable name. If the underlying file moves, update the slug mapping instead of changing all scripts.
+:::
+
+## File Upload API (`FileUploadController`)
+
+The File Upload API provides file and folder management within the BruControl data directory.
+
+```
+GET    /api/v1/files?path={path}
+POST   /api/v1/files/upload?path={path}
+POST   /api/v1/files/folder?path={path}
+PATCH  /api/v1/files/rename
+PATCH  /api/v1/files/move
+DELETE /api/v1/files?path={path}
+```
+
+| Method | URL | Description | Request | Response |
+|--------|-----|-------------|---------|----------|
+| `GET` | `/api/v1/files?path=` | List files and folders at path | Query: `path` (optional, root if omitted) | `FileListResponseViewModel` |
+| `POST` | `/api/v1/files/upload?path=` | Upload files (multipart/form-data) | Query: `path`; Form: `files` | Array of `FileEntryViewModel` |
+| `POST` | `/api/v1/files/folder?path=` | Create a folder | Query: `path`; Body: `{ "name": "folder-name" }` | `FileEntryViewModel` |
+| `PATCH` | `/api/v1/files/rename` | Rename a file or folder | `{ "path": "old/path.txt", "newName": "new-name.txt" }` | `FileEntryViewModel` |
+| `PATCH` | `/api/v1/files/move` | Move a file or folder | `{ "sourcePath": "from/file.txt", "destinationPath": "to/" }` | `FileEntryViewModel` |
+| `DELETE` | `/api/v1/files?path=` | Delete a file or folder | Query: `path` (required) | `204 No Content` |
+
+**`FileEntryViewModel` shape:**
+
+```json
+{
+  "name": "boil.png",
+  "path": "uploads/boil.png",
+  "isDirectory": false,
+  "size": 24576,
+  "contentType": "image/png",
+  "modifiedAtUtc": "2026-03-10T14:30:00Z",
+  "url": "/files/uploads/boil.png"
+}
+```
+
+## Data Exchange Legacy API (`DataExchangeLegacyController`)
+
+The Data Exchange Legacy API provides external system access to BruControl global variables. This is the legacy "Data Exchange" protocol for third-party integrations (e.g. Node-RED, Home Assistant, custom scripts).
+
+:::warning Professional License & External Access Only
+This API requires a **Professional** license and is accessible only from external HTTP clients — not from the BruControl web UI. The `AllowWeb = false` attribute blocks requests originating from the browser session.
+:::
+
+```
+GET /global/{name}
+PUT /global/{name}
+GET /globals?offset=0&limit=0
+PUT /globals
+```
+
+| Method | URL | Description | Request | Response |
+|--------|-----|-------------|---------|----------|
+| `GET` | `/global/{name}` | Get a global variable by name | — | `{ "name": "...", "value": "...", "valueType": "..." }` |
+| `PUT` | `/global/{name}` | Set a global variable by name | `{ "name": "...", "value": "72.5", "valueType": "Decimal" }` | `200 OK` |
+| `GET` | `/globals?offset=0&limit=0` | Get all global variables (paged) | Query: `offset`, `limit` (0 = all) | Array of global variable objects |
+| `PUT` | `/globals` | Set multiple global variables | Array of `{ "name": "...", "value": "...", "valueType": "..." }` | `200 OK` |
+
+:::info Route Note
+These routes are at the **root** path (not under `/api/v1/`). For example: `http://localhost:5005/global/MyTemp`.
+:::
+
+**Value types:** `String`, `Integer`, `Decimal`, `Boolean`
+
+**Example — read a variable from an external system:**
+
+```bash
+curl http://brucontrol-host:5005/global/MashTemp
+```
+
+```json
+{ "name": "MashTemp", "value": "152.3", "valueType": "Decimal" }
+```
+
+**Example — write a variable:**
+
+```bash
+curl -X PUT http://brucontrol-host:5005/global/MashTemp \
+  -H "Content-Type: application/json" \
+  -d '{"value": "155.0", "valueType": "Decimal"}'
+```

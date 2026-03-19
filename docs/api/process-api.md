@@ -71,6 +71,20 @@ Starts or resumes a process. If the process is paused, this resumes execution.
 
 **Response:** `ProcessViewModel`, `404 Not Found`, or `400 Bad Request` (e.g. invalid state)
 
+### Load Process
+
+```
+POST /api/v1/process/{id}/load
+```
+
+Loads the script and leaves the process paused in step mode (ready for `step`). Use this to prepare a script for line-by-line debugging without immediately executing it.
+
+**Response:** `ProcessViewModel` or `404 Not Found`
+
+:::tip Step-Mode Debugging
+Call `load` to prepare the script, then use `step` repeatedly to execute one line at a time. The process starts in `Paused` state with `currentLine` at the first executable line.
+:::
+
 ### Stop Process
 
 ```
@@ -139,6 +153,24 @@ Returns the execution trace (timestamp, line, command) for debugging.
 
 **Response:** Array of trace entries `{ timestamp, line, command }`, or `404 Not Found` when process not found
 
+## Endpoints Summary
+
+| Method | URL | Description |
+|--------|-----|-------------|
+| `GET` | `/api/v1/process` | List all processes |
+| `POST` | `/api/v1/process` | Create a new process |
+| `GET` | `/api/v1/process/{id}` | Get process by ID |
+| `PATCH` | `/api/v1/process/{id}` | Update process |
+| `DELETE` | `/api/v1/process/{id}` | Delete process |
+| `POST` | `/api/v1/process/{id}/run` | Run (start/resume) |
+| `POST` | `/api/v1/process/{id}/load` | Load script into step mode |
+| `POST` | `/api/v1/process/{id}/stop` | Stop process |
+| `POST` | `/api/v1/process/{id}/resume` | Resume paused process |
+| `POST` | `/api/v1/process/{id}/step` | Execute single line |
+| `POST` | `/api/v1/process/{id}/reset` | Reset to first line |
+| `POST` | `/api/v1/process/{id}/sethere` | Set execution line |
+| `GET` | `/api/v1/process/{id}/trace` | Get execution trace |
+
 ## Process State
 
 Process states:
@@ -147,7 +179,13 @@ Process states:
 |-------|-------------|
 | `Stopped` | Not running |
 | `Loading` | Script is being loaded |
-| `Paused` | Execution paused (e.g. breakpoint, user pause) |
+| `Paused` | Execution paused (e.g. breakpoint, user pause, or loaded via `load`) |
 | `Running` | Actively executing |
 
-Process updates are broadcast via SignalR to clients subscribed to `process-{id}` or `all-processes` groups.
+Process updates are broadcast via SignalR to clients subscribed to process events. See [API Overview](./overview) for SignalR event details.
+
+## Cross-References
+
+- [Element APIs](./element-apis) — Script elements link to processes
+- [API Overview](./overview) — SignalR `ProcessStateChanged`, `ProcessOutputReceived` events
+- [Scripting](../scripting/introduction) — Script language reference

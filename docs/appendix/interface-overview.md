@@ -13,6 +13,7 @@ This appendix provides specifications and considerations for BruControl-supporte
 | Interface | USB Port Type | Ethernet | Wi-Fi | Network Settings Saved |
 |-----------|---------------|----------|-------|------------------------|
 | Arduino MEGA (2560) | Type B | W5100 or W5500 based | WINC1500 based | Permanent |
+| Arduino UNO | Type B | N/A | N/A | N/A (Serial only) |
 | ESP32 (e.g. Dev Board) | Micro | N/A | Built-in | Permanent |
 | Adafruit Grand Central M4 | Micro | W5500 based | WINC1500 based | Until New FW |
 | Adafruit Feather M0 | Micro | W5500 based | WINC1500 based | Until New FW |
@@ -24,6 +25,14 @@ This appendix provides specifications and considerations for BruControl-supporte
 - Power cycling does not affect network settings in either case
 :::
 
+:::info Arduino UNO
+The Arduino UNO is supported for **serial (USB) connections only**. There are no network firmware variants for the UNO in BruControl. It has limited I/O compared to the MEGA but can be useful for small, local setups where a USB connection is sufficient.
+:::
+
+:::info Dynamic Device Types
+Device types are synced from the BruControl plugin registry. New boards may be added in future firmware releases. Use `POST /api/v1/device-type/sync` or the Plugin Store to check for updates.
+:::
+
 ## Interface Specifications
 
 ### Power and Voltage
@@ -31,6 +40,7 @@ This appendix provides specifications and considerations for BruControl-supporte
 | Interface | Power Supply (DC) | I/O Voltage | Notes |
 |-----------|------------------|-------------|-------|
 | Arduino MEGA (2560) | 6–12V / VIN | 5V | Readily available. Beware modified designs. |
+| Arduino UNO | 6–12V / VIN | 5V | Same as MEGA, fewer I/O pins. |
 | ESP32 (e.g. Dev Board) | 5V / VIN | 3.3V | Ancillary hardware must be 3.3V compliant. Use voltage dividers or level shifters. |
 | Adafruit Grand Central M4 | 6–12V / VIN | 3.3V | Same as ESP32. |
 | Adafruit Feather M0 | 5V / USB | 3.3V | Same as ESP32. |
@@ -41,6 +51,7 @@ This appendix provides specifications and considerations for BruControl-supporte
 | Interface | Max Digital I/O | Max PWM Outputs | Max Analog Inputs | Analog Divisions | Max 1-Wire Temp | Max Counters |
 |-----------|-----------------|-----------------|------------------|------------------|-----------------|--------------|
 | Arduino MEGA (2560) | 43 / 46 | 12 / 15 | 16 / 16 | 1024 | 10 | 4 |
+| Arduino UNO | 14 / 14 | 6 / 6 | 6 / 6 | 1024 | 10 | 2 |
 | ESP32 (e.g. Dev Board) | 22 / 22 | 14 / 14 | 6 / 6 | 4096 | 10 | 8 |
 | Adafruit Grand Central M4 | 43 / 46 | 12 / 15 | 16 / 16 | 4096 | 10 | 4 |
 | Adafruit Feather M0 | 17 / 17 | 7 / 7 | 8 / 8 | 1024 | 10 | 4 |
@@ -93,5 +104,6 @@ Each interface and firmware combination has a specific [Interface Wiring Map](..
 ## Next Steps
 
 - [Interface-Specific Considerations](./interface-specific) — Per-board notes (WINC1500, SPI sensors, ESP32)
+- [WINC1500 Wi-Fi Considerations](./winc1500-wifi) — Wi-Fi module setup and troubleshooting
 - [Firmware Installation](../hardware/firmware-installation) — Install and configure firmware
 - [Troubleshooting](./troubleshooting) — Resolve connection and setup issues

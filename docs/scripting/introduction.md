@@ -19,6 +19,17 @@ A **script** is a list of instructions your system follows automatically. Think 
 
 You write the steps once; BruControl runs them for you. Scripts can control pumps, valves, heaters, timers, and other elements in your setup.
 
+## How Scripts Execute
+
+BruControl scripts are **interpreted line-by-line**. When you click **Start**, the interpreter reads each line in order and carries out the instruction immediately before moving to the next.
+
+Key things to know about execution:
+
+- **Single-threaded per script** — Each script (Process element) runs on its own thread. One script won't block another.
+- **Concurrent scripts** — You can run multiple scripts at the same time. Each Process element runs independently.
+- **Error behavior** — If a line causes an error, the script stops at that line. The built-in validator catches many errors (unclosed blocks, unknown commands, type mismatches) before you run the script.
+- **Output** — `print` sends text to the **script output panel** at the bottom of the script editor. This is useful for debugging and status messages.
+
 ## Your First Script
 
 Let's run the simplest possible script.
@@ -84,6 +95,10 @@ Element names are **case-sensitive**. `"DigitalOut"` is not the same as `"digita
 Since device elements can address the same physical device, include the control type in the name for clarity. For example, use "Boil Kettle PID" rather than "Boil Kettle".
 :::
 
+### One Statement Per Line
+
+Each line contains a single statement. You cannot put multiple commands on one line, and arithmetic expressions are limited to one operator per line (use parenthesized expressions or intermediate variables for complex math).
+
 ## What You Can Do With Scripts
 
 BruControl scripts allow you to:
@@ -94,8 +109,10 @@ BruControl scripts allow you to:
 - **Make decisions** — Use if/then/else logic
 - **Handle timing** — Delays, waits, timers
 - **Manage data** — Variables, calculations, data storage
-- **Coordinate systems** — Multiple concurrent scripts
+- **Coordinate systems** — Multiple concurrent scripts via `start`/`stop`
 - **Respond to events** — Alarms, buttons, conditions
+- **Control the UI** — Show/hide workspaces, display text on LCDs
+- **Send raw commands** — `tx` and `exec` for direct interface communication
 
 ## Script Execution
 
@@ -105,6 +122,10 @@ Scripts can be:
 - **Paused** — Temporarily stop execution
 - **Stepped** — Execute one line at a time for debugging
 - **Started at different positions** — Jump to specific sections
+
+:::info Script output panel
+When a script runs `print`, the output appears in the output panel below the script editor. Open it to see messages, variable values, and debug output from your scripts.
+:::
 
 ## Editor Features
 
@@ -119,6 +140,14 @@ The script editor supports basic editing commands:
 | Ctrl+F | Find |
 | Ctrl+H | Find & Replace |
 | Ctrl+Space | IntelliSense (suggestions) |
+
+The editor also provides:
+
+- **Syntax highlighting** — Keywords, strings, comments, and element references are color-coded
+- **IntelliSense** — Context-aware suggestions for commands, element names, properties, and variable types
+- **Hover tooltips** — Hover over any keyword, element name, or property to see documentation
+- **Real-time validation** — The validator underlines errors as you type (unknown commands, unclosed blocks, type mismatches)
+- **Auto-indentation** — The editor automatically indents inside `if`/`while` blocks
 
 :::tip Keyboard recommended
 It is recommended to edit scripts using a keyboard-based computer for ease of writing, speed, and manipulation.
