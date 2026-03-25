@@ -1,7 +1,12 @@
 .navbarWrapper :global(.navbar) {
-  padding: 0 1rem;
+  padding: 0 1.5rem;
   min-height: 40px;
   font-size: 0.85rem;
+}
+
+.navbarWrapper :global(.navbar__items--right) {
+  gap: 0.75rem;
+  padding-right: 0.25rem;
 }
 
 [data-theme='dark'] .navbarWrapper :global(.navbar) {

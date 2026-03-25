@@ -73,33 +73,19 @@ const config: Config = {
   ],
 
   themeConfig: {
-    announcementBar: {
-      id: 'v2_release',
-      content: 'BruControl v2 is here — Docker support, new plugin store, and more. <a href="/docs/application/updates-releases">See what\'s new</a>',
-      backgroundColor: '#0e639c',
-      textColor: '#ffffff',
-      isCloseable: true,
-    },
-    // Replace with your project's social card
     image: 'img/logo.svg',
     colorMode: {
       defaultMode: 'dark',
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'BruControl',
+      title: 'Documentation',
       logo: {
         alt: 'BruControl Logo',
-        src: 'img/logo.svg',
+        src: 'img/favicon.png',
         href: '/',
       },
       items: [
-        {
-          type: 'docSidebar',
-          sidebarId: 'docsSidebar',
-          position: 'left',
-          label: 'Documentation',
-        },
         {
           href: 'https://brucontrol.com',
           label: 'BruControl.com',
@@ -113,7 +99,7 @@ const config: Config = {
         {
           title: 'Docs',
           items: [
-            { label: 'Getting Started', to: '/intro' },
+            { label: 'Getting Started', to: '/' },
             { label: 'Quick Start', to: '/quick-start' },
             { label: 'API Reference', to: '/api/overview' },
           ],
