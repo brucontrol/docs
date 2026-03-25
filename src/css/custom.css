@@ -347,6 +347,37 @@ code {
 }
 
 /* =========================================================
+   ANNOUNCEMENT BAR
+   ========================================================= */
+div[class*='announcementBar'] {
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.4rem 0;
+}
+
+div[class*='announcementBar'] a {
+  color: #ffffff;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+div[class*='announcementBar'] a:hover {
+  color: #d4d4d4;
+}
+
+/* =========================================================
+   LAST UPDATED
+   ========================================================= */
+.theme-last-updated {
+  font-size: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+[data-theme='dark'] .theme-last-updated {
+  color: #858585;
+}
+
+/* =========================================================
    SEARCH — VS Code command palette style
    ========================================================= */
 [data-theme='dark'] .dsla-search-wrapper {
@@ -382,6 +413,27 @@ code {
   border: 1px solid #3c3c3c !important;
   border-radius: 5px !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32) !important;
+}
+
+.aa-DetachedOverlay .aa-DetachedContainer {
+  margin: 10vh auto !important;
+  max-width: 600px !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  position: fixed !important;
+  top: 0 !important;
+  border-radius: 8px !important;
+}
+
+[data-theme='dark'] .aa-DetachedOverlay .aa-DetachedContainer {
+  background-color: #252526 !important;
+  border: 1px solid #3c3c3c !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme='dark'] .aa-DetachedOverlay {
+  background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
 [data-theme='dark'] .aa-Item {

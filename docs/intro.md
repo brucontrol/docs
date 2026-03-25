@@ -2,6 +2,7 @@
 id: intro
 title: Introduction to BruControl
 sidebar_position: 1
+slug: /
 ---
 
 # BruControl

@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'BruControl Documentation',
   tagline: 'Complete control and automation for your brewing system',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -60,6 +60,7 @@ const config: Config = {
           routeBasePath: '/',
           sidebarPath: './sidebars.ts',
           exclude: ['**/plans/**'],
+          showLastUpdateTime: true,
           editUrl:
             'https://github.com/brucontrol/docs/edit/main/',
         },
@@ -72,6 +73,13 @@ const config: Config = {
   ],
 
   themeConfig: {
+    announcementBar: {
+      id: 'v2_release',
+      content: 'BruControl v2 is here — Docker support, new plugin store, and more. <a href="/docs/application/updates-releases">See what\'s new</a>',
+      backgroundColor: '#0e639c',
+      textColor: '#ffffff',
+      isCloseable: true,
+    },
     // Replace with your project's social card
     image: 'img/logo.svg',
     colorMode: {
