@@ -1,0 +1,21 @@
+.navbarWrapper :global(.navbar) {
+  padding: 0 1rem;
+  min-height: 40px;
+  font-size: 0.85rem;
+}
+
+[data-theme='dark'] .navbarWrapper :global(.navbar) {
+  background-color: #252526;
+  border-bottom: 1px solid #3c3c3c;
+  box-shadow: none;
+}
+
+.navbarWrapper :global(.navbar__logo) {
+  height: 24px;
+  margin-right: 0.5rem;
+}
+
+.navbarWrapper :global(.navbar__title) {
+  font-weight: 600;
+  font-size: 0.85rem;
+}

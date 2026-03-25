@@ -49,7 +49,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Dashboard',
+      label: 'Workspace',
       items: [
         'dashboard/overview',
         'dashboard/canvas-layout',

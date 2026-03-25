@@ -37,6 +37,21 @@ const config: Config = {
     locales: ['en'],
   },
 
+  plugins: [
+    [
+      '@cmfcmf/docusaurus-search-local',
+      {
+        indexDocs: true,
+        indexBlog: false,
+        indexPages: false,
+        indexDocSidebarParentCategories: 2,
+        includeParentCategoriesInPageTitle: true,
+        language: 'en',
+        maxSearchResults: 10,
+      },
+    ],
+  ],
+
   presets: [
     [
       'classic',
@@ -58,8 +73,9 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/logo.svg',
     colorMode: {
+      defaultMode: 'dark',
       respectPrefersColorScheme: true,
     },
     navbar: {
@@ -81,44 +97,41 @@ const config: Config = {
           label: 'BruControl.com',
           position: 'right',
         },
-        {
-          href: 'https://github.com/brucontrol/docs',
-          label: 'GitHub',
-          position: 'right',
-        },
       ],
     },
     footer: {
       style: 'dark',
       links: [
         {
-          title: 'Documentation',
+          title: 'Docs',
           items: [
-            {
-              label: 'Getting Started',
-              to: '/',
-            },
+            { label: 'Getting Started', to: '/intro' },
+            { label: 'Quick Start', to: '/quick-start' },
+            { label: 'API Reference', to: '/api/overview' },
           ],
         },
         {
-          title: 'Community',
+          title: 'Resources',
           items: [
-            {
-              label: 'BruControl Website',
-              href: 'https://brucontrol.com',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/brucontrol/docs',
-            },
+            { label: 'Hardware Setup', to: '/hardware/overview' },
+            { label: 'Scripting Guide', to: '/scripting/introduction' },
+            { label: 'Element Templates', to: '/element-templates/overview' },
+          ],
+        },
+        {
+          title: 'Links',
+          items: [
+            { label: 'BruControl.com', href: 'https://brucontrol.com' },
+            { label: 'GitHub', href: 'https://github.com/brucontrol/docs' },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} BruControl. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} BruControl`,
     },
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      theme: prismThemes.vsLight,
+      darkTheme: prismThemes.vsDark,
+      additionalLanguages: ['bash', 'json', 'csharp'],
     },
   } satisfies Preset.ThemeConfig,
 };
