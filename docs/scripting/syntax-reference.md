@@ -24,7 +24,7 @@ Formal reference for all commands, types, operators, and syntax.
 - Execution starts at the first section (by file order); `[main]` is the conventional entry point
 - Sections are targets for `goto` and `call`
 - Section names can include spaces: `[heating phase]`
-- Section names are case-insensitive when referenced by `goto`/`call`
+- Section names are **case-sensitive**. `goto "Main"` will NOT find a section declared as `[main]`.
 
 ## Variable Types
 
@@ -33,7 +33,7 @@ Formal reference for all commands, types, operators, and syntax.
 | bool | `new bool name` | Boolean (true/false, on/off) | `true`, `off` |
 | value | `new value name` | Numeric (integer or decimal) | `42`, `98.6` |
 | time | `new time name` | Time span (hh:mm:ss) | `01:30:00` |
-| datetime | `new datetime name` | Date and time | `now`, `"03-18-2024 09:00:00 PM"` |
+| datetime | `new datetime name` | Date and time | `now`, `"2024-03-18T21:00:00"` |
 | string | `new string name` | Text string | `"Hello World"` |
 
 ## Commands
@@ -107,6 +107,7 @@ display "MEGA" 2 myVariable
 |---------|--------|-------------|
 | sync | `sync "Element"` | Force device sync (must be a device element) |
 | autosync | `autosync on` or `autosync off` | Enable/disable automatic sync |
+| estop | `estop` | Disable all enabled ports on all connected devices |
 
 ### Workspace
 
@@ -116,15 +117,55 @@ display "MEGA" 2 myVariable
 | hide | `hide workspace "Name"` or `hide workspace index` | Hide workspace |
 | reveal | `reveal workspace "Name"` or `reveal workspace index` | Reveal workspace |
 
+:::info Workspace indices are 1-indexed
+When using numeric indices, they start at **1**, not 0. `show workspace 1` shows the first workspace.
+:::
+
+### Webhooks
+
+| Command | Syntax | Description |
+|---------|--------|-------------|
+| webhook | `webhook "Name" [key=value ...]` | Call a named webhook defined in Settings → Webhooks |
+
+The `webhook` command looks up a webhook definition by name, substitutes any `key=value` parameters into the body template's `{{placeholder}}` fields, and enqueues the HTTP request for background delivery.
+
+**Webhook examples:**
+```
+webhook "SlackAlert" message="Temp is high"
+webhook "NtfyAlert" title="Alert" message="Fermenter hit 78°F" priority=4
+webhook "DiscordHook"
+```
+
+Parameter values must be simple literals or single-token variable names:
+
+```
+webhook "TempLog" temperature=72.5
+webhook "TempLog" temperature=myVar
+```
+
+:::warning Element references as parameter values
+Multi-token element references like `"Boil Temp" Value` cannot be used directly as webhook parameter values — the tokenizer cannot parse them in that position. Read the element value into a variable first, then pass the variable:
+
+```
+new value temp
+temp = "Boil Temp" Value
+webhook "TempLog" temperature=temp
+```
+:::
+
+:::info Webhook setup
+Webhooks must be defined in **Settings → Webhooks** before calling them from a script. Only HTTPS URLs are allowed. See [Webhook API](../api/misc-apis#webhooks-webhookcontroller) for REST management.
+:::
+
 ### Direct commands
 
 | Command | Syntax | Description |
 |---------|--------|-------------|
 | tx | `tx "Interface" command` | Transmit raw command to interface |
-| exec | `exec "command"` | Execute a system-level command |
+| exec | `exec "command"` | Reserved — not yet implemented in the current interpreter |
 
-:::info exec command
-The `exec` command provides system-level execution capability. It is an advanced feature for integration with external programs or operating system commands.
+:::warning exec command
+The `exec` command is **reserved** and is **not yet implemented** in the current interpreter. It appears in the keyword list for forward-compatibility but will produce no effect or an error if used. Do not rely on it in scripts.
 :::
 
 ## Arithmetic Operators
@@ -165,6 +206,10 @@ The `exec` command provides system-level execution capability. It is an advanced
 |----------|---------|
 | `and`, `&&` | Logical AND |
 | `or`, `\|\|` | Logical OR |
+
+:::danger Mixing AND and OR
+Mixing `and` and `or` in the same expression **without parentheses** is a **hard runtime error**, not merely ambiguous. The interpreter will reject the expression. Always use parentheses to group sub-expressions when combining `and` with `or`.
+:::
 
 ## Parenthesized Expressions
 
@@ -243,11 +288,15 @@ Examples: `00:00:00`, `01:30:00`, `00:05:30`
 
 ## DateTime Literals
 
-Format: `"MM-DD-YYYY hh:mm:ss AM/PM"`
+Canonical format (ISO 8601): `"yyyy-MM-ddTHH:mm:ss"`
 
-Example: `"03-18-2024 09:00:00 PM"`
+Example: `"2024-03-18T21:00:00"`
 
 Or use the `now` keyword for the current date and time.
+
+:::info Legacy format
+The legacy format `"MM-DD-YYYY hh:mm:ss AM/PM"` (e.g., `"03-18-2024 09:00:00 PM"`) may still parse on US-locale systems, but ISO 8601 is the canonical format and should be preferred for portability.
+:::
 
 ## String Literals
 
@@ -318,7 +367,8 @@ All keywords recognized by the BruControl scripting language:
 | Timing | `wait`, `sleep` |
 | Script/Timer control | `start`, `stop`, `pause`, `resume`, `reset`, `restart`, `load` |
 | Output | `print`, `display` |
-| Device sync | `sync`, `autosync` |
+| Device sync | `sync`, `autosync`, `estop` |
+| Webhooks | `webhook` |
 | Workspace | `show`, `hide`, `reveal` |
 | Direct | `tx`, `exec` |
 | Boolean constants | `true`, `false`, `on`, `off` |

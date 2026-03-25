@@ -118,7 +118,7 @@ Keys match the PWM Output `ui-controls.json`.
 
 | Property | Type | Access | Description |
 |----------|------|--------|-------------|
-| `Value` | number | RO | Current output after calibration. |
+| `Value` | number | RW | Current output after calibration. Although documented elsewhere as read-only, the `[NotPatchable]` attribute is **not** present on `Value` in the ViewModel, so it may be writable at the API layer. |
 | `RawValue` | number | RO | Raw drive level (e.g., 0–255) before calibration. |
 | `RequestedValue` | number | RW | Target output; firmware maps to hardware. |
 

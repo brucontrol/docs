@@ -17,7 +17,7 @@ The dashboard canvas supports zoom and pan for navigating large layouts. Zoom an
 | **Touch** | Pinch with two fingers (works in both modes) |
 | **Buttons** | Zoom in (+), Zoom out (−), Reset (100%), Fit to view |
 
-Zoom in/out buttons are disabled at the 200% and 10% limits respectively. **Fit to view** calculates a zoom level that fits all elements in the viewport (capped at 100%) and centers the content.
+Zoom in/out buttons are disabled at the 200% and 10% limits respectively. **Fit to view** calculates a zoom level that fits all elements in the viewport (capped at 200%) and centers the content.
 
 ## Pan
 
@@ -47,7 +47,7 @@ The **CanvasControls** component provides all zoom and pan controls. It has two 
 | Zoom % | Percentage text | Reset to 100% on click | |
 | Zoom in | + | Increase zoom | Disabled at 200% |
 | Home | Home | Reset pan/zoom to initial position | Returns to the default view |
-| Fit to view | Maximize2 | Zoom to fit all elements | Caps at 100% zoom |
+| Fit to view | Maximize2 | Zoom to fit all elements | Caps at 200% zoom |
 | Fullscreen | Maximize/Minimize | Toggle fullscreen mode | Only shown when supported |
 
 ## Persistence

@@ -32,18 +32,12 @@ PUT /api/v1/element-template/defaults
 
 **Example payload:**
 
+The API accepts a flat `Dictionary<string, string>` — a map of elementType → templateId:
+
 ```json
 {
-  "defaults": [
-    {
-      "elementType": "timer",
-      "elementTemplateId": "abc12345-6789-..."
-    },
-    {
-      "elementType": "globalVariable-value",
-      "elementTemplateId": "def98765-4321-..."
-    }
-  ]
+  "timer": "abc12345-6789-...",
+  "globalVariable-value": "def98765-4321-..."
 }
 ```
 

@@ -36,16 +36,22 @@ Timers frequently reference Alarms in **alarm associations**. The Timer supplies
 | `displayName` | string | Name shown in UI |
 | `name` | string | Internal name (fallback) |
 | `active` | boolean | Whether the alarm is currently active (condition met; script can clear to acknowledge) |
-| `sound` | None \| Default \| Custom | Sound playback mode |
-| `soundFile`, `soundFile2`, `soundFile3` | string | Custom sound file paths |
-| `zeroFileIndex` | number | Active sound slot (0, 1, 2) for custom files |
+| `soundFile` | string | Sound file path (default `/sounds/alarm.wav`) |
 | `loop` | boolean | Loop sound until acknowledged |
+| `onImagePath` | string | Path to image displayed when alarm is active |
+| `offImagePath` | string | Path to image displayed when alarm is inactive |
 | `digitalOutputId` | string | Digital output to assert when the alarm triggers |
 | `userControl` | boolean | Allow manual acknowledge from the Dashboard |
 | `visibility` | Default \| Visible \| Hidden \| HiddenLocked | When to show |
 | `enableHistoricalLogging` | boolean | Log active state over time |
 | `loggingIntervalSeconds` | number | Logging interval |
 | `maxSilenceSeconds` | number | Max silence window for logging (when applicable) |
+
+:::info Legacy desktop properties
+
+Properties such as `soundFile2`, `soundFile3`, `zeroFileIndex`, and the `sound` enum (None/Default/Custom) exist in the desktop application but are **not** available in the web API. The web API exposes only `soundFile` (string path, default `/sounds/alarm.wav`).
+
+:::
 
 ## Common Script Properties
 

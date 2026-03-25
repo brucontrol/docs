@@ -35,7 +35,7 @@ On touch devices, a ⋮ (vertical ellipsis) button appears next to items. Tap it
 | Generic | Add a generic element |
 | Global Variable | Add a global variable |
 | Profile | Add a profile element |
-| Script | Add a script element (inspector) |
+| Script Inspector | Add a script element |
 | Timer | Add a timer element |
 | Toggle Switch | Add a toggle switch element |
 | Folder | Create a folder to organize elements |
@@ -75,7 +75,6 @@ On touch devices, a ⋮ (vertical ellipsis) button appears next to items. Tap it
 | Run | Start the script |
 | Stop | Stop the running script |
 | Edit Script | Open the script in the Script Panel editor |
-| Rename Script | Change the script name |
 | Delete Script | Delete the script |
 
 :::tip Pause and Resume
@@ -87,7 +86,6 @@ Pause and Resume are available in the **Script Panel** when a script is running,
 | Action | Description |
 |--------|-------------|
 | Edit [Type] | Open the edit drawer for that element |
-| Rename [Type] | Change the element name |
 | Move to Workspace | Move the element to a different workspace |
 | Duplicate | Create a copy of the element (non-device elements only) |
 | Delete [Type] | Delete the element |
@@ -97,7 +95,7 @@ Pause and Resume are available in the **Script Panel** when a script is running,
 | Action | Description |
 |--------|-------------|
 | Edit [Type] | Open the edit drawer |
-| Calibrations... | Open calibrations for analog/control elements (Analog Input, Counter, OW Temp, SPI Sensor, Hydrometer, PWM Output) |
+| Calibrations... | Open calibrations for analog/control elements (Analog Input, Counter, OW Temp, SPI Sensor, Hydrometer, PWM Output, PID, Deadband) |
 | Move to Workspace | Move the element to a different workspace |
 | Delete [Type] | Delete the device element |
 
@@ -127,7 +125,6 @@ Pause and Resume are available in the **Script Panel** when a script is running,
 | Action | Description |
 |--------|-------------|
 | Open | Open the data view in the Data Explorer |
-| Rename | Change the data view name |
 | Duplicate | Create a copy of the data view |
 | Delete Data View | Delete the data view |
 
@@ -137,11 +134,9 @@ Pause and Resume are available in the **Script Panel** when a script is running,
 |--------|-------------|
 | New Interface | Add a new interface (opens device creation) |
 
-### Media Folder
+### Mocks Folder
 
-| Action | Description |
-|--------|-------------|
-| Open | Open the media browser view |
+The Mocks folder context menu shows a single disabled informational item: **"Mock devices are created when you enable mock mode on an interface"**. There are no actionable menu items.
 
 ### Settings — Shutdown
 
@@ -153,7 +148,7 @@ You can also drag items to move them:
 
 - **Elements** — Drag into a folder, to the workspace root, or use Move to Workspace for cross-workspace moves
 - **Processes** — Drag into script folders
-- **Folders** — Drag to reorder or nest within other folders
+- **Folders** — Drag to nest within other folders or move to a different parent
 - **Workspace tabs** — Drag tabs in the tab bar to reorder workspaces
 
 ## Tips

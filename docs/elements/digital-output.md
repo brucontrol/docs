@@ -113,7 +113,8 @@ The toggle uses **toggle**\* properties. Older docs sometimes referred to `value
 | `State` | boolean | RW | On/off output state. |
 | `ActiveLow` | boolean | RW | Invert active level: ON drives low instead of high when enabled. |
 | `OneShot` | number | RW | One-shot duration in ms; `0` disables one-shot. |
-| `OneShotDirection` | number | RW | `0` = pulse **ON→OFF**, `1` = **OFF→ON**. |
+| `OneShotDirection` | boolean | RW | `true` = pulse **OFF→ON**, `false` = pulse **ON→OFF**. |
+| `ActualState` | boolean | RO | State as received from the physical device (may differ from `State` during one-shot or dual-throw transitions). |
 | `DualThrowPortNum` | number | RW | Companion port index for dual-throw relay logic. |
 | `DualThrowDelay` | number | RW | Delay in ms between throws when using dual-throw mode. |
 

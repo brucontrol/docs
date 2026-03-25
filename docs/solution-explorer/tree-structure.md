@@ -29,7 +29,7 @@ The Solution Explorer tree is organized into a well-defined hierarchy. Understan
     ├── Security
     ├── License
     ├── Data Storage
-    ├── Data Explorer
+    ├── Webhooks
     ├── Element Templates
     ├── Device Types
     ├── Plugin Store      (opens in new tab)
@@ -117,7 +117,7 @@ Settings items open their respective configuration panels in a modal, except for
 | Security | Opens Security settings modal |
 | License | Opens License settings modal |
 | Data Storage | Opens Data Storage settings modal |
-| Data Explorer | Opens Data Explorer settings modal |
+| Webhooks | Opens Webhooks settings modal |
 | Element Templates | Opens Element Templates settings modal |
 | Device Types | Opens Device Types settings modal |
 | Plugin Store | Opens Plugin Store in a **new browser tab** |

@@ -125,7 +125,9 @@ The **Band** row summarizes deadband and inner-band parameters for at-a-glance v
 
 ## Script Integration
 
-**Deadband-specific script properties:** **`InputPortID`** (string, read/write), **`Target`** (number, read/write), **`DeadbandOffset`** (number, read/write), **`InnerBandOffset`** (number, read/write), **`InnerBandDrive`** (number, read/write), **`OuterBandDrive`** (number, read/write), **`InitialOutput`** (number, read/write), **`Reversed`** (boolean, read/write), **`CalcTime`** (number, read/write), **`OutTime`** (number, read/write), **`RawValue`** (number, read-only), **`Value`** (number, read-only).
+**Deadband-specific script properties:** **`InputPortID`** (string, read/write), **`Target`** (number, read/write), **`DeadbandOffset`** (number, read/write, 0–30000), **`InnerBandOffset`** (number, read/write), **`InnerBandDrive`** (number, read/write, 0–50), **`OuterBandDrive`** (number, read/write, 0–50), **`InitialOutput`** (number, read/write, 0–100), **`Reversed`** (boolean, read/write), **`CalcTime`** (number, read/write, 1–30), **`OutTime`** (number, read/write, 1–10), **`Pwm`** (boolean, read/write — controls PWM output mode), **`RawValue`** (number, read-only), **`Value`** (number, read-only).
+
+**Resolved read-only properties (for frontend rendering):** **`InputElementId`** (Guid, read-only — resolved from InputPortID), **`InputElementType`** (string, read-only), **`InputDisplayName`** (string, read-only).
 
 **Common device script properties:** **`Enabled`** (boolean, read/write), **`Connected`** (boolean, read-only), **`RefreshMultiple`** (number, read/write), **`DisplayText`** (string, read-only), **`PortID`** (string, read-only).
 

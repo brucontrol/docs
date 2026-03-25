@@ -26,7 +26,7 @@ The **CanvasControls** toolbar provides quick access to all dashboard actions. I
 | **Zoom out** | − | Decrease zoom (disabled at 10%) |
 | **Zoom %** | Percentage | Click to reset zoom to 100% |
 | **Zoom in** | + | Increase zoom (disabled at 200%) |
-| **Home** | Home | Reset pan position to the initial view |
+| **Home** | Home | Reset pan position and zoom level to the initial view |
 | **Fit to view** | Maximize | Zoom and pan to fit all elements in the viewport |
 | **Fullscreen** | Maximize/Minimize | Toggle fullscreen mode (when available) |
 

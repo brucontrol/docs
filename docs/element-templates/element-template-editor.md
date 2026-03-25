@@ -83,7 +83,9 @@ Built-in templates are **read-only** — you cannot modify them directly. To cus
 
 ## Importing Templates
 
-You can import a template by uploading a folder containing the source files (`index.html`, `style.css`, `index.js`, etc.). This is useful for templates developed externally or received from other users.
+:::note
+Local file import (uploading a folder) is not available. To sideload a template developed externally, use the **Developer / Sideload** feature in the [Plugin Store](plugin-store.md), which accepts a GitHub repository URL pointing to the plugin folder.
+:::
 
 ## Save and Compile Pipeline
 

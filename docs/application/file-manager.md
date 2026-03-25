@@ -93,6 +93,8 @@ In some parts of BruControl (e.g., selecting an alarm sound file or a custom ass
 
 ## Technical Details
 
+Files registered as media assets display their media slug, providing a stable URL reference.
+
 - **Frontend:** `FileManager` component at `/files` route
 - **Backend:** `FileUploadController` at `api/v1/files`; `FileStorageService` manages files under the user data directory's `uploads` subfolder
 - **File serving:** Files are served at `/uploads/{path}` for viewing or downloading. Each file entry includes its `contentType` and direct `url` for access.

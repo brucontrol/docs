@@ -86,6 +86,7 @@ sidebar_position: 2
 - **REST API** (OpenAPI/Swagger) — Full programmatic access to workspaces, elements, devices, processes, and settings
 - **Data Exchange Legacy Protocol** — Read and write global variables from third-party systems (Node-RED, Home Assistant, custom scripts) via simple HTTP GET/PUT endpoints
 - **SignalR real-time hub** — Push-based WebSocket updates for elements, processes, devices, and charts without polling
+- **Outbound webhooks** — Define HTTPS webhooks with templated bodies; call from scripts to push data to Slack, Discord, ntfy, or any external service
 - **Media slug system** — Map friendly names to uploaded files for script image references
 
 ### Automation & Scripting
@@ -94,6 +95,8 @@ sidebar_position: 2
 - Scripting includes flow control, variable handling, device control, and properties
 - **Processes** – Run concurrent scripts to manage different machine systems and perform multi-tasking
 - Scripts can be run, paused, stepped-through, or started in different places
+- **Emergency stop (`estop`)** – Instantly disable all enabled ports on all connected devices from script, equivalent to the toolbar stop-all action
+- **Webhooks** – Call external HTTP endpoints from scripts with `webhook "Name" key=value` syntax; define webhooks in Settings with body templates supporting `{{placeholder}}` substitution
 
 ### Configuration & Calibration
 

@@ -96,8 +96,8 @@ endif
 
 Without parentheses, the behavior may not match your intent. Always group sub-expressions when mixing `and` with `or`.
 
-:::warning Mixing AND and OR
-Always use parentheses when combining `and` and `or` in the same condition to avoid ambiguous evaluation order.
+:::danger Mixing AND and OR
+Mixing `and` and `or` in the same condition **without parentheses** is a **hard runtime error** — the interpreter will reject the expression, not silently pick an evaluation order. Always use parentheses to make the grouping explicit.
 :::
 
 ## Comparing Different Types
@@ -123,6 +123,10 @@ if mode == "auto"
   print "Running in auto mode"
 endif
 ```
+
+:::info String comparisons are case-insensitive
+Both sides of a string comparison are lowercased before comparison. `if mode == "Auto"` and `if mode == "auto"` produce the same result.
+:::
 
 ### Booleans
 
@@ -208,6 +212,10 @@ endif
 ```
 
 The editor auto-indents after `if`, `else`, `elseif`, and `while` lines, and auto-outdents after `endif` and `endwhile`.
+
+:::warning elseif not allowed in while blocks
+`elseif` cannot be used inside a `while` block. The interpreter throws: **`'elseif' not allowed after 'while'`**. Use separate `if`/`endif` blocks inside `while` loops instead.
+:::
 
 ## Common Mistakes
 

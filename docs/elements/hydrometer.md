@@ -43,6 +43,21 @@ When comparing **`SG`** to manual samples, allow time for equilibrium and temper
 
 Editor-only fields (including raw readings, color hints, or channel selection where provided) configure how the device is interpreted and displayed. Scripts do not see those properties—use **`SG`**, **`Temp`**, **`DisplayText`**, and common device diagnostics instead.
 
+### Color
+
+The **`Color`** property uses the **HydrometerColor** enum to visually distinguish hydrometers on the Dashboard and in device lists:
+
+| Value | Name |
+|-------|------|
+| 1 | Red |
+| 2 | Green |
+| 3 | Black |
+| 4 | Purple |
+| 5 | Orange |
+| 6 | Blue |
+| 7 | Yellow |
+| 8 | Pink |
+
 ## Custom properties (template)
 
 From `ui-controls.json` for **`hydrometer`**.

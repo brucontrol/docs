@@ -34,7 +34,7 @@ When you create or edit a Data View, you can configure:
 
 ### View Type
 
-Choose how the data is laid out:
+The default view type for new data views is `timeSeries`. Choose how the data is laid out:
 
 | View Type | Description |
 |-----------|-------------|

@@ -69,7 +69,7 @@ POST /api/v1/process/{id}/run
 
 Starts or resumes a process. If the process is paused, this resumes execution.
 
-**Response:** `ProcessViewModel`, `404 Not Found`, or `400 Bad Request` (e.g. invalid state)
+**Response:** `ProcessViewModel` or `404 Not Found` with an error message if the process cannot be started (e.g., not found or invalid state)
 
 ### Load Process
 

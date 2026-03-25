@@ -53,6 +53,10 @@ Both use the same element template system:
 
 Device elements connect to hardware; non-device elements do not. The element template model treats them uniformly: **element + template + appearance**.
 
+:::note Generic elements
+Generic elements have no native properties — all properties are custom (defined via `ui-controls.json` or added by the user). This makes `generic` the most flexible element type for template authors, since every property key in ui-controls becomes a user-configurable setting with no risk of shadowing live data.
+:::
+
 ## Related Topics
 
 - [Element Template Developer Guide](element-template-developer-guide.md) — **Complete reference for plugin authors** (SDK, manifest, ui-controls, examples)

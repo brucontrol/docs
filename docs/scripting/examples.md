@@ -168,6 +168,65 @@ goto "main"
 The `display` command text cannot contain these characters: `/!?$,;`
 :::
 
+## Emergency Stop (estop)
+
+Immediately disable all enabled ports on all connected devices:
+
+```
+[main]
+if "Boil Temp" Value > 220
+  print "EMERGENCY: Temperature exceeded limit!"
+  estop
+endif
+```
+
+The `estop` command is the scripting equivalent of the toolbar "stop all ports" action. It disables each enabled port in software and sends a hardware resync command to each connected interface. It does **not** shut down the application or stop the running script.
+
+## Webhook Notifications
+
+Send an alert to an external service when a condition triggers. The webhook must first be defined in **Settings → Webhooks**.
+
+### Simple notification
+
+```
+[main]
+webhook "SlackAlert" message="Brew session started"
+```
+
+### Alert on temperature threshold
+
+```
+[monitor]
+wait "Fermenter Temp" Value > 78
+webhook "NtfyAlert" title="Temp Warning" message="Fermenter hit 78°F" priority=4
+sleep 60000
+goto "monitor"
+```
+
+### Logging values with template parameters
+
+If the webhook "TempLog" has a body template like `{"sensor": "{{sensor}}", "reading": {{value}}}`, pass the matching parameters from script:
+
+```
+[main]
+new value temp
+temp = "Boil Temp" Value
+webhook "TempLog" sensor="Boil Kettle" value=temp
+sleep 10000
+goto "main"
+```
+
+### Emergency estop with webhook
+
+```
+[main]
+if "Boil Temp" Value > 220
+  estop
+  webhook "SlackAlert" message="ESTOP triggered — temp exceeded 220°F"
+  print "Emergency shutdown — webhook sent"
+endif
+```
+
 ## Sync and Autosync
 
 Batch property changes and sync manually for coordinated updates:
@@ -209,8 +268,8 @@ new string timeStr
 startTime = now
 print "Started at: " + startTime
 
-// Assign a specific datetime
-dt = "03-18-2024 09:00:00 PM"
+// Assign a specific datetime (ISO 8601 format)
+dt = "2024-03-18T21:00:00"
 print dt
 
 // Add time to a datetime

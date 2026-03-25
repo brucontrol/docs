@@ -90,7 +90,15 @@ The **gv-bool** template targets boolean globals. Label and background groups mi
 
 ## Script Integration
 
-Globals expose **`Value`** (read/write; type follows the variable’s configured type). For numeric globals, **`Precision`** (read/write number) controls how many decimal places are shown in contexts that honor precision.
+Globals expose **`Value`** (read/write; type follows the variable’s configured type). For numeric globals, **`Precision`** (read/write number) controls how many decimal places are shown in contexts that honor precision. Note that the ViewModel default for **`Precision`** is **3**, which differs from the element template default of 0 in `ui-controls.json`.
+
+Additional native properties:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| **`VariableType`** | ScriptVariableType enum | Determines the type of value stored: `Value`, `Boolean`, `String`, `DateTime`, `TimeSpan`. |
+| **`Format`** | string | Display format string for value presentation. |
+| **`FileValue`** | string | File-backed value path for persistent storage. |
 
 Every element also supports: **`ID`** (string, read-only), **`DisplayName`** (string, read/write), **`Visibility`** (string, read/write), **`EnableHistoricalLogging`** (boolean, read/write), **`LoggingIntervalSeconds`** (number, read/write), **`MaxSilenceSeconds`** (number, read/write).
 

@@ -21,7 +21,8 @@ The Live tab shows a real-time stream of log entries as they are written. It con
 
 - **Use for:** Watching current activity, debugging in real time, monitoring startup or connection attempts
 - **Streaming:** Events are delivered in batches (`LogEventBatchReceived`) or individually (`LogEventReceived`). The live view maintains a rolling buffer of the most recent **500 events** — older events scroll out as new ones arrive.
-- **Scrolling:** The view auto-scrolls to the latest entries when at the bottom. Scroll up to review older lines.
+- **Level filters:** The Live tab supports five log levels: **Debug**, **Information**, **Warning**, **Error**, and **Fatal**. (Verbose is not available in the Live tab — use the Search tab for Verbose-level entries.)
+- **Scrolling:** The view auto-scrolls to the latest entries when at the bottom. Scroll up to review older lines. Use the **Scroll to Bottom** button to jump back to the latest entries after scrolling up.
 - **Pause / Resume** — Use **Pause** to freeze the stream and inspect a section; **Resume** to continue receiving new entries.
 - **Clear** — Use the **Clear** button to empty the current live buffer and start fresh.
 
@@ -52,7 +53,7 @@ The Search tab lets you search historical log files with filters. It is the main
 2. Click **Search** (or equivalent).
 3. Results appear in a list. Each entry typically shows:
    - **Timestamp**
-   - **Level** (e.g., VRB, DBG, INF, WRN, ERR, FTL)
+   - **Level** (e.g., VRB, DBG, INF, WRN, ERR, FTL — VRB is only available in Search tab results)
    - **Category** (e.g., component or namespace)
    - **Message** (the log text)
 4. **Load more** — Scroll down to fetch the next page of results.

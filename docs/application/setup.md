@@ -14,10 +14,10 @@ BruControl is available in two forms:
 
 ### Windows Zip
 
-- **Best for:** Running on a Windows PC (desktop or laptop)
+- **Best for:** Running directly on a Windows machine
 - **Download:** Visit [BruControl.com](https://brucontrol.com) or the [GitHub releases page](https://github.com/brucontrol/app/releases)
 - **Format:** A ZIP file containing the application and dependencies
-- **Requirements:** Windows 10 or 11 (64-bit). See [System Requirements](../requirements) for details.
+- **Requirements:** Windows 10 or later (64-bit). See [System Requirements](../requirements) for details.
 
 ### Docker
 
@@ -48,7 +48,12 @@ On first run, BruControl will create a folder in your Documents directory called
 
 ### Configuring the URL and Port
 
-The host and port are configured in `appsettings.json` in the same folder as the executable. Edit `BruControl:Urls` to change the binding (e.g. `http://0.0.0.0:5005` for port 5005 on all interfaces). You can also set the `ASPNETCORE_URLS` environment variable to override this.
+The listen URL is resolved in this order:
+1. `ASPNETCORE_URLS` environment variable
+2. `BruControl:Urls` in `appsettings.json`
+3. Default: `http://0.0.0.0:5005`
+
+Edit `appsettings.json` in the same folder as the executable to change the binding (e.g. `http://0.0.0.0:5005` for port 5005 on all interfaces), or set the `ASPNETCORE_URLS` environment variable to override it.
 
 ## Installation (Docker)
 
@@ -64,6 +69,16 @@ docker run -p 5005:5005 -e BRUCONTROL_DATA_DIR=/data/brucontrol -v brucontrol_da
 :::info Data Persistence
 Set `BRUCONTROL_DATA_DIR` to the path inside the container where data is stored, and mount that path to a volume or host directory so configuration and data persist across container restarts.
 :::
+
+A `docker-compose.yml` can simplify container management. A typical setup uses a named volume `brucontrol_data_v2`, the `BRUCONTROL_DATA_DIR` environment variable, and a restart policy (e.g., `restart: unless-stopped`).
+
+### Reverse Proxy
+
+BruControl supports running behind reverse proxies (Traefik, Caddy, nginx, Coolify). Forwarded headers (`X-Forwarded-For`, `X-Forwarded-Proto`, `X-Forwarded-Host`) are processed automatically.
+
+### Health Check
+
+A health check endpoint is available at `GET /health` for container orchestration and monitoring.
 
 ### Shutdown Behavior for Docker
 
@@ -91,7 +106,7 @@ BruControl uses a license system. The application is fully functional without ac
 
 | Level | Capabilities |
 |-------|--------------|
-| **Evaluation** | Full functionality for 15 days; mirrors Advanced level |
+| **Evaluation** | Full functionality for 15 days; mirrors Professional level |
 | **Basic** | One serial (USB) interface |
 | **Advanced** | Unlimited serial and network interfaces |
 | **Professional** | Advanced + Data Exchange (external API communication), Mock Mode |

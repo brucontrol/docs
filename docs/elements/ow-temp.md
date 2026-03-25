@@ -12,11 +12,11 @@ The **1-Wire Temperature** element (often called **OW Temp**) reads Dallas/Maxim
 
 The interface firmware performs 1-Wire discovery and conversion, then BruControl exposes **`Value`** as the temperature in the unit chosen by **`Unit`**. **`RawValue`** is the read-only numeric reading before the same calibration layer you might apply elsewhere on the element—use it to confirm the probe is responding when **`Value`** looks wrong after scaling.
 
-**SensorIndex** (read/write, 0–99) selects which device on the bus maps to this element when more than one sensor shares the port. **`Unit`** is a **string** in scripts: assign **`"Fahrenheit"`** or **`"Celsius"`** exactly—do not use numeric enums like `0` or `1`.
+**SensorIndex** (read/write, 0–99) selects which device on the bus maps to this element when more than one sensor shares the port. **`Unit`** at the API/model layer is an **integer** (`0` = Celsius, `1` = Fahrenheit). The scripting engine also accepts the string values **`"Fahrenheit"`** and **`"Celsius"`** for convenience, but the REST API uses the integer representation.
 
 :::warning
 
-**Unit** in Process scripts uses the string values **`"Fahrenheit"`** and **`"Celsius"`**. Assigning a number will not switch units the way you expect.
+**Unit** has different representations depending on the access layer. The **REST API** uses integers (`0` = Celsius, `1` = Fahrenheit). **Process scripts** accept the string values **`"Fahrenheit"`** and **`"Celsius"`**. Use the correct form for the context you are working in.
 
 :::
 
@@ -124,7 +124,7 @@ Default template **`ow-temp`**.
 | Property | Access | Description |
 |----------|--------|-------------|
 | SensorIndex | Read/write | Sensor index on the bus (0–99) |
-| Unit | Read/write | `"Fahrenheit"` or `"Celsius"` (string) |
+| Unit | Read/write | Temperature unit — integer at the API layer (`0` = Celsius, `1` = Fahrenheit); scripts also accept `"Fahrenheit"` / `"Celsius"` strings |
 | RawValue | Read-only | Raw reading before calibrations |
 | Value | Read-only | Temperature after processing |
 

@@ -118,8 +118,8 @@ Keys follow the Duty Cycle `ui-controls.json`.
 
 | Property | Type | Access | Description |
 |----------|------|--------|-------------|
-| `DutyCycle` | number | RW | Percent on-time per cycle, **0–100**. |
-| `Interval` | number | RW | Full cycle length in **milliseconds**. |
+| `DutyCycle` | number | RW | Percent on-time per cycle, **0–100** (default: `50`). |
+| `Interval` | number | RW | Full cycle length in **milliseconds**, valid range **100–10000** (default: `1000`). |
 | `Value` | boolean | RO | Current phase: ON vs OFF within the pattern. |
 
 :::warning

@@ -125,7 +125,9 @@ During mash, operators often care most about **Target** and **Input**. Increase 
 
 ## Script Integration
 
-**PID-specific script properties:** **`InputPortID`** (string, read/write), **`Target`** (number, read/write), **`Kp`** (number, read/write), **`Ki`** (number, read/write), **`Kd`** (number, read/write), **`Reversed`** (boolean, read/write), **`CalcTime`** (number, read/write), **`OutTime`** (number, read/write), **`MaxIntegral`** (number, read/write), **`MaxOutput`** (number, read/write), **`RawValue`** (number, read-only), **`Value`** (number, read-only).
+**PID-specific script properties:** **`InputPortID`** (string, read/write), **`Target`** (number, read/write), **`Kp`** (number, read/write, 0–300.00), **`Ki`** (number, read/write, 0–300.00), **`Kd`** (number, read/write, 0–300.00), **`Reversed`** (boolean, read/write), **`CalcTime`** (number, read/write, 1–10), **`OutTime`** (number, read/write, 1–10), **`MaxIntegral`** (number, read/write, 0–100), **`MaxOutput`** (number, read/write, 0–100), **`Pwm`** (boolean, read/write — controls PWM output mode), **`RawValue`** (number, read-only), **`Value`** (number, read-only).
+
+**Resolved read-only properties (for frontend rendering):** **`InputElementId`** (Guid, read-only — resolved from InputPortID), **`InputElementType`** (string, read-only), **`InputDisplayName`** (string, read-only).
 
 **Common device script properties:** **`Enabled`** (boolean, read/write), **`Connected`** (boolean, read-only), **`RefreshMultiple`** (number, read/write), **`DisplayText`** (string, read-only), **`PortID`** (string, read-only).
 

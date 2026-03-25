@@ -6,7 +6,7 @@ sidebar_position: 4
 
 # Tool Mode
 
-The dashboard has two modes: **Pan** and **Edit**. They control whether you navigate the canvas or select and manipulate elements. The current mode is persisted in a browser cookie and restored when you return.
+The dashboard has two modes: **Pan** and **Edit**. They control whether you navigate the canvas or select and manipulate elements. The current mode is saved to a browser cookie, but always resets to **Pan mode** when opening a workspace.
 
 ## Pan Mode
 
@@ -57,7 +57,7 @@ Buttons are disabled when the action is not available (e.g., "Bring to front" wh
 - Click the **Edit mode** button (pencil icon) in the canvas controls — active = Edit mode, inactive = Pan mode
 - Press **H** for Pan, **V** for Edit
 - **Hold Space** — Temporarily switch to Pan while in Edit mode (release to return)
-- Tool mode is persisted in a browser cookie and restored when switching workspaces
+- Tool mode is saved to a browser cookie but always resets to Pan mode when opening a workspace
 
 ## Selection Frame
 
@@ -74,7 +74,7 @@ Elements are **not** added from the dashboard. They are added from the **Solutio
 2. Choose the element type (e.g., **Button**, **Timer**, **Chart**)
 3. For device elements, choose **Device** and configure interface/port in the dialog
 
-New elements appear on the dashboard at the center of the current viewport and in the tree. See [Adding Elements](../solution-explorer/add-elements) for details.
+New elements appear on the dashboard at the center of the current viewport and in the tree. When a new element is added, the dashboard automatically switches to **Edit mode** and selects the new element. See [Adding Elements](../solution-explorer/add-elements) for details.
 
 ## Show Invisible
 

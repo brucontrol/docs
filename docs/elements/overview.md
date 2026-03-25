@@ -47,9 +47,10 @@ All elements share a common set of configuration and behavior. These apply in th
 | **DisplayName** | Label shown on the element in the UI. Can differ from **Name** for clearer operator-facing text. |
 | **Visibility** | Controls whether the element appears on the Dashboard: `default` (follows normal rules), `visible`, `hidden`, or `hiddenlocked` (hidden and not trivially revealed). |
 | **UserControl** | Whether operators may change values or interact with the element from the Dashboard when the design allows it. |
+| **Enabled** | Whether the element is active (boolean, default `true`). For device elements this controls hardware communication and is read/write. For non-device elements the property is read-only. |
 | **ElementTemplateId** | Identifies the **element template** used for visual representation and template-defined custom properties. |
 | **EnableHistoricalLogging** | When enabled, the element’s values can be stored for history and charts. |
-| **LoggingIntervalSeconds** | Minimum seconds between stored samples when logging is enabled; `0` means log on every change. |
+| **LoggingIntervalSeconds** | Minimum seconds between stored samples when logging is enabled (default: `1`). Set to `0` to log on every change. |
 | **MaxSilenceSeconds** | If no value change occurs for this many seconds, the current value is logged anyway; `0` disables this. Useful for values that stay stable for long periods (for example, setpoints or global variables). |
 
 **Visibility** and **UserControl** work together: an element can exist in the solution but stay off the Dashboard (`hidden` / `hiddenlocked`), or stay visible while scripts still enforce whether operators may click or drag values. Use **`hiddenlocked`** when you want elements removed from normal operator view without inviting casual unhide actions.

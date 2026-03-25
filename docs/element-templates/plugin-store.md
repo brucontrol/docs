@@ -29,7 +29,7 @@ When a newer version of an installed element template plugin is available, an **
 
 ## Uninstall
 
-To remove a plugin template, delete it from the Element Template Editor. Elements currently using the template will need a new template assigned.
+To remove a plugin template, delete it from the Element Template Editor. When a template is deleted, all elements using it are automatically reassigned to the default template for their type.
 
 ## Badges and Sources
 
@@ -40,6 +40,14 @@ To remove a plugin template, delete it from the Element Template Editor. Element
 | **Beta** | Pre-release; not auto-installed unless already present |
 
 Official plugins are vetted and supported. Core plugins are installed automatically when BruControl starts and kept up to date.
+
+## Startup Sync and Auto-Management
+
+BruControl automatically syncs plugins from the official registry on startup and approximately every hour. Core plugins are auto-installed and updated. Orphaned plugins (removed from registry) are automatically demoted.
+
+## Revert to Stable
+
+If a beta version of a plugin has issues, use the `POST /api/v1/plugin-registry/revert-to-stable` endpoint to revert to the last stable version.
 
 ## Developer Sideload
 

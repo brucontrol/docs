@@ -145,6 +145,14 @@ BruControl uses [SignalR](https://learn.microsoft.com/en-us/aspnet/core/signalr/
 | `UnsubscribeFromChartSamples` | `chartId` | Stop chart sample stream |
 | `SubscribeToDataViewSamples` | `dataViewId` | Receive live data view samples |
 | `UnsubscribeFromDataViewSamples` | `dataViewId` | Stop data view sample stream |
+| `SubscribeToSystemLogs` | — | Subscribe to live system log events |
+| `UnsubscribeFromSystemLogs` | — | Unsubscribe from system log events |
+| `SubscribeToDeviceDiagnostics` | `deviceId` (Guid) | Subscribe to real-time device communication events for a specific device |
+| `UnsubscribeFromDeviceDiagnostics` | `deviceId` (Guid) | Unsubscribe from device communication events |
+
+:::info Initial State on Subscribe
+When calling `SubscribeToAllProcesses` or `SubscribeToProcess`, the hub sends the current process state and variables to the caller immediately.
+:::
 
 ### Client Events (received from server)
 
@@ -181,6 +189,16 @@ BruControl uses [SignalR](https://learn.microsoft.com/en-us/aspnet/core/signalr/
 |-------|-----------|-------------|
 | `ChartSampleReceived` | `chartId, channelKey, timestampUnixMs, value, oscillationDutyPercent?, oscillationPeriodMs?` | Live chart data point |
 | `DataViewSampleReceived` | `dataViewId, channelKey, timestampUnixMs, value` | Live data view data point |
+
+**Log and diagnostics events:**
+
+| Event | Description |
+|-------|-------------|
+| `LogEventReceived` | Single system log event (timestamp, level, message, source) |
+| `LogEventBatchReceived` | Batch of system log events |
+| `DeviceCommEventReceived` | Single device communication event (Rx, Tx, Connected, Disconnected, Error) |
+| `DeviceCommEventBatchReceived` | Batch of device communication events (replayed on subscribe) |
+| `WebhookCallCompleted` | Webhook dispatch result (webhookName, statusCode, error, durationMs) |
 
 ### Mock Device Hub
 

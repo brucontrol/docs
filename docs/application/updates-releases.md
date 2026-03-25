@@ -62,11 +62,11 @@ Check the release notes or brucontrol-releases repository for the exact image pa
 
 | Aspect | Windows Zip | Docker |
 |--------|-------------|--------|
-| **Platform** | Windows only | Any platform with Docker |
+| **Platform** | Windows 10+ (64-bit) | Any platform with Docker (Linux, Windows, macOS) |
 | **Installation** | Extract and run | Pull image and run container |
 | **Updates** | Download new ZIP, extract, replace | Pull new image, recreate container |
 | **Configuration** | Stored in Documents\BruControl | Typically mounted volume or bind mount |
-| **Use case** | Desktop/laptop, direct control | Server, NAS, headless operation |
+| **Use case** | Windows host with direct USB access | Server, NAS, headless, or cross-platform deployment |
 
 Choose the option that fits your deployment. Both receive the same application updates.
 

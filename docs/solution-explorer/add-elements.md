@@ -10,7 +10,7 @@ Elements are added to workspaces from the Solution Explorer. Right-click a **wor
 
 ## Non-Device Elements
 
-Non-device elements (Global Variable, Toggle Switch, Button, Timer, Alarm, Script, Chart, Profile, Generic) are created directly in a workspace:
+Non-device elements (Global Variable, Toggle Switch, Button, Timer, Alarm, Script Inspector, Chart, Profile, Generic) are created directly in a workspace:
 
 1. Right-click a **Workspace** in the Solution Explorer
 2. Choose the element type (e.g., **Global Variable**, **Timer**, **Button**)
@@ -26,7 +26,7 @@ Non-device elements (Global Variable, Toggle Switch, Button, Timer, Alarm, Scrip
 | Button | Momentary press | 6 × 4 |
 | Timer | Count-up or count-down | 6 × 4 |
 | Alarm | Threshold monitoring with optional sound | 6 × 4 |
-| Script | Links to a runnable script (process), also called Inspector | 6 × 4 |
+| Script Inspector | Links to a runnable script (process) | 6 × 4 |
 | Chart | Time-series display | 6 × 6 |
 | Profile | Ramp/profile control | 6 × 6 |
 | Generic | Flexible container for custom displays | 6 × 4 |

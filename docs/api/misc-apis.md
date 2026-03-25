@@ -170,10 +170,10 @@ POST   /api/v1/security/unlock
 ```
 
 - **status** — Current lock status, hasPin, locked, autoLockIdleTime
-- **POST pin** — Set or change PIN. Body: `{ "pin": "1234" }`
+- **POST pin** — Set or change PIN. Body: `{ "pin": "1234" }`. The PIN must be exactly 4 digits (0-9). Invalid PINs return `400 Bad Request`.
 - **DELETE pin** — Clear configured PIN
 - **POST lock** — Lock the controller (requires PIN)
-- **POST unlock** — Unlock with PIN. Body: `{ "pin": "1234" }`
+- **POST unlock** — Unlock with PIN. Body: `{ "pin": "1234" }`. Returns `401 Unauthorized` with `{ "error": "Invalid PIN." }` on wrong PIN.
 
 ## Session (`SessionController`)
 
@@ -235,7 +235,7 @@ POST /api/v1/plugin-registry/sideload
 POST /api/v1/plugin-registry/revert-to-stable
 ```
 
-- **sync** — Force sync of official plugins and color themes from registry
+- **sync** — Force sync of official plugins, color themes, and device types from registry
 - **install** — Install from registry. Body: `{ "manifestId": "..." }`
 - **update** — Update installed plugin. Body: `{ "manifestId": "..." }`
 - **sideload** — Install from GitHub. Body: `{ "repo": "...", "path": "...", "ref": "..." }`
@@ -249,6 +249,104 @@ POST /api/v1/plugin-registry/revert-to-stable
 | `400` | `manifestId` missing or not a beta ID |
 | `404` | Beta plugin not installed, or stable version not found |
 | `502` | Failed to fetch stable plugin from upstream registry |
+
+## Webhooks (`WebhookController`)
+
+Manage outbound webhook definitions that scripts can call with the `webhook` command.
+
+```
+GET    /api/v1/webhook
+GET    /api/v1/webhook/:id
+POST   /api/v1/webhook
+PUT    /api/v1/webhook/:id
+DELETE /api/v1/webhook/:id
+```
+
+| Method | URL | Description | Request | Response |
+|--------|-----|-------------|---------|----------|
+| `GET` | `/api/v1/webhook` | List all webhook definitions | — | Array of `WebhookDefinition` |
+| `GET` | `/api/v1/webhook/:id` | Get a webhook by ID | — | `WebhookDefinition` or `404` |
+| `POST` | `/api/v1/webhook` | Create a new webhook | `CreateWebhookRequest` | `201 Created` with `WebhookDefinition` |
+| `PUT` | `/api/v1/webhook/:id` | Update a webhook | `UpdateWebhookRequest` | `WebhookDefinition` or `404`/`400` |
+| `DELETE` | `/api/v1/webhook/:id` | Delete a webhook | — | `204 No Content` or `404` |
+
+**`CreateWebhookRequest` body:**
+
+```json
+{
+  "name": "SlackAlert",
+  "url": "https://hooks.slack.com/services/T.../B.../xxx",
+  "method": "POST",
+  "headersJson": "{\"Content-Type\": \"application/json\"}",
+  "bodyTemplate": "{\"text\": \"{{message}}\"}"
+}
+```
+
+**`UpdateWebhookRequest` body** (all fields optional):
+
+```json
+{
+  "name": "SlackAlert",
+  "url": "https://hooks.slack.com/services/...",
+  "method": "POST",
+  "headersJson": "{\"Content-Type\": \"application/json\"}",
+  "bodyTemplate": "{\"text\": \"{{message}}\"}",
+  "isEnabled": true
+}
+```
+
+**`WebhookDefinition` shape:**
+
+```json
+{
+  "id": "guid",
+  "name": "SlackAlert",
+  "url": "https://hooks.slack.com/services/...",
+  "method": "POST",
+  "headersJson": "{\"Content-Type\": \"application/json\"}",
+  "bodyTemplate": "{\"text\": \"{{message}}\"}",
+  "isEnabled": true,
+  "createdAt": "2026-03-20T12:00:00Z",
+  "updatedAt": "2026-03-20T12:00:00Z"
+}
+```
+
+**Validation rules:**
+
+- **Name** — Required, must be unique (case-insensitive)
+- **URL** — Must be a valid absolute URL with HTTPS scheme
+- **Method** — Must be one of: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`
+
+**Body template placeholders:**
+
+The `bodyTemplate` field supports `{{placeholder}}` syntax. When a script calls `webhook "Name" key=value`, the matching placeholders are replaced with the provided values. Unmatched placeholders are replaced with empty strings (a warning is logged).
+
+**Dispatch behavior:**
+
+When a webhook is called from a script, the request is enqueued to a bounded background queue (capacity 100, drops oldest when full). A background dispatcher sends the HTTP request with a 30-second timeout. On transient failures (5xx or transport errors), one automatic retry is attempted after 2 seconds. After each dispatch attempt, a `WebhookCallCompleted` SignalR event is broadcast with the webhook name, status code, error (if any), and duration in milliseconds.
+
+## External Fetch (`ExternalFetchController`)
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `POST` | `/api/v1/external/fetch` | Proxy an HTTPS request to an allowlisted external host |
+
+**Request body:**
+
+```json
+{
+  "url": "https://api.example.com/data",
+  "method": "GET",
+  "headers": { "Authorization": "Bearer token" },
+  "body": null
+}
+```
+
+**Response:** Returns a JSON envelope with the upstream response status, headers, and base64-encoded body. Returns `400` if the URL is invalid or the host is not in the server-side allowlist.
+
+**Configuration:** The allowlist and limits are configured in `appsettings.json` under the `ExternalFetch` section.
+
+This endpoint is used by element templates via the `BruControl.fetchExternal()` SDK method.
 
 ## System (`SystemController`)
 

@@ -28,7 +28,7 @@ When generating a plugin from a photo or spec:
 - [ ] Add `ui-controls.json` if the template needs configurable options (colors, fonts, visibility)
 - [ ] Use `BruControl.onData(render)` to receive and render element data
 - [ ] Use `BruControl.updateProperties({ key: value })` for user-controlled changes
-- [ ] Use `BruControl.requestKeypad`, `requestTextInput`, `requestSelection`, etc. for input dialogs when appropriate
+- [ ] Use `BruControl.requestKeypad`, `requestTextInput`, `requestSelection`, `fetchExternal`, etc. for input dialogs and data fetching when appropriate
 - [ ] Resolve colors via `BruControl.getTheme()` or `getComputedStyle` for theme-aware styling
 - [ ] Use strict `!== undefined` checks for optional text (not `||`) so users can intentionally blank fields
 - [ ] Read custom properties at root level: `data.title`, `data.min` — not `data.appearance.title`
@@ -36,6 +36,9 @@ When generating a plugin from a photo or spec:
 - [ ] Do not put native properties (`value`, `state`, etc.) in ui-controls.json for device elements — they shadow live hardware data
 - [ ] Use the first `onData` payload as initialization; do not rely only on DOMContentLoaded (it can race with data)
 - [ ] ui-controls.json is a flat dictionary (no `"properties"` wrapper); use `default`, `title`, `type: "text"`
+- [ ] For dropdown/select controls, use `type: "text"` with an `enum` array (there is no `type: "select"`)
+- [ ] For file-upload, use `accept` and `pickerTitle` (not `x-accept` or `x-picker-title`)
+- [ ] For `requestSelection`, pass `options: string[]` (not `items: [{value, label}]`)
 
 ---
 
@@ -47,13 +50,15 @@ When generating a plugin from a photo or spec:
 4. [UIControls Schema (ui-controls.json)](#4-uicontrols-schema-ui-controlsjson)
 5. [Base Element Properties](#5-base-element-properties)
 6. [Element Types Reference](#6-element-types-reference)
-7. [BruControl SDK](#7-brucontrol-sdk)
-8. [SDK Methods Reference](#8-sdk-methods-reference)
-9. [Theme and Colors](#9-theme-and-colors)
-10. [Control Examples](#10-control-examples)
-11. [Complete Example: Water Level Meter](#11-complete-example-water-level-meter)
-12. [Full SDK Source](#12-full-sdk-source)
-13. [Common Pitfalls](#13-common-pitfalls)
+7. [Multi-Type Templates (Native vs Custom Properties)](#7-multi-type-templates-native-vs-custom-properties)
+8. [BruControl SDK](#8-brucontrol-sdk)
+9. [SDK Methods Reference](#9-sdk-methods-reference)
+10. [Theme and Colors](#10-theme-and-colors)
+11. [Control Examples](#11-control-examples)
+12. [Complete Example: Water Level Meter](#12-complete-example-water-level-meter)
+13. [Full SDK Source](#13-full-sdk-source)
+14. [Common Pitfalls](#14-common-pitfalls)
+15. [Build Pipeline Notes](#15-build-pipeline-notes)
 
 ---
 
@@ -80,21 +85,28 @@ element-templates/{template-name}/
 
 Each template must have an `element-template.yaml` manifest.
 
+**Runtime fields** (parsed and used by BruControl at install/load):
+
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `name` | string | Yes | Display name (e.g. "Timer - Card") |
 | `description` | string | No | Short description |
-| `version` | string | No | Semantic version; defaults to `1.0.0` or from `package.json` |
 | `supportedTypes` | string[] | Yes | Element types this template supports |
 | `defaultFor` | string | No | Single type this template is the default for |
 | `defaultWidth` | int | No | Default width in pixels when creating a new element |
 | `defaultHeight` | int | No | Default height in pixels |
 | `id` | string (UUID) | No* | Stable plugin ID; `generate-manifests` assigns if missing |
-| `beta` | boolean | No | Set by CI; do not edit manually |
-| `tags` | string[] | No | Discoverability tags |
-| `collection` | string | No | Group name (e.g. "BruControl Cards") |
 
 \*`id` is required for registry publish; the script assigns one if missing.
+
+**Registry-only fields** (used by the plugin store / CI pipeline; silently ignored by the app at runtime):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `version` | string | Semantic version; defaults to `1.0.0` or from `package.json` |
+| `beta` | boolean | Set by CI; do not edit manually |
+| `tags` | string[] | Discoverability tags for the plugin store |
+| `collection` | string | Group name (e.g. "BruControl Cards") |
 
 ### Examples
 
@@ -234,50 +246,76 @@ Optional. Maps dependency names to CDN URLs. Loaded before the SDK.
 
 ### Control Types
 
-| Type | Purpose | Example |
-|------|---------|---------|
-| `text` | String | label, font-family |
-| `number` | Numeric, optional min/max/step | fontSize, value |
-| `boolean` | Toggle | showHeader, showLabel |
-| `date` | Date picker | — |
-| `time` | Time picker | — |
-| `object` | Nested object | — |
-| `array` | List, optional items.enum | hiddenRowKeys |
+| Type | Purpose | Renders as | Example |
+|------|---------|------------|---------|
+| `text` | String | Text input (or dropdown when `enum` is provided — see below) | label, font-family |
+| `number` | Numeric, optional min/max/step | Number input (or range slider with `format: "range"`) | fontSize, value |
+| `boolean` | Toggle | Checkbox | showHeader, showLabel |
+| `date` | Date picker | Native date input | — |
+| `time` | Time picker | Text input (hh:mm:ss) | — |
+| `object` | Nested object | JSON textarea | — |
+| `array` | List, optional `items` sub-schema | Falls through to text input (no dedicated editor) | hiddenRowKeys |
 
-### Format Values (from plugin-library)
+### Dropdown / Select (text + enum)
 
-| Format | Purpose |
-|--------|---------|
-| `font-family` | Font picker |
-| `font-size` | Font size (use min/max) |
-| `font-weight` | Font weight |
-| `font-style` | Font style |
-| `text-align` | Text alignment |
-| `color-alpha` | Color picker; hex #RRGGBB or #RRGGBBAA; theme-aware via `x-theme-default` |
-| `element-ref` | References another element by ID |
-| `file-upload` | File picker; use `x-accept`, `x-picker-title` |
-| `range` | Slider (use min, max, step) |
+There is no dedicated `select` type. To create a dropdown, use **`type: "text"` with an `enum` array**:
+
+```json
+{
+  "mode": {
+    "type": "text",
+    "title": "Operating Mode",
+    "default": "auto",
+    "enum": ["auto", "manual", "off"],
+    "group": "General"
+  }
+}
+```
+
+This renders a native `<select>` in the Appearance tab. Each `enum` value is used as both the option value and the display label. The stored value is the selected string.
+
+### Format Values
+
+The `format` field provides specialized rendering for `text` and `number` controls:
+
+| Format | Type | Renders as |
+|--------|------|------------|
+| `font-family` | text | Searchable font picker (system + Google Fonts) |
+| `font-size` | number | Number input with "px" suffix |
+| `font-weight` | text | Dropdown (100 Thin → 900 Black) |
+| `font-style` | text | Dropdown (Normal, Italic, Oblique) |
+| `text-align` | text | Button group (Left, Center, Right) |
+| `color` | text | Color picker (hex #RRGGBB) |
+| `color-alpha` | text | Color picker with alpha (hex #RRGGBB or #RRGGBBAA); theme-aware via `x-theme-default` |
+| `element-ref` | text | Element picker filtered by `elementType`; requires `elementType` field |
+| `file-upload` | text | File path input + Browse modal + Clear button; use `accept`, `pickerTitle`, `initialPath` |
+| `file-picker` | text | Alias for `file-upload` |
+| `range` | number | Range slider + number input (use `min`, `max`, `step`) |
 
 ### Fields
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `type` | string | One of: text, number, boolean, date, time, object, array |
+| `type` | string | One of: `text`, `number`, `boolean`, `date`, `time`, `object`, `array` |
 | `title` | string | Display label |
-| `description` | string | Help text |
+| `description` | string | Help text shown below the control |
 | `default` | any | Default value |
 | `group` | string | Group for organization (e.g. "Layout", "Label", "Value", "Background & Border") |
-| `min`, `max`, `step` | number | For number/range |
-| `enum` | array | For constrained choice |
-| `format` | string | Format hint (see above) |
-| `x-theme-default` | string | Theme key when value is empty (e.g. `textPrimary`, `accentGreen`, `bgSecondary`, `borderColor`) |
-| `hidden` | boolean | When true, not shown in Appearance tab |
-| `x-accept` | string | For file-upload: MIME/types (e.g. `image/*,.png,.jpg`) |
-| `x-picker-title` | string | For file-upload: dialog title |
+| `format` | string | Format hint that changes rendering (see above) |
+| `min`, `max`, `step` | number | For `number` and `range` controls |
+| `enum` | array | String array for dropdown (`type: "text"` + `enum` → `<select>`) |
+| `precision` | number | Decimal precision for number values |
+| `elementType` | string | Required for `format: "element-ref"` — filters element picker by type |
+| `accept` | string | For `file-upload`: MIME/type filter (e.g. `"image/*,.png,.jpg"`) |
+| `pickerTitle` | string | For `file-upload`: dialog title (e.g. `"Select Background Image"`) |
+| `initialPath` | string | For `file-upload`: initial directory path in file picker |
+| `items` | UIControlDefinition | For `type: "array"` — schema definition for list items |
+| `x-theme-default` | string | Theme key used as fallback when value is empty (e.g. `textPrimary`, `accentGreen`, `bgSecondary`, `borderColor`) |
+| `hidden` | boolean | When true, not shown in Appearance tab (used for internal storage like anchors) |
 
 ### x-theme-default
 
-When the user leaves a color (or other theme-bound) property empty, the template uses the theme's default. `x-theme-default` binds to a theme key. Theme keys use kebab-case: `bg-primary`, `text-primary`, `accent-green`, `accent-blue`, `border-color`, `bg-secondary`, `bg-tertiary`, etc.
+When the user leaves a color (or other theme-bound) property empty, the template uses the theme's default. `x-theme-default` binds to a theme key. The `x-theme-default` field values use **camelCase** (e.g., `textPrimary`, `bgSecondary`, `accentGreen`, `borderColor`) to match the `ThemeColorSetViewModel` property names. The CSS variables use kebab-case (e.g., `--text-primary`, `--bg-secondary`), but the `x-theme-default` values are camelCase.
 
 ### Example (generic ui-controls.json)
 
@@ -309,8 +347,29 @@ When the user leaves a color (or other theme-bound) property empty, the template
     "group": "Background & Border",
     "format": "file-upload",
     "title": "Background Image",
-    "x-accept": "image/*,.png,.jpg,.jpeg,.gif,.webp,.svg,.bmp,.ico,.avif",
-    "x-picker-title": "Select Background Image"
+    "accept": "image/*,.png,.jpg,.jpeg,.gif,.webp,.svg,.bmp,.ico,.avif",
+    "pickerTitle": "Select Background Image"
+  }
+}
+```
+
+### Example (dropdown via text + enum)
+
+```json
+{
+  "unit": {
+    "type": "text",
+    "title": "Display Unit",
+    "default": "celsius",
+    "enum": ["celsius", "fahrenheit", "kelvin"],
+    "group": "General"
+  },
+  "displayMode": {
+    "type": "text",
+    "title": "Display Mode",
+    "default": "gauge",
+    "enum": ["gauge", "numeric", "bar"],
+    "group": "Layout"
   }
 }
 ```
@@ -417,7 +476,247 @@ Native properties are never stored in `PropertiesJson`; they come from the eleme
 
 ---
 
-## 7. BruControl SDK
+## 7. Multi-Type Templates (Native vs Custom Properties)
+
+A single template can support multiple element types. This is one of the most powerful — and most nuanced — features of the system. Understanding how native properties and custom properties interact across types is critical.
+
+### How supportedTypes works
+
+In `element-template.yaml`, list every element type the template should work with:
+
+```yaml
+name: Value Display - Card
+supportedTypes:
+  - globalVariable-value
+  - globalVariable-string
+  - generic
+defaultFor: globalVariable-value
+```
+
+When a user assigns this template to an element, BruControl checks that the element's type is in `supportedTypes`. The **same compiled HTML/JS** runs for every supported type — your template code must handle the differences.
+
+### Native properties vs custom properties
+
+Every element type has a set of **native properties** — fields that come from the element's domain model (hardware, scripting engine, etc.). These are determined by reflection on the element's view model type.
+
+| Element Type | Native Properties | Notes |
+|--------------|------------------|-------|
+| `generic` | **None** | All properties are custom |
+| `globalVariable-value` | `value`, `variableName`, `precision`, `format`, `variableType` | `value` is the live variable |
+| `globalVariable-bool` | `value`, `variableName`, `variableType` | `value` is `"True"`/`"False"` |
+| `globalVariable-string` | `value`, `variableName`, `variableType` | `value` is a string |
+| `toggleSwitch` | `state` | boolean |
+| `digitalOutput` | `state`, `portId`, `deviceConnected`, `activeLow`, ... | boolean state + device metadata |
+| `analogInput` | `value`, `rawValue`, `precision`, `prefix`, `suffix`, ... | live sensor value |
+| `owTemp` | `value`, `rawValue`, ... | live temperature |
+
+**The key rule:** When a template defines a property in `ui-controls.json` that shares a name with a native property, what happens depends on the element type:
+
+### The value field across types — a concrete example
+
+Suppose your template defines `value` in `ui-controls.json`:
+
+```json
+{
+  "value": { "type": "number", "title": "Value", "default": 50, "min": 0, "max": 100 }
+}
+```
+
+**When this template is assigned to a `generic` element:**
+- `generic` has **no native properties** (its native set is empty)
+- `value` from ui-controls is stored in `PropertiesJson` as a custom property
+- The template receives `data.value = 50` (the default from ui-controls)
+- Users can edit `value` via the Appearance tab — it's a configurable setting
+- The template controls this value entirely
+
+**When this template is assigned to a `globalVariable-value` element:**
+- `globalVariable-value` has `value` as a **native property**
+- BruControl detects the collision and **strips** `value` from `PropertiesJson` — it is never stored as a custom property
+- The template receives `data.value = 42.5` (the **live variable value** from the element model)
+- The `value` field does **not** appear in the Appearance tab for this element type
+- The template reads the live value and can update it via `updateProperties({ value: newVal })`
+
+**This happens automatically.** The server uses `NativePropertyKeysService` to determine which keys are native for each element type, and:
+1. `DefaultTemplateResolver.ApplyDefaultTemplate` skips writing native keys to `Properties`
+2. `DefaultTemplateResolver.ApplyTemplate` removes native keys from the merged property bag
+3. `ElementTemplateSyncService` strips native keys before persisting
+4. `ElementMapper.ToFlatViewModel` excludes native keys from `DynamicProperties` (they come from the typed view model instead)
+
+### Switching on elementType in your template
+
+Your `onData` callback always receives `data.elementType` (e.g. `"globalVariable-value"`, `"generic"`, `"toggleSwitch"`). Use this to branch your logic:
+
+```javascript
+function render(data) {
+  var label = data.displayName || data.name || 'Element';
+  document.getElementById('title').textContent = label;
+
+  switch (data.elementType) {
+    case 'globalVariable-value':
+    case 'globalVariable-string':
+    case 'globalVariable-datetime':
+    case 'globalVariable-timespan':
+      // value comes from the live variable — read-only display or use a picker to change it
+      renderLiveValue(data);
+      break;
+
+    case 'globalVariable-bool':
+      // value is "True"/"False" — render as a toggle
+      renderBoolToggle(data);
+      break;
+
+    case 'toggleSwitch':
+      // uses state (boolean), not value
+      renderToggle(data.state);
+      break;
+
+    case 'generic':
+      // value is a custom property from ui-controls — use it as display config
+      renderGauge(data.value, data.min, data.max);
+      break;
+
+    default:
+      renderFallback(data);
+  }
+}
+```
+
+### Using variableType for global variable subtypes
+
+For global variables, `data.variableType` tells you the subtype (`"Value"`, `"Boolean"`, `"String"`, `"DateTime"`, `"TimeSpan"`). This is essential for choosing the right picker:
+
+```javascript
+function handleValueClick() {
+  if (!currentData || currentData.userControl === false) return;
+  if (!window.BruControl) return;
+
+  var vt = String(currentData.variableType || 'Value');
+
+  if (vt === 'Value') {
+    window.BruControl.requestKeypad({
+      currentValue: String(currentData.value || '0'),
+      label: currentData.displayName || 'Set Value',
+      precision: currentData.precision,
+      allowNegative: true
+    }).then(function(result) {
+      if (result !== null) window.BruControl.updateProperties({ value: String(result) });
+    });
+  } else if (vt === 'Boolean') {
+    var isTrue = /^(true|1|on)$/i.test(String(currentData.value || ''));
+    window.BruControl.updateProperties({ value: isTrue ? 'False' : 'True' });
+  } else if (vt === 'String') {
+    window.BruControl.requestTextInput({
+      currentValue: String(currentData.value || ''),
+      label: currentData.displayName || 'Set Value'
+    }).then(function(result) {
+      if (result !== null) window.BruControl.updateProperties({ value: String(result) });
+    });
+  } else if (vt === 'TimeSpan') {
+    window.BruControl.requestTimeSpanPicker({
+      currentValue: String(currentData.value || ''),
+      label: currentData.displayName || 'Set Duration'
+    }).then(function(result) {
+      if (result !== null) window.BruControl.updateProperties({ value: String(result) });
+    });
+  } else if (vt === 'DateTime') {
+    window.BruControl.requestDateTimePicker({
+      currentValue: String(currentData.value || ''),
+      label: currentData.displayName || 'Set Date/Time'
+    }).then(function(result) {
+      if (result !== null) window.BruControl.updateProperties({ value: String(result) });
+    });
+  }
+}
+```
+
+### Toggle templates across toggleSwitch and globalVariable-bool
+
+A toggle template can support both `toggleSwitch` and `globalVariable-bool`, but the update API differs:
+
+```javascript
+function handleToggleClick() {
+  if (!currentData || !window.BruControl) return;
+  if (currentData.userControl === false) return;
+
+  if (currentData.elementType === 'toggleSwitch') {
+    // toggleSwitch uses native "state" (boolean)
+    window.BruControl.updateProperties({ state: !currentData.state });
+  } else {
+    // globalVariable-bool uses native "value" ("True"/"False" strings)
+    var isTrue = /^(true|1|on)$/i.test(String(currentData.value || ''));
+    window.BruControl.updateProperties({ value: isTrue ? 'False' : 'True' });
+  }
+}
+
+function isOn(data) {
+  if (data.elementType === 'toggleSwitch') return Boolean(data.state);
+  return /^(true|1|on)$/i.test(String(data.value || ''));
+}
+```
+
+### Design patterns for multi-type templates
+
+**Pattern 1: Generic-only template with display config**
+
+For templates like a gauge or meter that only support `generic`, you can freely use `value`, `min`, `max` in ui-controls — they are all custom properties:
+
+```json
+{
+  "value": { "type": "number", "default": 50, "min": 0, "max": 100 },
+  "min": { "type": "number", "default": 0 },
+  "max": { "type": "number", "default": 100 }
+}
+```
+
+**Pattern 2: Multi-type template with safe custom properties**
+
+For templates that support both `generic` and typed elements, avoid ui-controls keys that collide with native properties. Use distinct names:
+
+```json
+{
+  "displayMin": { "type": "number", "title": "Display Minimum", "default": 0 },
+  "displayMax": { "type": "number", "title": "Display Maximum", "default": 100 },
+  "showLabel": { "type": "boolean", "default": true },
+  "labelColor": { "type": "text", "format": "color-alpha", "x-theme-default": "textPrimary" }
+}
+```
+
+This way, on a `globalVariable-value` the template reads the live `data.value` from the native field and uses `data.displayMin`/`data.displayMax` for gauge bounds. On a `generic`, there is no native `value` — the template would need to handle that case (e.g. show a placeholder or use `data.displayMin` as the default).
+
+**Pattern 3: Intentional collision for dual behavior**
+
+You can intentionally define `value` in ui-controls knowing it will behave differently:
+
+- On `generic`: `value` becomes a user-editable config slider in the Appearance tab
+- On `globalVariable-value`: `value` is stripped and the live variable value passes through
+
+Your template code handles both:
+
+```javascript
+function render(data) {
+  var value = parseFloat(data.value);
+  if (isNaN(value)) value = 0;
+
+  // Same rendering logic — the value source is different per type but the template doesn't care
+  updateGauge(value, data.min || 0, data.max || 100);
+}
+```
+
+This is the **recommended approach** for templates like gauges and meters that should work as both standalone display widgets (generic) and live data displays (globalVariable, analogInput, etc.).
+
+### What gets stripped before reaching your template
+
+Before the host sends data to your iframe via `receiveData`, it strips these internal keys:
+- `propertiesJson` — raw JSON storage string
+- `schemaJson` — JSON Schema for properties
+- `uiControls` — control definitions (used by the Appearance tab, not the template)
+- `elementTemplateId` — which template is assigned
+
+Your template never sees these. Everything else on the flat data object is available.
+
+---
+
+## 8. BruControl SDK
 
 The SDK is injected into every compiled template iframe. Your template runs in a sandboxed iframe; communication with the dashboard uses **Penpal v7**.
 
@@ -426,6 +725,8 @@ The SDK is injected into every compiled template iframe. Your template runs in a
 - **Template → Host:** `updateProperties`, `requestKeypad`, `requestTextInput`, `requestSelection`, `fetchSamples`, `subscribeElement`, etc.
 
 **Registration methods, not properties:** `onData`, `onTheme`, `onSamples`, and `onElementUpdate` are **methods you call with a callback**. Do not assign to them (e.g. `BruControl.onData = function(data) { ... }`). Assigning overwrites the internal method and breaks the data pipeline. Always call: `BruControl.onData(function(data) { ... })`.
+
+**Unified SDK:** The SDK is a single JavaScript file embedded as a resource in both the TypeScript (editor preview / dashboard) and C# (server-side plugin compilation) paths. Both inject the same `window.BruControl` API surface including `fetchExternal` and `THEME_KEYS`. There is no separate "C# version" — the JS SDK source is shared.
 
 **No explicit init hook:** There is no `onInit` or `onMount`. The first time your `onData` callback runs is the de facto initialization. Use that first payload to build or update the DOM. Relying only on `DOMContentLoaded` can race with BruControl's template injection — the host may not have sent data yet.
 
@@ -447,7 +748,7 @@ To access Chart.js from your template, use `window.BruControlLibs.Chart` or `win
 
 ---
 
-## 8. SDK Methods Reference
+## 9. SDK Methods Reference
 
 ### Core Data and Theme
 
@@ -518,7 +819,7 @@ function handleToggleClick() {
 | `requestTextInput` | `(options?) => Promise<string \| null>` | Entered text or null | Text input flyout. |
 | `requestTimeSpanPicker` | `(options?) => Promise<string \| null>` | ISO 8601 duration or null | Time span picker. |
 | `requestDateTimePicker` | `(options?) => Promise<string \| null>` | ISO 8601 datetime or null | Date/time picker. |
-| `requestSelection` | `(options?) => Promise<string \| null>` | Selected item value or null | Selection dialog with a list of options. |
+| `requestSelection` | `(options?) => Promise<string \| null>` | Selected option string or null | Selection dialog with a list of string options. |
 
 **requestKeypad options:** `{ currentValue, label, min, max, precision, allowNegative }`
 
@@ -528,24 +829,20 @@ function handleToggleClick() {
 
 **requestDateTimePicker options:** `{ currentValue, label, minDate, maxDate }`
 
-**requestSelection options:** `{ items, label, currentValue }`
+**requestSelection options:** `{ options, label, currentValue }`
 
-- `items` — Array of selection items (each with a value and display label)
+- `options` — Array of **strings** (each string is both the value and the display label)
 - `label` — Title for the selection dialog
-- `currentValue` — Currently selected value (for highlighting)
+- `currentValue` — Currently selected string (for highlighting)
 
 **Example (requestSelection):**
 ```javascript
 function openModeSelector() {
   if (!window.BruControl || !window.BruControl.requestSelection) return;
   window.BruControl.requestSelection({
-    items: [
-      { value: 'auto', label: 'Automatic' },
-      { value: 'manual', label: 'Manual' },
-      { value: 'off', label: 'Off' }
-    ],
+    options: ['Automatic', 'Manual', 'Off'],
     label: 'Select Mode',
-    currentValue: currentData.mode || 'auto'
+    currentValue: currentData.mode || 'Automatic'
   }).then(function(result) {
     if (result !== null && window.BruControl) {
       window.BruControl.updateProperties({ mode: result });
@@ -554,15 +851,58 @@ function openModeSelector() {
 }
 ```
 
+### External HTTP Requests
+
+| Method | Signature | Returns | Description |
+|--------|-----------|---------|-------------|
+| `fetchExternal` | `(init) => Promise<object>` | Response object | Send an HTTP request through the BruControl server proxy. |
+
+**fetchExternal init:** `{ method, url, headers?, bodyBase64? }`
+
+- `method` — HTTP method string (`"GET"`, `"POST"`, `"PUT"`, `"PATCH"`, `"DELETE"`)
+- `url` — Absolute HTTPS URL of the external service
+- `headers` — Optional `{ key: value }` request headers (only permitted headers are forwarded: Content-Type, Accept, Authorization, X-Api-Key, etc.)
+- `bodyBase64` — Optional Base64-encoded request body (null for GET)
+
+**fetchExternal response:** `{ statusCode, headers, bodyBase64?, error? }`
+
+- `statusCode` — Upstream HTTP status code (0 for transport/validation errors)
+- `headers` — Subset of upstream response headers
+- `bodyBase64` — Base64-encoded response body (null when empty)
+- `error` — Human-readable error string (only when `statusCode` is 0)
+
+**Example (fetchExternal):**
+```javascript
+function fetchWeatherData(apiKey) {
+  if (!window.BruControl || !window.BruControl.fetchExternal) return;
+  window.BruControl.fetchExternal({
+    method: 'GET',
+    url: 'https://api.example.com/weather?city=Portland',
+    headers: { 'X-Api-Key': apiKey, 'Accept': 'application/json' }
+  }).then(function(response) {
+    if (response.error) {
+      console.error('Fetch failed:', response.error);
+      return;
+    }
+    if (response.bodyBase64) {
+      var json = JSON.parse(atob(response.bodyBase64));
+      // Use json data...
+    }
+  }).catch(function(err) {
+    console.error('fetchExternal not available:', err);
+  });
+}
+```
+
 ### Constants
 
 | Name | Value | Description |
 |------|-------|-------------|
-| `THEME_KEYS` | Array of strings | All theme CSS variable names. See [Theme and Colors](#9-theme-and-colors). |
+| `THEME_KEYS` | Array of strings | All theme CSS variable names. See [Theme and Colors](#10-theme-and-colors). |
 
 ---
 
-## 9. Theme and Colors
+## 10. Theme and Colors
 
 ### Theme Keys (BruControl.THEME_KEYS)
 
@@ -614,7 +954,7 @@ var labelColor = resolveColor(data.labelColor, '--text-primary', '#d4d4d4');
 
 ---
 
-## 10. Control Examples
+## 11. Control Examples
 
 ### Numeric Keypad (gv-value)
 
@@ -683,12 +1023,9 @@ window.BruControl.requestDateTimePicker({
 
 ```javascript
 window.BruControl.requestSelection({
-  items: [
-    { value: 'fahrenheit', label: 'Fahrenheit' },
-    { value: 'celsius', label: 'Celsius' }
-  ],
+  options: ['Fahrenheit', 'Celsius'],
   label: 'Select Unit',
-  currentValue: currentData.unit || 'fahrenheit'
+  currentValue: currentData.unit || 'Fahrenheit'
 }).then(function(result) {
   if (result !== null && window.BruControl) {
     window.BruControl.updateProperties({ unit: result });
@@ -714,7 +1051,7 @@ function handleValueClick() {
 
 ---
 
-## 11. Complete Example: Water Level Meter
+## 12. Complete Example: Water Level Meter
 
 A full template that displays `value` between `min` and `max` as an animated water level.
 
@@ -809,7 +1146,7 @@ See [Section 4](#4-uicontrols-schema-ui-controlsjson) for the full water-level-m
 
 ---
 
-## 12. Full SDK Source
+## 13. Full SDK Source
 
 The following is the canonical Element Template SDK injected into every compiled template. It is from `elementTemplateSdk.ts` (frontend). Plugin install uses a backend equivalent; both expose the same API. **Do not use `onState`/`receiveState`** — the host never calls them; use `onData`/`receiveData` only.
 
@@ -873,6 +1210,12 @@ The following is the canonical Element Template SDK injected into every compiled
       }
       return _parentConnection.requestSelection(options || {});
     },
+    fetchExternal: function(init) {
+      if (!_parentConnection || !_parentConnection.externalFetch) {
+        return Promise.reject(new Error('fetchExternal not available (no parent connection)'));
+      }
+      return _parentConnection.externalFetch(init || {});
+    },
     THEME_KEYS: ['bg-primary','bg-secondary','bg-tertiary','bg-hover','bg-active','bg-selection','text-primary','text-secondary','text-muted','border-color','border-subtle','border-focus','accent-primary','accent-hover','accent-blue','accent-green','accent-yellow','accent-orange','accent-purple','accent-red','scrollbar-bg','scrollbar-thumb','scrollbar-thumb-hover','list-active-background','list-active-hover-background','editor-line-highlight','editor-line-number','editor-line-number-active','editor-cursor','editor-execution-line-running','editor-execution-line-paused','editor-execution-glyph-running','editor-execution-glyph-paused','editor-comment','editor-string','editor-keyword','editor-type','editor-function','editor-operator','input-background','input-foreground','input-border']
   };
 
@@ -911,7 +1254,7 @@ The SDK source above is abbreviated — internal callback notification functions
 
 ---
 
-## 13. Common Pitfalls
+## 14. Common Pitfalls
 
 ### Empty string handling
 
@@ -937,7 +1280,7 @@ Custom properties live at the root: `data.title`, `data.min`, not `data.appearan
 
 ### The shadowing trap in ui-controls.json
 
-Defining a property in ui-controls.json makes BruControl treat it as a **static user-defined setting**. If that property name is also a **native** property of the element (e.g. `value` on an analog input or 1-Wire sensor), your config entry **shadows** the live hardware value — the template will receive the stored config value instead of the live sensor reading. To let hardware/element data pass through, **omit native properties from ui-controls.json**. Only include template-specific options (colors, labels, visibility, display ranges, etc.). See [Section 4](#4-uicontrols-schema-ui-controlsjson).
+Defining a property in ui-controls.json makes BruControl treat it as a **static user-defined setting**. If that property name is also a **native** property of the element (e.g. `value` on an analog input or 1-Wire sensor), the server **strips** it from `Properties` so the live value passes through. However, for `generic` elements (which have no native properties), all ui-controls keys become custom properties. This dual behavior is intentional — see [Section 7: Multi-Type Templates](#7-multi-type-templates-native-vs-custom-properties) for the full explanation and design patterns.
 
 ### Method registration vs. property assignment
 
@@ -958,6 +1301,36 @@ BruControl does not provide an `onInit` or `onMount` lifecycle hook. The **first
 ### Flat UI schema (not JSON Schema)
 
 ui-controls.json is a **flat dictionary**: keys are property names, values are control definitions. There is no `"properties"` wrapper and no standard JSON Schema structure. Use BruControl keys: `default` (not `defaultValue`), `title`, `type: "text"`, etc. See [Section 4](#4-uicontrols-schema-ui-controlsjson).
+
+---
+
+## 15. Build Pipeline Notes
+
+### How templates are compiled
+
+When a plugin is installed (or sideloaded), the server:
+
+1. Parses `element-template.yaml` via `ElementTemplateManifestParser` (YamlDotNet, camelCase mapping; unrecognized fields are silently ignored)
+2. Reads all `*.html`, `*.css`, `*.js` files from the plugin folder
+3. If `package.json` exists, extracts its `dependencies` object as `dependencies.json`
+4. If `ui-controls.json` exists, reads it as raw JSON and stores it on the template entity
+5. Builds compiled HTML via `BuildCompiledHtml`:
+   - Concatenates **all** CSS files (not just `style.css`) and inlines as `<style>`
+   - Concatenates **all** JS files (not just `index.js`)
+   - Strips `import` lines referencing `.css` files from JS
+   - Injects Google Fonts link, Penpal CDN, Chart.js CDN, chartjs-adapter-date-fns CDN
+   - Injects dependency scripts from `dependencies.json` (HTTP/HTTPS URLs only)
+   - Injects the SDK inline script
+   - Removes `<link>` tags referencing CSS files (CSS is already inlined)
+   - Appends user JS as inline `<script>` before `</body>`
+
+### Multiple CSS/JS files
+
+If your plugin has multiple `.css` or `.js` files, they are all concatenated. Use this for modular organization, but be aware of global scope collisions in JS. Wrapping each file in an IIFE is recommended.
+
+### Editor preview vs server compilation
+
+The element template editor preview uses the same pipeline but runs client-side (the TS version of `buildCompiledHtml`). The editor injects the TS SDK which includes `fetchExternal` and `THEME_KEYS`. Server-compiled plugins use the C# SDK which may lag behind the TS version.
 
 ---
 

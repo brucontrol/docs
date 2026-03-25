@@ -106,6 +106,8 @@ In addition to the [common element properties](./overview) (`ID`, `DisplayName`,
 | `RefreshMultiple` | number | Read/write | Multiplier for the refresh interval; higher values reduce traffic. |
 | `DisplayText` | string | Read-only | Formatted display string including calibrations. |
 | `PortID` | string | Read-only | Port identifier for this element. |
+| `PrimaryDisplayChannel` | number | Read/write | Controls which channel provides the primary display value for multi-channel ports. |
+| `Suspended` | boolean | Read-only | Whether the port is currently suspended. |
 
 :::warning Disabled vs disconnected
 

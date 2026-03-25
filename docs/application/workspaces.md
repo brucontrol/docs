@@ -29,7 +29,7 @@ You can create as many workspaces as you need. Use them to separate different ma
 
 ## Workspace Tab Bar
 
-When you have two or more *visible* workspaces, a tab bar appears above the Dashboard. Each tab represents one workspace. (Hidden workspaces do not appear in the tab bar.)
+When multiple workspaces are visible, a tab bar appears above the Dashboard. Tabs can be reordered by dragging. Each tab represents one workspace. (Hidden workspaces do not appear in the tab bar.)
 
 - **Switch workspaces** — Click a tab to view that workspace's dashboard
 - **Reorder tabs** — Drag a tab left or right to change the order
@@ -102,10 +102,12 @@ Workspaces can have background images to provide visual context for your layout 
 Workspace canvas state is saved **per theme**. This means each theme stores its own:
 
 - **Zoom level** and **pan position** (`canvasX`, `canvasY`)
-- **Tool mode** (Pan or Edit)
-- **Canvas lock state**
+- **Canvas lock state** (`IsCanvasLocked`) — maps to tool mode: locked = Pan mode, unlocked allows Edit mode
+- **Granular canvas permissions** — `AllowEditButton`, `AllowLayerControls`, `AllowDrag`, `AllowResize`, `AllowZoom`, `AllowPan` for fine-grained control over what interactions are permitted per theme
 
-When you switch themes, BruControl restores the zoom, pan, and tool mode specific to that theme. This lets you maintain different layout views for desktop vs. mobile themes.
+Tool mode is not stored as a direct field. Instead, the `IsCanvasLocked` flag determines whether the canvas is in Pan mode (locked) or allows Edit mode (unlocked).
+
+When you switch themes, BruControl restores the zoom, pan, lock state, and canvas permissions specific to that theme. This lets you maintain different layout views and interaction controls for desktop vs. mobile themes.
 
 ## Clearing a Workspace
 

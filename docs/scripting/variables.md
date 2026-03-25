@@ -20,6 +20,10 @@ new type name
 
 Where `type` is the variable type and `name` is the variable name.
 
+:::info Variable names are case-insensitive
+Variable names are **silently lowercased** on creation. `new value MyTemp` and `new value mytemp` create the same variable. This is different from element names, which are case-sensitive.
+:::
+
 ## Variable Types
 
 BruControl supports five variable types. You must declare the type when you create a variable.
@@ -171,13 +175,17 @@ duration = 01:30:00
 
 ## DateTime Literals
 
-DateTime values can be assigned from `now` or from a string literal in the format `"MM-DD-YYYY hh:mm:ss AM/PM"`:
+DateTime values can be assigned from `now` or from a string literal in ISO 8601 format (`"yyyy-MM-ddTHH:mm:ss"`):
 
 ```
 new datetime dt
 dt = now
-dt = "03-18-2024 09:00:00 PM"
+dt = "2024-03-18T21:00:00"
 ```
+
+:::info Legacy format
+The legacy format `"MM-DD-YYYY hh:mm:ss AM/PM"` (e.g., `"03-18-2024 09:00:00 PM"`) may still parse on US-locale systems, but ISO 8601 is the canonical format and should be preferred.
+:::
 
 ## String Operations
 
@@ -323,6 +331,17 @@ goto "loop"
 3. **Clean up when done** — Use `delete` or `clear` to free memory
 4. **Choose the right type** — Use the appropriate variable type for your data
 5. **Avoid redeclaration** — Don't `new` a variable that already exists unless you intend to reset it
+
+## Display Formatting Sub-Properties
+
+Numeric variables have sub-properties that control how their values are displayed:
+
+| Sub-property | Description |
+|--------------|-------------|
+| `precision` | Number of decimal places shown when the variable is displayed |
+| `format` | Display format string used for rendering the value |
+
+These are accessible for display formatting purposes and behave similarly to the `Precision` property on Global Variable elements.
 
 ## Tips and Gotchas
 

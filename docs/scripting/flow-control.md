@@ -58,6 +58,10 @@ print "Temperature reached 150!"
 The validator detects unclosed `while`/`endwhile` blocks and reports: `Missing 1 "endwhile" statement(s)` at the end of the script. It also catches unmatched `endwhile` without a corresponding `while`.
 :::
 
+:::warning elseif not allowed in while blocks
+`elseif` cannot be used inside a `while` block. The interpreter throws: **`'elseif' not allowed after 'while'`**. Use separate `if`/`endif` blocks inside `while` loops instead.
+:::
+
 ## goto — Jump to a section
 
 `goto` jumps execution to a named section. It does **not** return.
@@ -124,6 +128,10 @@ sleep 60000   // 1 minute
 - Allow processes time to complete
 - Prevent the CPU from racing in loops
 - Control loop execution rates
+
+:::warning sleep accepts literal integers only
+`sleep` only accepts **literal integer values**, not variables or expressions. Using a variable (e.g., `sleep x`) will cause the script to hang. If you need a variable delay, use `wait` with a timer instead.
+:::
 
 :::tip Best practice
 Always include delays in loops to prevent CPU overload. Even `sleep 100` (0.1s) is enough.
@@ -227,17 +235,19 @@ Use `start` when you want another script to run. Use `load` when you want to pre
 After typing `start `, `stop `, etc., IntelliSense only suggests elements of the correct type (Timers and Processes for `start`/`stop`, only Processes for `pause`/`resume`/`load`).
 :::
 
-## exec — Execute a System Command
+## exec — Reserved
 
-The `exec` command executes a system-level command or external program. This is an advanced feature for direct system integration.
+The `exec` command is **reserved** and is **not yet implemented** in the current interpreter. It appears in the keyword list for forward-compatibility but will produce no effect or an error if used. Do not rely on it in scripts.
 
-```
-exec "command"
-```
+## Workspace Commands
 
-:::warning Advanced use
-`exec` runs commands at the system level. Use it carefully and only when you need to interact with external programs or the operating system.
+The `show`, `hide`, and `reveal` commands control workspace visibility. Workspaces can be referenced by name or by index.
+
+:::info Workspace indices are 1-indexed
+When using numeric indices with `show workspace`, `hide workspace`, or `reveal workspace`, indices start at **1**, not 0. `show workspace 1` shows the first workspace.
 :::
+
+See [Syntax Reference](./syntax-reference#workspace) for full syntax details.
 
 ## When to use sleep vs wait
 

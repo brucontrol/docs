@@ -37,7 +37,7 @@ Charts only plot data that exists in history. Enable **EnableHistoricalLogging**
 | `displayName` | string | Name shown in UI |
 | `name` | string | Internal name (fallback) |
 | `spanSeconds` | number | Visible time window (seconds), typically 4–604800 |
-| `channels` | array | Bindings: `{ channelID: { elementID, index }, autoScale, axisYMin, axisYMax, appearance }` — configure in Edit Chart |
+| `channels` | array | Bindings: `{ channelID: { elementID, index }, autoScale, axisYMin, axisYMax, appearance }` — configure in Edit Chart. Per-channel Y-axis properties: **`autoScale`** (boolean, default `true`) enables automatic Y-axis scaling; when `false`, **`axisYMin`** (number) and **`axisYMax`** (number) define the fixed Y-axis range for that channel. |
 | `hGridLines` | 0 \| 1 \| 2 | Horizontal grid density (native); aligns with designer **showGrid** for template |
 | `vGridLines` | 0 \| 1 \| 2 | Vertical grid density |
 | `userControl` | boolean | Allow user interaction (pan/zoom where supported) |

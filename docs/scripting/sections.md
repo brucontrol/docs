@@ -14,7 +14,7 @@ Scripts are divided into **sections** — blocks of code with names in brackets.
 [section_name]
 ```
 
-Section headers use square brackets. The section name can include spaces: `[heating phase]` is valid. Section names are case-insensitive when used with `goto` and `call`.
+Section headers use square brackets. The section name can include spaces: `[heating phase]` is valid. Section names are **case-sensitive**. `goto "Main"` will NOT find a section declared as `[main]`.
 
 ## The [main] Section
 
@@ -120,7 +120,7 @@ goto loop
 ```
 
 :::warning return without call
-If you execute `return` without a matching `call`, the script may behave unexpectedly. Always pair `return` with `call`.
+If you execute `return` without a matching `call`, the interpreter throws a clear error: **`cannot return, call history empty`**. Always pair `return` with `call`.
 :::
 
 ## Section Names with Spaces

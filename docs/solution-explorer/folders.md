@@ -47,9 +47,13 @@ You can reorganize items by dragging:
 - **Drag elements** into a folder to group them
 - **Drag elements** out of a folder to the workspace root (drag to the workspace item in the tree)
 - **Drag scripts** into or out of process folders
-- **Drag folders** to reorder or nest them within other folders
+- **Drag folders** to nest them within other folders or move them to a different parent
 
 Supported drag types include elements, processes, workspace folders, and script folders.
+
+:::note Cross-Workspace Moves
+Elements can only be dragged within the same workspace. To move an element to a different workspace, use the **Move to Workspace** context menu action.
+:::
 
 :::tip Moving to Root
 To move an element out of a folder back to the workspace root, drag it onto the workspace name in the tree. This sets its folder to `null`, placing it at the top level.

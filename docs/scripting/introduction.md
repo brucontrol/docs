@@ -67,7 +67,7 @@ goto "main"
 
 - `//` — Everything after `//` on a line is ignored (a comment)
 - `"Pump" State = on` — Turns the pump on
-- `sleep 5000` — Pauses for 5000 milliseconds (5 seconds)
+- `sleep 5000` — Pauses for 5000 milliseconds (5 seconds). **Note:** `sleep` only accepts literal integer values, not variables. Using a variable (e.g., `sleep x`) will cause the script to hang.
 - `goto "main"` — Jumps back to the start of `[main]`
 
 ## Syntax Rules
@@ -112,7 +112,9 @@ BruControl scripts allow you to:
 - **Coordinate systems** — Multiple concurrent scripts via `start`/`stop`
 - **Respond to events** — Alarms, buttons, conditions
 - **Control the UI** — Show/hide workspaces, display text on LCDs
-- **Send raw commands** — `tx` and `exec` for direct interface communication
+- **Emergency stop** — Instantly disable all ports with `estop`
+- **Call webhooks** — Push data to external services with `webhook "Name" key=value`
+- **Send raw commands** — `tx` for direct interface communication
 
 ## Script Execution
 

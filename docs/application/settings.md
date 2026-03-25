@@ -27,7 +27,7 @@ Settings are opened one panel at a time in a modal. Select a panel from the Solu
 General settings control configuration, error reporting, updates, shutdown behavior, and logging:
 
 - **Configuration** — Select the active configuration. Create, rename, or delete configurations. Each configuration has its own workspaces, elements, and data. Changing configuration reloads the application.
-- **Error Reporting** — Enable or disable anonymous exception reporting. A unique reporting ID is shown for crash reports.
+- **Error Reporting** — Enable or disable anonymous exception reporting. A unique reporting ID is shown for crash reports. See [Error Reporting](#error-reporting) below for details.
 - **Updates** — Toggle whether to check for beta updates instead of stable releases.
 - **Shutdown Behavior** — When enabled (`disableAllOnShutdown`), all hardware ports are sent disable commands before disconnecting during shutdown (manual or external signals such as SIGTERM). This is the default behavior referenced when using the Shutdown dialog's "Close Ports & Shutdown" option.
 - **Logging** — Configure which log domains are recorded and at what level. There are 10 logging domains:
@@ -46,6 +46,10 @@ General settings control configuration, error reporting, updates, shutdown behav
 | Mock Devices | Mock device simulation |
 
 Each domain can be independently enabled/disabled and set to a level: **Verbose**, **Debug**, **Information**, **Warning**, **Error**, or **Fatal**.
+
+#### Error Reporting
+
+When **Error Reporting** is enabled, anonymous crash reports are sent to a self-hosted Exceptionless instance. Each installation is identified by a randomly generated **Reporting ID** (visible in General settings). No private information is collected (`IncludePrivateInformation` is disabled). To opt out, disable the **Error Reporting** toggle in General settings.
 
 ### Security
 
@@ -79,7 +83,7 @@ Configure how BruControl stores data:
 
 - **Data Retention** — Number of days to retain historical data (1–365) and log entries (1–365).
 - **Maintenance** — Data purge interval (hours), maximum database size (GB), and database size monitor interval (minutes).
-- **Database** — The database provider and connection strings are configured in the **settings.yaml** file, not in this UI.
+- **Database** — The database provider and connection strings are configured in the **settings.yaml** file, not in this UI. Valid `databaseProvider` values in `settings.yaml`: `sqlite` (default), `postgresql` or `postgres`, `mongo` or `mongodb`.
 
 ### Data Explorer
 
@@ -89,6 +93,22 @@ The Data Explorer settings panel controls default behavior for Data Views:
 - **Time Span** — Default time span (in seconds) used when opening a new Data View.
 
 See [Data Views](./data-views) for more about creating and using data views.
+
+:::note
+The Data Explorer settings panel is currently not accessible from the Solution Explorer tree. The component exists but has no entry point in the navigation.
+:::
+
+### Webhooks
+
+The Webhooks settings panel lets you create and manage outbound HTTP webhook definitions that scripts can trigger using the `webhook` command.
+
+Each webhook definition includes:
+- **Name** — Unique identifier used in scripts (e.g., `webhook "MyHook" key=value`)
+- **URL** — The target HTTP endpoint
+- **Method** — HTTP method (POST, PUT, PATCH, GET, or DELETE)
+- **Headers** — Custom request headers as key-value pairs
+- **Body Template** — Request body with `{{placeholder}}` interpolation for dynamic values
+- **Enabled** — Toggle to enable or disable the webhook without deleting it
 
 ### Element Templates
 
@@ -137,6 +157,7 @@ If you choose **Keep Ports & Shutdown** while hardware is active (heaters, pumps
 | **License** | Activating, evaluating, releasing, or checking license status |
 | **Data Storage** | Adjusting data retention, maintenance intervals, or database size limits |
 | **Data Explorer** | Changing shared Y-axis default or default time span for data views |
+| **Webhooks** | Creating, editing, enabling, or disabling outbound HTTP webhooks for scripts |
 | **Element Templates** | Changing default element templates or opening the Element Template Editor |
 | **Device Types** | Updating firmware version, syncing from registry, or uploading .brumc files |
 | **Plugin Store** | Installing or updating plugins (opens in new tab) |

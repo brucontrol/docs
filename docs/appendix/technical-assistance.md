@@ -105,7 +105,7 @@ There are three ways to access log files:
 - **Evaluation license:** Available for a 15-day trial without a purchased activation key — request one from the application's license screen
 
 :::info License Tiers
-BruControl offers Standard and Professional licenses. Some features (Mock Mode, Data Exchange API) require a Professional license. See [Features](../features) for a complete comparison.
+BruControl offers Basic, Advanced, and Professional licenses. Some features (Mock Mode, Data Exchange API) require a Professional license. See [Features](../features) for a complete comparison.
 :::
 
 ## Before Contacting Support

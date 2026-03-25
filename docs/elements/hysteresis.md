@@ -140,6 +140,8 @@ All names below match the **hysteresis** entry in `ui-controls.json`.
 
 **Hysteresis-specific script properties:** **`InputPortID`** (string, read/write), **`Target`** (number, read/write), **`OnOffset`** (number, read/write), **`OnDelay`** (number, read/write), **`Value`** (boolean, read-only).
 
+**Resolved read-only properties (for frontend rendering):** **`InputElementId`** (Guid, read-only — resolved from InputPortID), **`InputElementType`** (string, read-only), **`InputDisplayName`** (string, read-only).
+
 **Common device script properties:** **`Enabled`** (boolean, read/write), **`Connected`** (boolean, read-only), **`RefreshMultiple`** (number, read/write), **`DisplayText`** (string, read-only), **`PortID`** (string, read-only).
 
 **Common element script properties:** **`ID`** (string, read-only), **`DisplayName`** (string, read/write), **`Visibility`** (string, read/write), **`EnableHistoricalLogging`** (boolean, read/write), **`LoggingIntervalSeconds`** (number, read/write), **`MaxSilenceSeconds`** (number, read/write).

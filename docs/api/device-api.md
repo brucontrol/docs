@@ -301,6 +301,20 @@ Each of the 12 device element types has dedicated endpoints for create, list, ge
 
 **Delete:** Use the generic `DELETE /api/v1/device-element/{id}` for all types. There is no type-specific delete endpoint.
 
+### Web Appearance
+
+Device elements support web appearance endpoints for managing position, size, and z-order per theme:
+
+```
+GET   /api/v1/device-element/{id}/web-appearance
+PATCH /api/v1/device-element/{id}/web-appearance
+POST  /api/v1/device-element/batch-web-appearances
+```
+
+- **GET** — Get the web appearance for a device element. Query: `themeId` (required).
+- **PATCH** — Update the web appearance for a device element (upsert). Query: `themeId` (required).
+- **POST batch-web-appearances** — Get web appearances for multiple device elements. Query: `themeId` (required). Body: `{ "elementIds": ["guid1", "guid2", ...] }`.
+
 ## Cross-References
 
 - [Element APIs](./element-apis) — Non-device elements (dashboard)

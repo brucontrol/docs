@@ -25,7 +25,7 @@ The interface is built with **resizable split panes** (powered by Allotment). Yo
 
 The header bar shows status and controls:
 
-- **Panel toggles** — Show or hide the Configuration (Solution Explorer) panel and the Script Panel
+- **Panel toggles** — Two toggle buttons in the header allow hiding/showing the Solution Explorer (left panel) and the Script Panel (bottom panel). Panel visibility is persisted in a browser cookie.
 - **Status indicators** — Version (with update indicator), device connections (connected/total), and license status
 - **Uptime ticker** — A real-time counter showing how long the application has been running since it was started
 - **Enable/Disable all ports** — Quick controls for all interface ports
@@ -45,7 +45,7 @@ The Solution Explorer is the tree on the left side of the application (labeled *
 - **Interfaces** — Your connected hardware devices (click a device to open the Device Editor)
 - **Media** — Shared media assets (images, sounds) available to element templates
 - **Mocks** — Simulated devices (only visible when mock mode is enabled)
-- **Settings** — Application configuration (General, Security, License, Data Storage, Data Explorer, Element Templates, Device Types, Plugin Store, System Logs, and Shutdown)
+- **Settings** — Application configuration (General, Security, License, Data Storage, Webhooks, Element Templates, Device Types, Plugin Store, System Logs, and Shutdown)
 
 Use the Solution Explorer to create workspaces, add elements, manage processes, and open settings. Right-click items for context menus with actions like New, Edit, Rename, Delete, and Run. The left panel can be toggled on or off via the header.
 
@@ -72,7 +72,7 @@ Scripts use a simple language with variables, conditionals, timers, alarms, and 
 
 ### Settings (Solution Explorer)
 
-Settings control how BruControl behaves. Open Settings by expanding **Settings** in the Solution Explorer and selecting an item (e.g., General, Security, License). Settings open in a modal. Settings panels include: **General**, **Security**, **License**, **Data Storage**, **Data Explorer**, **Element Templates**, and **Device Types**. **Plugin Store** and **System Logs** open in separate browser tabs. **Shutdown** opens a dedicated shutdown dialog.
+Settings control how BruControl behaves. Open Settings by expanding **Settings** in the Solution Explorer and selecting an item (e.g., General, Security, License). Settings open in a modal. Settings panels include: **General**, **Security**, **License**, **Data Storage**, **Webhooks**, **Element Templates**, and **Device Types**. **Plugin Store** and **System Logs** open in separate browser tabs. **Shutdown** opens a dedicated shutdown dialog.
 
 ## Security and Access Control
 
@@ -131,8 +131,8 @@ Some features open in separate pages or new tabs:
 - **Log Viewer** (`/logs`) — Live logs and search (also via **Settings** → **System Logs**)
 - **Plugin Store** (`/plugin-store`) — Install element templates and themes (also via **Settings** → **Plugin Store**)
 - **Element Template Editor** (`/element-templates`) — Create and edit element templates
-- **Device Diagnostics** (`/device/:id/diagnostics`) — Per-device diagnostics
-- **Mock Device** (`/mock/:port`) — Simulate a device for testing
+- **Device Diagnostics** (`/device/:deviceId/diagnostics`) — Per-device diagnostics
+- **Mock Device** (`/mock/:tcpPort`) — Simulate a device for testing
 
 ## Tips
 

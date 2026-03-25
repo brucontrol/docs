@@ -57,8 +57,8 @@ Each template can define a `ui-controls.json` file (or `UIControlsJson` in the d
 | `format` | string | Format hint (see Format Values below) |
 | `hidden` | boolean | When `true`, the property is not shown in the Appearance tab but is still available in the data object |
 | `x-theme-default` | string | Theme key when value is empty (e.g. `textPrimary`, `accentGreen`, `bgSecondary`, `borderColor`) |
-| `x-accept` | string | For `file-upload`: MIME/types (e.g. `image/*,.png,.jpg`) |
-| `x-picker-title` | string | For `file-upload`: dialog title |
+| `accept` | string | For `file-upload`: MIME/types (e.g. `image/*,.png,.jpg`) |
+| `pickerTitle` | string | For `file-upload`: dialog title |
 
 ## Format Values
 
@@ -71,7 +71,7 @@ Each template can define a `ui-controls.json` file (or `UIControlsJson` in the d
 | `text-align` | Text alignment |
 | `color-alpha` | Color picker; hex #RRGGBB or #RRGGBBAA; theme-aware via `x-theme-default` |
 | `element-ref` | References another element by ID. The edit form shows an element picker |
-| `file-upload` | File picker; use `x-accept` for MIME types, `x-picker-title` for dialog title |
+| `file-upload` | File picker; use `accept` for MIME types, `pickerTitle` for dialog title |
 | `range` | Slider (use min, max, step) |
 
 ### element-ref format
@@ -118,7 +118,7 @@ Properties can be grouped for organization in the edit form:
 
 ## x-theme-default
 
-When the user leaves a color (or other theme-bound) property empty, the template uses the theme's default. `x-theme-default` binds to a theme key. Theme keys use kebab-case: `bg-primary`, `text-primary`, `accent-green`, `accent-blue`, `border-color`, `bg-secondary`, `bg-tertiary`, etc.
+When the user leaves a color (or other theme-bound) property empty, the template uses the theme's default. `x-theme-default` binds to a theme key. The `x-theme-default` field values use **camelCase** (e.g., `textPrimary`, `bgSecondary`, `accentGreen`, `borderColor`) to match the `ThemeColorSetViewModel` property names. The CSS variables use kebab-case (e.g., `--text-primary`, `--bg-secondary`), but the `x-theme-default` values are camelCase.
 
 Example:
 
@@ -142,8 +142,8 @@ For properties that accept uploaded files (images, sounds):
   "default": "",
   "format": "file-upload",
   "title": "Background Image",
-  "x-accept": "image/*,.png,.jpg,.jpeg,.gif,.webp,.svg,.bmp,.ico,.avif",
-  "x-picker-title": "Select Background Image"
+  "accept": "image/*,.png,.jpg,.jpeg,.gif,.webp,.svg,.bmp,.ico,.avif",
+  "pickerTitle": "Select Background Image"
 }
 ```
 
@@ -173,7 +173,7 @@ Use `hidden: true` to define a property that is available in the data object but
 Native properties are part of the element's domain model (e.g., a Global Variable's `value`, a Toggle Switch's `state`). Custom properties are either template-defined (from `ui-controls.json`) or user-added configuration stored on the element in `PropertiesJson`.
 
 :::warning Do not shadow native properties
-For device elements, do not include native property names like `value` or `state` in `ui-controls.json`. They would shadow live hardware data. Only include template-specific options (colors, labels, visibility, display ranges). See [Common Pitfalls](element-template-developer-guide.md#13-common-pitfalls) in the developer guide.
+For device elements, do not include native property names like `value` or `state` in `ui-controls.json`. They would shadow live hardware data. Only include template-specific options (colors, labels, visibility, display ranges). See [Common Pitfalls](element-template-developer-guide.md#14-common-pitfalls) in the developer guide.
 :::
 
 For the complete ui-controls schema, format values, and plugin authoring guide, see [Element Template Developer Guide](element-template-developer-guide.md).

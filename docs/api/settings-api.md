@@ -78,6 +78,8 @@ Partially updates application settings. Patches are applied to the in-memory set
 
 **Response:** `SettingsViewModel` or `400 Bad Request` if patch fails
 
+PATCH requests are validated against the SettingsViewModel schema. Invalid or unknown property names are rejected with `400 Bad Request`.
+
 ## Settings Structure
 
 The settings view model includes the following sections:

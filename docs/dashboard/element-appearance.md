@@ -36,7 +36,7 @@ Position and size are changed **on the canvas**, not in the Edit Drawer.
 | **Resize** | Edit mode → select element → drag one of the 8 resize handles on the selection frame |
 | **Rotate** | Edit mode → select element → drag the rotation handle (15° snap) |
 
-Layout is stored per theme in **WebAppearance** entities (X, Y, Width, Height, Z, Rotation). Values are in grid units: X/Y in columns/rows, Width in columns, Height in row units.
+Layout is stored per theme in **WebAppearance** entities (X, Y, Width, Height, Z, Rotation). Values are stored in pixels on the backend; the frontend converts to grid units by dividing by 20 (`PX_PER_GRID`).
 
 ## Element Template
 
@@ -60,7 +60,11 @@ Many element templates define custom configuration properties through `uiControl
 | `color-alpha` | Color picker with alpha (`#RRGGBBAA`) |
 | `element-ref` | Element reference picker |
 | `font-family` | Font family selector |
-| `file-path` | File picker (opens File Manager) |
+| `file-upload` | File upload (opens File Manager for upload) |
+| `file-picker` | File picker (opens File Manager for selection) |
+| `font-weight` | Font weight selector |
+| `font-style` | Font style selector (normal, italic) |
+| `font-size` | Font size input |
 
 ### Template Metadata
 

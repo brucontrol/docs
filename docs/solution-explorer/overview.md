@@ -18,7 +18,7 @@ The **Solution Explorer** is the tree panel on the left side of BruControl. It o
 | **Interfaces** | Hardware devices (microcontrollers); right-click → New Interface to add |
 | **Media** | Shared media assets (images, sounds) available to element templates and alarm sounds |
 | **Mocks** | Mock device simulators (visible when mock mode is enabled on an interface) |
-| **Settings** | General, Security, License, Data Storage, Data Explorer, Element Templates, Device Types, Plugin Store, System Logs, Shutdown |
+| **Settings** | General, Security, License, Data Storage, Webhooks, Element Templates, Device Types, Plugin Store, System Logs, Shutdown |
 
 ## Common Actions
 
@@ -27,6 +27,7 @@ The **Solution Explorer** is the tree panel on the left side of BruControl. It o
 - **Click** an element to **navigate to it** on the Dashboard — the dashboard switches to the element's workspace and pans to center the element in the viewport
 - **Click** a script to open it in the Script Panel
 - **Expand/collapse** folders to navigate
+- Press **F2** on a selected item to rename it inline (supported for workspaces, folders, elements, scripts, and data views)
 - On touch devices, tap the **⋮ button** that appears next to items to open the context menu
 
 ## Element Navigation
